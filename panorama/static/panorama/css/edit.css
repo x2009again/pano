@@ -1,0 +1,707 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body, html {
+    width: 100%;
+    height: 100%;
+    background-color: #CDCDCD;
+}
+
+body {
+    background-color: #000;
+    overflow: hidden;
+    position: relative;
+    font-family: "Microsoft YaHei", "SimSun", "Microsoft JhengHei", "SimHei", "YouYuan", sans-serif;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+/*定义滚动条高宽及背景 高宽分别对应横竖滚动条的尺寸*/
+::-webkit-scrollbar {
+    width: 8px;
+    height: 100%;
+    background-color: #fff;
+}
+
+/*定义滚动条轨道 内阴影+圆角*/
+::-webkit-scrollbar-track {
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    background-color: #fff;
+}
+
+/*定义滑块 内阴影+圆角*/
+::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    background-color: #999999;
+}
+
+#edit-sidebar {
+    height: 96%;
+    width: 400px;
+    position: absolute;
+    left: 30px;
+    top: 2%;
+    background-color: #fff;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    border-radius: 4px;
+    -webkit-box-shadow: 0 0 3px #1f1f1f;
+    -moz-box-shadow: 0 0 3px #1f1f1f;
+    box-shadow: 0 0 3px #1f1f1f;
+    z-index: 4;
+}
+
+#name-bar {
+    width: 100%;
+    height: 80px;
+}
+
+#option-bar {
+    width: 100%;
+    height: 60px;
+    background-color: #dddddd;
+    color: #666666;
+    font-size: 15px;
+}
+
+#qr-code {
+    background-image: url('../img/icon/bg.png');
+    background-size: 100%;
+    width: 210px;
+    height: 230px;
+    margin-left: -90px;
+    margin-top: -40px;
+    position: absolute;
+    z-index: 8;
+    text-align: center;
+    font-size: 16px;
+    opacity: 0;
+    display: none;
+}
+
+#qr-code span, #qr-code a {
+    width: 100%;
+    color: #444444;
+    height: 35px;
+    line-height: 35px;
+    text-decoration: none;
+    display: block;
+}
+
+#qr-code div {
+    height: 130px;
+    width: 130px;
+    margin-left: 40px;
+    overflow: hidden;
+}
+
+#qr-canvas {
+    width: 140px;
+    height: 140px;
+    margin: -5px 0 0 -5px;
+    display: inline-block;
+}
+
+#qr-code a:hover {
+    color: #00aeef;
+    text-decoration: underline;
+}
+
+#add-space {
+    width: 100px;
+    height: 32px;
+    line-height: 32px;
+    border-top: 1px solid #ccc;
+    background: url('../img/icon/add.png') #fff 12px center no-repeat;
+    cursor: pointer;
+    position: absolute;
+    margin: 14px;
+    text-align: center;
+    z-index: 5;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    border-radius: 4px;
+}
+
+#add-space:hover {
+    background-color: #e6e6e6;
+}
+
+.option-ele {
+    height: 60px;
+    line-height: 60px;
+    float: left;
+    margin-right: 20px;
+}
+
+.option-ele>span {
+    cursor: pointer;
+}
+
+.option-ele>span:hover {
+    color: #00aeef;
+}
+
+#space-bar {
+    /*position: relative;*/
+    width: 100%;
+    overflow: auto;
+}
+
+#space-bar li {
+    list-style: none;
+}
+
+#space-bar .active {
+    background-color: #fbf0bb;
+}
+
+.space-ele {
+    position: relative;
+    width: 100%;
+    height: 120px;
+    border-bottom: 1px solid #999999;
+    background-color: #f5f5f5;
+    cursor: pointer;
+}
+
+.space-ele:hover {
+    background-color: #e6e6e6;
+}
+
+.space-ele:hover .ele-ope {
+    display: block;
+}
+
+.space-ele .ele-pic {
+    width: 160px;
+    height: 90px;
+    background-color: #e4e4e4;
+    margin: 15px 0 0 10px;
+    float: left;
+}
+
+.ele-pic img {
+    width: 100%;
+    height: 100%;
+}
+
+.space-ele .ele-name {
+    width: 200px;
+    height: 120px;
+    line-height: 120px;
+    float: left;
+    font-size: 16px;
+    color: #666666;
+    margin-left: 15px;
+    position: relative;
+}
+
+.ele-name input {
+    height: 24px;
+    width: 80%;
+    padding: 0 10px;
+    border: 1px solid #ccc;
+    -moz-border-radius: 2px;
+    -webkit-border-radius: 2px;
+    border-radius: 2px;
+    font-size: 16px;
+    color: #666666;
+    outline: none;
+    display: none;
+}
+
+.ele-name span {
+    width: 80%;
+    display: inline-block;
+}
+
+.space-ele .ele-ope {
+    position: absolute;
+    width: 70px;
+    height: 25px;
+    top: 20px;
+    right: 10px;
+    display: none;
+}
+
+.ele-ope-edit {
+    width: 18px;
+    height: 18px;
+    background-image: url("../img/icon/edit_nor.png");
+    float: left;
+}
+
+.ele-ope-del {
+    width: 18px;
+    height: 18px;
+    margin-left: 20px;
+    background-image: url("../img/icon/del_nor.png");
+    float: left;
+}
+
+.no-del .ele-ope-del {
+    display: none;
+}
+
+.ele-ope-edit:hover {
+    background-image: url("../img/icon/edit_hov.png");
+}
+
+.ele-ope-del:hover {
+    background-image: url("../img/icon/del_hov.png");
+}
+
+.editing input {
+    display: inline-block;
+}
+
+.dialog {
+    position: fixed;
+    z-index: 10;
+    width: 340px;
+    height: auto;
+    left: 50%;
+    top: 50%;
+    background-color: #e6e6e6;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    border-radius: 4px;
+    -webkit-box-shadow: 0 0 1px #1f1f1f;
+    -moz-box-shadow: 0 0 1px #1f1f1f;
+    box-shadow: 0 0 1px #1f1f1f;
+}
+
+.dialog .btn {
+    outline: none;
+    border: 0;
+    -webkit-appearance: none;
+    width: 110px;
+    height: 38px;
+    line-height: 38px;
+    vertical-align: middle;
+    text-align: center;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    border-radius: 4px;
+    cursor: pointer;
+    color: #fff;
+    display: inline-block;
+}
+
+#upload-pic {
+    height: 32px;
+    line-height: 32px;
+}
+
+#seller-name {
+    height: 100%;
+    width: 100%;
+    padding: 0 10px;
+    border: 1px solid #ccc;
+    -moz-border-radius: 2px;
+    -webkit-border-radius: 2px;
+    border-radius: 2px;
+    font-size: 14px;
+}
+
+#seller-desc {
+    height: 100%;
+    width: 100%;
+    padding: 0 10px;
+    font-size: 14px;
+    line-height: 30px;
+    resize: none;
+    border: 1px solid #ccc;
+    -moz-border-radius: 2px;
+    -webkit-border-radius: 2px;
+    border-radius: 2px;
+}
+
+.dialog .dialog-title {
+    position: relative;
+    width: 100%;
+    height: 50px;
+    line-height: 50px;
+    background-color: #fff;
+    font-size: 18px;
+    border-bottom: 1px solid #cfcece;
+    -moz-border-top-left-radius: 4px;
+    -moz-border-top-right-radius: 4px;
+    -webkit-border-top-left-radius: 4px;
+    -webkit-border-top-right-radius: 4px;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+
+}
+
+.dialog-title .dialog-name {
+    float: left;
+    margin-left: 15px;
+}
+
+.dialog-title .dialog-close {
+    float: right;
+    margin-right: 16px;
+    cursor: pointer;
+}
+
+.dialog-close:hover {
+    color: #eb7070
+}
+
+.dialog .dialog-operation {
+    width: 250px;
+    height: 38px;
+
+}
+
+#edit-seller-dialog {
+    width: 720px;
+    height:600px;
+    margin-left: -360px;
+    margin-top: -300px;
+    display: none;
+}
+
+#edit-seller-dialog input, textarea {
+    outline: none;
+    border: 0;
+    -webkit-appearance: none;
+}
+
+#edit-seller-dialog .dialog-ele {
+    width: 500px;
+    height: 32px;
+    margin-left: 80px;
+    line-height: 40px;
+    margin-top: 15px;
+}
+
+#edit-seller-dialog .dialog-ele .dialog-ele-title {
+    width: 90px;
+    height: 32px;
+    float: left;
+    color: #444444;
+    font-size: 16px;
+}
+
+#edit-seller-dialog .dialog-ele .dialog-ele-content {
+    width: 410px;
+    height: 32px;
+    float: left;
+}
+
+#upload-pic {
+    background-color: #03a5ef;
+}
+
+#upload-pic:hover {
+    background-color: #039be1;
+}
+
+#seller-logo {
+    width: 110px;
+    height: 110px;
+}
+
+.dialog-cancel {
+    float: left;
+    background-color: #adadad;
+    font-size: 20px;
+}
+
+.dialog-confirm {
+    float: right;
+    background-color: #03a9f4;
+    font-size: 20px;
+}
+
+.dialog-cancel:hover {
+    background-color: #039be1;
+}
+
+.dialog-confirm:hover {
+    background-color: #039be1;
+}
+
+#save-as-dialog {
+    width: 480px;
+    height: 300px;
+    margin-left: -240px;
+    margin-top: -150px;
+    display: none;
+}
+
+#save-as-dialog input {
+    outline: none;
+    border: 0;
+    -webkit-appearance: none;
+}
+
+#save-as-dialog .dialog-ele {
+    width: 300px;
+    height: 36px;
+    margin-left: 80px;
+    line-height: 36px;
+}
+
+#scene-title {
+    height: 100%;
+    width: 100%;
+    padding: 0 10px;
+    border: 1px solid #ccc;
+    -moz-border-radius: 2px;
+    -webkit-border-radius: 2px;
+    border-radius: 2px;
+}
+
+#add-space-dialog {
+    position: absolute;
+    width: 800px;
+    height: 640px;
+    margin-left: -400px;
+    margin-top: -320px;
+    display: none;
+}
+
+#spaces-container {
+    width: 798px;
+    height: 490px;
+    margin-left: 2px;
+    background-color: #e6e6e6;
+    overflow: auto;
+
+}
+
+#spaces-container .space {
+    width: 176px;
+    height: 145px;
+    float: left;
+    margin-left: 18px;
+    margin-top: 20px;
+    cursor: pointer;
+}
+
+.space .space-img {
+    width: 176px;
+    height: 98px;
+    position: relative;
+}
+
+.space .space-img img {
+    width: 100%;
+    height: 100%;
+}
+
+.space .space-name {
+    font-size: 16px;
+    color: #444444;
+    margin-top: 6px;
+}
+
+.space .space-time {
+    font-size: 12px;
+    color: #999999;
+    margin-top: 2px;
+}
+
+.space input {
+    position: absolute;
+    left: 6px;
+    top: 6px;
+    width: 18px;
+    height: 18px;
+    outline: none;
+    pointer-events: none;
+}
+
+#container {
+    height: 100%;
+    position: absolute;
+    left: 300px;
+}
+
+#hot-title {
+    position: absolute;
+    color: #fff;
+    font-size: 18px;
+    height: 25px;
+    line-height: 25px;
+    padding: 0 5px;
+    z-index: 1;
+    pointer-events: none;
+    background-color: rgba(0, 0, 0, 0.3);
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    display: none;
+}
+
+#context-menu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 125px;
+    z-index: 2;
+    text-align: center;
+    background: #fff;
+    box-shadow: 2px 2px 3px 1px rgba(0, 0, 0, 0.3);
+    display: none;
+}
+
+#context-menu ul {
+    margin: 0;
+}
+
+#context-menu li {
+    padding: 0 5px;
+    list-style: none;
+    line-height: 25px;
+    cursor: pointer;
+}
+
+#context-menu li.disabled {
+    cursor: default;
+    color: #717171;
+}
+
+#context-menu li:not(.disabled):hover {
+    background-color: #f2f2f2;
+}
+
+
+#add-hot-dialog {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 2;
+    border: 1px solid black;
+    text-align: center;
+    padding: 5px;
+    background-color: rgba(255, 255, 255, 0.4);
+    display: none;
+    min-width: 130px;
+}
+
+#add-hot-dialog .header {
+    position: relative;
+    text-align: left;
+    line-height: 25px;
+}
+
+#add-hot-dialog .header i {
+    float: right;
+    font-style: normal;
+    box-sizing: border-box;
+    border: 1px solid #000;
+    width: 15px;
+    line-height: 15px;
+    cursor: pointer;
+    vertical-align: middle;
+    margin-top: 5px;
+    display: inline-block;
+}
+
+#add-hot-dialog .footer {
+    padding: 5px 0 5px;
+    border-top: 1px solid #333;
+    margin-top: 5px;
+}
+
+#edit-hot-dialog {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 2;
+    border: 1px solid black;
+    text-align: left;
+    padding: 5px;
+    background-color: rgba(255, 255, 255, 0.4);
+    display: none;
+    min-width: 130px;
+}
+
+#edit-hot-dialog .header {
+    position: relative;
+    text-align: left;
+}
+
+#edit-hot-dialog .header i {
+    position: absolute;
+    right: 0;
+    border: 1px solid #000;
+    width: 15px;
+    height: 15px;
+    line-height: 15px;
+    cursor: pointer;
+}
+
+#edit-hot-dialog .footer {
+    text-align: center;
+    padding: 5px 0 5px;
+    border-top: 1px solid #333;
+    margin-top: 5px;
+}
+
+/* TODO 操作面板 */
+#operate-panel {
+    font-size: 10px;
+    position: absolute;
+    right: 90px;
+    top: 10px;
+    background-color: #fff;
+    padding: 5px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    z-index: 2;
+    /*display: none;*/
+}
+
+#operate-panel button {
+    margin: 2px;
+    height: 25px;
+    line-height: 25px;
+    font-size: 13px;
+    vertical-align: middle;
+    padding: 1px 4px;
+    text-align: center;
+    border-width: 0 1px 1px 0;
+    border-style: solid;
+    border-color: #000;
+    outline: none;
+    cursor: pointer;
+    background-color: #d4d4d4;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+#operate-panel button:hover {
+    background-color: #f7f7f7;
+}
+
+#operate-panel button.active, #operate-panel button:active {
+    border-width: 1px 0 0 1px;
+    padding: 2px 2px 0 6px;
+    background-color: #999;
+}
+
+#operate-panel button.add-btn {
+    background-color: #30cc30;
+}
+
+.btn.del-btn {
+    background-color: red;
+}

@@ -1,0 +1,195 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset=utf-8>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>场景编辑</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'panorama/css/common.css' %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'panorama/css/edit.css' %}"/>
+</head>
+
+<body>
+<div id="mask"></div>
+<div id="loading">
+    <div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+    <div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+</div>
+
+<div id="operate-panel">
+    <input type="text" id="src-process" disabled="disabled" value="资源载入中(0%)" title="">
+    <button class="btn" id="pick-hot">选择热点</button>
+</div>
+
+<img src="{% static 'panorama/img/play.png' %}" id="play-btn">
+<div id="edit-sidebar">
+    <div id="name-bar">
+        <div style="float:left;margin-top:12px;margin-left:20px;"><img src="{% static 'panorama/img/icon/logo.png' %}">
+        </div>
+    </div>
+    <div id="option-bar">
+        <div id="add-space">&nbsp;&nbsp;&nbsp;添加空间</div>
+        <div style="float:right;width:194px">
+            <div class="option-ele">
+                <span id="edit-info">编辑信息</span>
+            </div>
+            <div class="option-ele">
+                <span id="save-as">保存</span>
+            </div>
+            <div class="option-ele">
+                <span id="preview">预览</span>
+                <div id="qr-code">
+                    <span class="qr-text" style="margin-top:20px;">微信扫一扫 查看全景图</span>
+                    <div>
+                        <canvas id="qr-canvas" title="扫码浏览"></canvas>
+                    </div>
+                    <a href="#" id="view-link" target="_blank">点击打开全景图</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <ul id="space-bar"></ul>
+</div>
+
+<!--编辑商家信息-->
+<div class="dialog" id="edit-seller-dialog">
+    <div class="dialog-title">
+        <div class="dialog-name">编辑信息</div>
+        <div class="dialog-close">×</div>
+    </div>
+    <form action="edit_seller_info" enctype="multipart/form-data" method="post" target="upload_iframe">
+        <div class="dialog-ele" style="margin-top:60px;">
+            <div class="dialog-ele-title">商家logo:</div>
+            <div class="dialog-ele-content">
+                <label for="logo-input" id="upload-pic" class="btn">重新上传</label>
+                <input type="file" id="logo-input" name="logo" accept="image/gif, image/jpeg, image/png"
+                       style="display: none">
+            </div>
+        </div>
+        <div class="dialog-ele" id="dialog-img-ele" style="height:110px;">
+            <div class="dialog-ele-title"></div>
+            <div class="dialog-ele-content" style="height:110px;">
+                <img id="seller-logo" src=""/>
+            </div>
+        </div>
+        <div class="dialog-ele" style="">
+            <div class="dialog-ele-title">商家名称:</div>
+            <div class="dialog-ele-content">
+                <input type="text" id="seller-name" name="name" placeholder="限制10个字" value="" maxlength="10"/>
+            </div>
+        </div>
+        <div class="dialog-ele" style="height:130px;">
+            <div class="dialog-ele-title">商家介绍:</div>
+            <div class="dialog-ele-content" style="height:120px;margin-top:10px;">
+                <textarea id="seller-desc" name="desc" placeholder="输入商家介绍，限制60字" maxlength="60"></textarea>
+            </div>
+        </div>
+        <input type="hidden" id="seller_id" name="seller_id" value="">
+        <input type="hidden" name="cb" value="getResultStr">
+    </form>
+    <div class="dialog-operation" style="margin:50px auto 50px 220px;">
+        <a class="btn dialog-cancel">取消</a>
+        <a class="btn dialog-confirm">确定</a>
+    </div>
+</div>
+<iframe id="upload_iframe" name="upload_iframe" src="" style="display: none;"></iframe>
+
+<!--另存为-->
+<div class="dialog" id="save-as-dialog">
+    <div class="dialog-title">
+        <div class="dialog-name">保存为</div>
+        <div class="dialog-close">×</div>
+    </div>
+    <div class="dialog-ele" style="margin-top:70px;">
+        <input type="text" id="scene-title" placeholder="输入全景图名称，限制10个字" value="" maxlength="10"/>
+    </div>
+    <div class="dialog-operation" style="margin:50px auto 60px 115px;">
+        <a class="btn dialog-cancel">取消</a>
+        <a class="btn dialog-confirm">确定</a>
+    </div>
+
+</div>
+
+<!--添加空间-->
+<div class="dialog" id="add-space-dialog">
+    <div class="dialog-title">
+        <div class="dialog-name">添加空间</div>
+        <div class="dialog-close">×</div>
+    </div>
+    <div id="spaces-container"></div>
+    <div class="dialog-operation" style="margin:40px auto 20px 275px;">
+        <a class="btn dialog-cancel">取消</a>
+        <a class="btn dialog-confirm">确定</a>
+    </div>
+</div>
+
+<div id="hot-title"></div>
+
+<div id="context-menu">
+    <ul>
+        <li id="add-hot">在此处添加热点</li>
+        <li class="disabled">修改此热点</li>
+        <li class="disabled">删除此热点</li>
+    </ul>
+</div>
+
+<!-- 添加热点对话框 -->
+<div id="add-hot-dialog">
+    <div class="header">选择目标场景:<i>×</i></div>
+    <div class="body">
+        <select title=""></select>
+    </div>
+    <div class="footer">
+        <button class="add-btn">添加</button>
+        <button class="redo-btn">重新选择</button>
+    </div>
+</div>
+
+<!-- 编辑热点对话框 -->
+<div id="edit-hot-dialog">
+    <div class="header">编辑热点:<i>×</i></div>
+    <div class="body">
+        <label>
+            跳转至：
+            <select title=""></select>
+        </label>
+        <br>
+        <label>
+            描述：
+            <input type="text" name="title">
+        </label>
+    </div>
+    <div class="footer">
+        <button class="btn del-btn">删除</button>
+        <button class="btn update-btn">更新</button>
+    </div>
+</div>
+
+<script src="//cdn.bootcss.com/jquery/2.2.4/jquery.min.js"></script>
+<script>window.jQuery || document.write('<script src="/lib/jquery_2_2_4.min.js"><\/script>')</script>
+<script src="//cdn.bootcss.com/jquery-easing/1.3/jquery.easing.min.js"></script>
+<script>$.easing.easeInOutQuad || document.write('<script src="/lib/jquery.easing_1_3.min.js"><\/script>')</script>
+<script src="{% static 'panorama/lib/jquery-ui.min.js' %}"></script>
+<script src="{% static 'panorama/lib/three.js/stats.min.js' %}"></script>
+<script src="{% static 'panorama/lib/three.js/three.js' %}"></script>
+<script src="{% static 'panorama/lib/three.js/StereoEffect.js' %}"></script>
+<script src="{% static 'panorama/lib/three.js/DeviceOrientationControls.js' %}"></script>
+<script src="{% static 'panorama/lib/three.js/OrbitControls.js' %}"></script>
+<script src="{% static 'panorama/lib/tweenjs/Tween.js' %}"></script>
+<script src="{% static 'panorama/lib/qrcode.min.js' %}"></script>
+<script src="{% static 'panorama/js/utils.js' %}"></script>
+<script src="{% static 'panorama/js/vray.scene.js' %}"></script>
+<script src="{% static 'panorama/js/edit.js' %}"></script>
+</body>
+</html>

@@ -496,7 +496,6 @@ var VRAY = {};
         var targetSpace = _spacesDict[this.spaceId];
         spaceHots = [];
         targetSpace.hots || (targetSpace.hots = {});
-        console.log(targetSpace.hots);
         Object.keys(targetSpace.hots).forEach(function (k) {
             var hot = targetSpace.hots[k];
             if (onlyGather) {  // 仅收集当前空间中的热点用于拾取
@@ -667,31 +666,29 @@ var VRAY = {};
                     );
                     hotSpot.lookAt(sceneCenter);
                 }
-            } else {  // 高亮hover的热点
-                if (spaceHots.length > 0) {
-                    raycaster.setFromCamera(mousePos, camera);
-                    intersects = raycaster.intersectObjects(spaceHots);
-                    // 全部热点置为默认颜色
-                    for (var k = 0; k < spaceHots.length; k++) {
-                        spaceHots[k].material.color.set(0x000000);
+            } else if (spaceHots.length > 0) {  // 高亮hover的热点
+                raycaster.setFromCamera(mousePos, camera);
+                intersects = raycaster.intersectObjects(spaceHots);
+                // 全部热点置为默认颜色
+                for (var k = 0; k < spaceHots.length; k++) {
+                    spaceHots[k].material.color.set(0x000000);
+                }
+                // 高亮选中的热点
+                if (intersects.length > 0) {
+                    selectedHot = intersects[0].object;
+                    selectedHot.material.color.set(0xffffff);
+                    // 使用准星进行热点跳转
+                    if ((_stereoMode || _walkMode) && !showDelayer) {
+                        showDelayer = setTimeout(function () {
+                            ui.$hotTitle.hide();
+                            this.showSpace(selectedHot);
+                            clearTimeout(showDelayer);
+                            showDelayer = null;
+                        }, 1000);
                     }
-                    // 高亮选中的热点
-                    if (intersects.length > 0) {
-                        selectedHot = intersects[0].object;
-                        selectedHot.material.color.set(0xffffff);
-                        // 使用准星进行热点跳转
-                        if ((_stereoMode || _walkMode) && !showDelayer) {
-                            showDelayer = setTimeout(function () {
-                                ui.$hotTitle.hide();
-                                this.showSpace(selectedHot);
-                                clearTimeout(showDelayer);
-                                showDelayer = null;
-                            }, 1000);
-                        }
-                    } else {
-                        clearTimeout(showDelayer);
-                        showDelayer = null;
-                    }
+                } else {
+                    clearTimeout(showDelayer);
+                    showDelayer = null;
                 }
 
                 if (!transiting && intersects.length > 0) {

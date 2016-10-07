@@ -3,29 +3,22 @@
  */
 
 "use strict";
-$.get('init_scene', {space_id: getParam('space_id'), scene_id: getParam('scene_id')}, function (ret) {
+var sceneId = getParam('scene_id');
+$.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, function (ret) {
     if (!ret.success) {
-        alert(ret.errMsg);
+        alert(ret.err_msg);
         return false;
     }
-
-    var STATIC_PREFIX = '/static/panorama/';
 
     var sceneInfo = ret.scene;
     var seller = ret.seller;
     var spaceList = ret.spaceList;
-    for(var i=0;i<spaceList.length;i++){
-        spaceList[i].url = STATIC_PREFIX + spaceList[i].url;
-        spaceList[i].cache_url = STATIC_PREFIX + spaceList[i].cache_url;
-        spaceList[i].thumb_url = STATIC_PREFIX + spaceList[i].thumb_url;
-    }
-    var hotImg = STATIC_PREFIX + 'img/foot_step.png';
+    var hotImg = '/static/panorama/img/foot_step.png';
 
     var container = document.getElementById('container');
     var $loading = $('#loading');
     var $mask = $('#mask');
     var $body = $(document.body);
-    var $autoRotateBtn = $('#auto-rotate');
     var $contextMenu = $('#context-menu');
 
     var $addHotBtn = $('#add-hot');
@@ -61,7 +54,7 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: getParam('scene_i
         document.title = sceneInfo.title;
         var viewUrl = window.location.origin + '/panorama/view?scene_id=' + sceneInfo.id;
         document.getElementById('view-link').href = viewUrl;
-        new QRCodeLib.QRCodeDraw().draw(document.getElementById('qr-canvas'), viewUrl, function (error, canvas) {
+        new QRCodeLib.QRCodeDraw().draw(document.getElementById('qr-canvas'), viewUrl, function (error) {
             if (error) {
                 return console.log('Error =( ', error);
             }
@@ -70,10 +63,10 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: getParam('scene_i
     // 商户信息
     var logoUrl = '';
     if (seller.logo) {
-        logoUrl = STATIC_PREFIX + seller.logo;
-        document.getElementById('seller-logo').src = STATIC_PREFIX + seller.logo;
+        logoUrl = seller.logo;
+        document.getElementById('seller-logo').src = seller.logo;
     } else {
-        logoUrl = STATIC_PREFIX + 'img/logo/logo.png';
+        logoUrl = '/media/seller-logo/logo.png';
         document.getElementById('dialog-img-ele').style.display = 'none';
     }
     document.getElementById('seller-name').value = seller.name || '';
@@ -149,6 +142,7 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: getParam('scene_i
 
     function onHotAdd(hotInfo, success, fail) {
         $.post('add_hot', {
+            scene_id: sceneId,
             space_id: vrayScene.spaceId,
             vx: hotInfo.vx,
             vy: hotInfo.vy,
@@ -198,7 +192,11 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: getParam('scene_i
     function bindUIListener() {
 
         $pickHotBtn.click(function () {
-            vrayScene.addingHot = !vrayScene.addingHot;
+            if (!sceneId) {
+                alert('请先保存场景后再添加热点！');
+            } else {
+                vrayScene.addingHot = !vrayScene.addingHot;
+            }
         });
 
         // 禁止页面弹出右键菜单
@@ -234,7 +232,7 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: getParam('scene_i
                         var checkedStr = vrayScene.spacesDict[key] ? 'checked="checked"' : '';
                         listHtml += '<div class="space">'
                             + '<div class="space-img">'
-                            + '<input type="checkbox" data-spaceid="' + key + '" ' + checkedStr + '  /><img src="' + STATIC_PREFIX + space.thumb_url + '">'
+                            + '<input type="checkbox" data-spaceid="' + key + '" ' + checkedStr + '  /><img src="' + space.thumb_url + '">'
                             + '</div>'
                             + '<div class="space-name">' + space.name + '</div>'
                             + '<div class="space-time">创建时间 ' + space.create_time + '</div>'
@@ -272,7 +270,7 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: getParam('scene_i
                                 saved = false;
                                 vrayScene.addSpace(space);
                                 $spaceBar.append('<li class="space-ele" id="space_id_' + key + '" data-index="' + key + '">' +
-                                    '<div class="ele-pic"><img src="' + STATIC_PREFIX +space.thumb_url + '"/></div>' +
+                                    '<div class="ele-pic"><img src="' + space.thumb_url + '"/></div>' +
                                     '<div class="ele-name"><input type="text" value=""/><span>' + space.name + '</span></div>' +
                                     '<div class="ele-ope"><div class="ele-ope-edit"></div><div class="ele-ope-del"></div></div></li>');
                                 if (i == operateLength) {
@@ -335,7 +333,7 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: getParam('scene_i
             return false;
         });
         // 修改空间名称
-        $spaceBar.on('click', '.ele-ope-edit', function (e) {
+        $spaceBar.on('click', '.ele-ope-edit', function () {
             var $li = $(this).parent().parent();
             var $span = $li.find('span');
             var $input = $li.find('input');
@@ -381,7 +379,7 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: getParam('scene_i
                 });
             $spaceBar.find('input:visible').blur();
         });
-        $spaceBar.on('click', 'input', function (e) {
+        $spaceBar.on('click', 'input', function () {
             return false;
         });
         // 编辑商家信息窗口
@@ -490,16 +488,16 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: getParam('scene_i
                     entry = ret.entry;
                     saved = true;
                     alert('保存成功');
+                    if (ret.scene_id) {
+                        window.location.assign('edit?scene_id=' + ret.scene_id);
+                    } else {
+                        document.title = ret.title;
+                        $mask.hide();
+                        $saveAsDialog.hide();
+                    }
                 } else {
                     alert(ret.err_msg);
                     // TODO return false;
-                }
-                if (ret.scene_id) {
-                    window.location.assign('edit?scene_id=' + ret.scene_id);
-                } else {
-                    document.title = ret.title;
-                    $mask.hide();
-                    $saveAsDialog.hide();
                 }
             });
         });

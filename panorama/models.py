@@ -1,3 +1,4 @@
+import uuid
 from django.db import models
 from django.utils import timezone
 
@@ -7,7 +8,7 @@ class Seller(models.Model):
     商户
     """
     name = models.CharField(max_length=20, null=False)
-    logo = models.CharField(max_length=100, null=False)
+    logo = models.ImageField(upload_to='seller-logo/')
     phone = models.CharField(max_length=20, null=True)
     address = models.CharField(max_length=100, null=True)
     desc = models.CharField(max_length=300, null=True)
@@ -31,7 +32,7 @@ class Scene(models.Model):
     """
     场景
     """
-    id = models.CharField(max_length=50, primary_key=True)
+    id = models.CharField(max_length=50, primary_key=True, default=uuid.uuid1)
     title = models.CharField(max_length=20, null=False)
     seller = models.ForeignKey(Seller, verbose_name='商户', related_name='seller_id', null=False)
     entry = models.ForeignKey(Space, verbose_name='入口空间', related_name='entry_id', null=False)

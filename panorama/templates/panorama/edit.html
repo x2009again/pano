@@ -68,7 +68,7 @@
         <div class="dialog-name">编辑信息</div>
         <div class="dialog-close">×</div>
     </div>
-    <form action="edit_seller_info" enctype="multipart/form-data" method="post" target="upload_iframe">
+    <form action="{% url 'update_seller' %}" enctype="multipart/form-data" method="post" target="upload_iframe">
         <div class="dialog-ele" style="margin-top:60px;">
             <div class="dialog-ele-title">商家logo:</div>
             <div class="dialog-ele-content">

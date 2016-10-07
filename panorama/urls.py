@@ -10,6 +10,5 @@ urlpatterns = [
     url(r'^list_spaces', views.list_spaces, name='list_spaces'),
     url(r'^update_scene', views.update_scene, name='update_scene'),
     url(r'^add_hot', views.add_hot, name='add_hot'),
-
-    url(r'^init_data$', views.init_data, name='init_data'),
+    url(r'^update_seller', views.update_seller, name='update_seller'),
 ]

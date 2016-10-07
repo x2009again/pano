@@ -4,7 +4,7 @@
     "pk": 1,
     "fields": {
       "name": "\u8427\u5c71\u5efa\u6750\u57ce",
-      "logo": "img/logo/logo.png",
+      "logo": "seller-logo/logo.png",
       "phone": "0751-67652213",
       "address": "\u676d\u5dde\u5e02\u8427\u5c71\u7ecf\u6d4e\u5f00\u53d1\u533a\u542f\u8fea\u8def198\u53f7\u676d\u5dde\u6e7e\u4fe1\u606f\u6e2fB\u5ea7",
       "desc": "\u5546\u5bb6\u63cf\u8ff0\u3002",
@@ -16,7 +16,7 @@
     "pk": 2,
     "fields": {
       "name": "\u9aa8\u5934\u793e",
-      "logo": "img/logo/logo.png",
+      "logo": "seller-logo/logo.png",
       "phone": "0751-1234567",
       "address": "\u9713\u8679",
       "desc": "\u52a8\u6f2b",

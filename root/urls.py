@@ -15,11 +15,14 @@ Including another URL conf
 """
 from django.conf.urls import include, url
 from django.contrib import admin
+from django.conf import settings
+from django.conf.urls.static import static
+from django.views.generic import RedirectView
 from panorama import views as panorama_views
 
 urlpatterns = [
-    # url(r'^favicon\.ico$', favicon_view),
-    url(r'^$', panorama_views.index),
-    url(r'^panorama/', include('panorama.urls')),
-    url(r'^admin/', admin.site.urls),
-]
+                  url(r'^favicon\.ico$', RedirectView.as_view(url='/static/favicon.ico')),
+                  url(r'^$', panorama_views.index),
+                  url(r'^panorama/', include('panorama.urls')),
+                  url(r'^admin/', admin.site.urls),
+              ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)  # 使MEDIA_ROOT目录可以访问

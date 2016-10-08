@@ -141,11 +141,11 @@ body {
     margin-right: 20px;
 }
 
-.option-ele>span {
+.option-ele > span {
     cursor: pointer;
 }
 
-.option-ele>span:hover {
+.option-ele > span:hover {
     color: #00aeef;
 }
 
@@ -365,9 +365,7 @@ body {
 
 #edit-seller-dialog {
     width: 720px;
-    height:600px;
-    margin-left: -360px;
-    margin-top: -300px;
+    height: 600px;
     display: none;
 }
 
@@ -467,8 +465,6 @@ body {
     position: absolute;
     width: 800px;
     height: 640px;
-    margin-left: -400px;
-    margin-top: -320px;
     display: none;
 }
 
@@ -578,14 +574,12 @@ body {
     background-color: #f2f2f2;
 }
 
-
 #add-hot-dialog {
     position: absolute;
     top: 0;
     left: 0;
     z-index: 2;
     border: 1px solid black;
-    text-align: center;
     padding: 5px;
     background-color: rgba(255, 255, 255, 0.4);
     display: none;
@@ -611,10 +605,16 @@ body {
     display: inline-block;
 }
 
+#add-hot-dialog .body > * {
+    display: block;
+    margin: 10px 5px;
+}
+
 #add-hot-dialog .footer {
     padding: 5px 0 5px;
     border-top: 1px solid #333;
     margin-top: 5px;
+    text-align: center;
 }
 
 #edit-hot-dialog {

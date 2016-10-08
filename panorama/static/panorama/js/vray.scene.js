@@ -6,11 +6,6 @@ var VRAY = {};
 (function (window, document, $, undefined) {
     "use strict";
 
-    // TODO 全部使用相对容器的位置、提供容器宽高修改接口
-
-    // 容器宽高
-    var SCREEN_WIDTH = window.innerWidth, SCREEN_HEIGHT = window.innerHeight;
-
     var stats = null;
     var renderer, stereoRenderer, scene, camera, raycaster, orbitControls, deviceControls;
     var logoMesh, logoMaterial;
@@ -40,7 +35,7 @@ var VRAY = {};
 
     var spaceHots = [];
 
-    var _stereoMode = false, _walkMode = false;
+    var _stereoMode = false, _walkMode = false, _stageWidth = window.innerWidth, _stageHeight = window.innerHeight;
 
     var spaceList = [];
     var _spacesDict = {};
@@ -49,11 +44,6 @@ var VRAY = {};
          * 首屏加载完毕
          */
         onLoad: function () {
-        },
-        /**
-         * 场景切换前
-         */
-        beforeShow: function () {
         },
         /**
          * 下一个场景载入中
@@ -86,6 +76,7 @@ var VRAY = {};
     VRAY.Scene = function (opt) {
         // 默认设置
         this.defaults = {
+            container: document.body,
             devMode: false,
             smoothStart: false,
             autoPlay: false,
@@ -110,27 +101,27 @@ var VRAY = {};
 
         // 渲染器
         renderer = new THREE.WebGLRenderer({antialias: true});
-        renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
+        renderer.setSize(_stageWidth, _stageHeight);
         renderer.sortObjects = false;
         renderer.setClearColor(0x000000);
 
         // 立体效果渲染器
         stereoRenderer = new THREE.StereoEffect(renderer);
-        stereoRenderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
-        this.container = renderer.domElement;
-        this.container.id = 'scene-canvas';
+        stereoRenderer.setSize(_stageWidth, _stageHeight);
+        this.stage = renderer.domElement;
+        this.stage.id = 'scene-canvas';
         // 设置样式
-        this.container.style.cursor = 'move';
-        this.container.style.zIndex = '1';
-        this.container.style.display = 'none';
-        this.container.style.position = 'absolute';
-        this.container.style.backgroundColor = '#000';
-        document.body.appendChild(this.container);
+        this.stage.style.cursor = 'move';
+        this.stage.style.zIndex = '1';
+        this.stage.style.display = 'none';
+        this.stage.style.position = 'absolute';
+        this.stage.style.backgroundColor = '#000';
+        this.options.container.appendChild(this.stage);
 
         textureLoader = new THREE.TextureLoader();
 
         scene = new THREE.Scene();
-        camera = new THREE.PerspectiveCamera(75, SCREEN_WIDTH / SCREEN_HEIGHT, 0.1, 1000);
+        camera = new THREE.PerspectiveCamera(75, _stageWidth / _stageHeight, 0.1, 1000);
         raycaster = new THREE.Raycaster();
 
         this.materials = {};  // 材质集合
@@ -204,8 +195,10 @@ var VRAY = {};
             })(space, i);
         }
 
-        if (_this.options.debug) {
+        if (_this.options.fps) {
             stats = new Stats();
+            stats.dom.style.left = 'initial';
+            stats.dom.style.right = 0;
             document.body.appendChild(stats.dom);
         }
 
@@ -227,7 +220,7 @@ var VRAY = {};
             scene.add(tempMesh);
             scene.add(hotSpot);
             renderer.render(scene, camera);
-            $(_this.container).fadeIn(1500);
+            $(_this.stage).fadeIn(1500);
 
             if (_this.options.devMode) {
                 spheres[0].material = spheres[1].material;
@@ -310,7 +303,7 @@ var VRAY = {};
         }
 
         function initControls() {
-            orbitControls = new THREE.OrbitControls(camera, _this.container);
+            orbitControls = new THREE.OrbitControls(camera, _this.stage);
             orbitControls.autoRotateSpeed = 0.07;
             orbitControls.enableRotate = true;
             orbitControls.enableDamping = true;
@@ -325,7 +318,7 @@ var VRAY = {};
             deviceControls.connect();
             deviceControls.enabled = false;
 
-            var $canvas = $(_this.container);
+            var $canvas = $(_this.stage);
             $canvas.on('mousedown touchstart', moveStart.bind(_this));
             $canvas.on('mousemove touchmove', movePass.bind(_this));
             $canvas.on('mouseup touchend', moveEnd.bind(_this));
@@ -548,7 +541,7 @@ var VRAY = {};
             spheres[1].add(newHotSpot);
             // 本地记录热点数据
             _spacesDict[_this.spaceId].hots[hotId] = hotInfo;
-            title && (_spacesDict[_this.spaceId].hots[hotId].title = title);
+            newHotSpot.title = hotInfo.title;
             console.log('"vx":' + hotInfo.vx + ',"vy":' + hotInfo.vy + ',"vz":' + hotInfo.vz + ',');
             // 重新收集当前空间的热点
             _this.initHotSpots(true);
@@ -560,8 +553,8 @@ var VRAY = {};
 
         if (pos) {
             // 根据鼠标位置创建射线
-            pos.x = (pos.x / SCREEN_WIDTH) * 2 - 1;
-            pos.y = -(pos.y / SCREEN_HEIGHT) * 2 + 1;
+            pos.x = (pos.x / _stageWidth) * 2 - 1;
+            pos.y = -(pos.y / _stageHeight) * 2 + 1;
             newRay = new THREE.Raycaster();
             newRay.setFromCamera(pos, camera);
 
@@ -581,15 +574,21 @@ var VRAY = {};
             newHotSpot.lookAt(sceneCenter);
             newHotSpot.to = to;
             newHotSpot.visible = true;
-            spheres[1].add(newHotSpot);
-            // TODO
-
+            hotInfo = {
+                vx: newHotPos.x.toFixed(4),
+                vy: newHotPos.y.toFixed(4),
+                vz: newHotPos.z.toFixed(4),
+                to: to,
+                title: title,
+                mesh: newHotSpot
+            };
+            callbacks.onHotAdd(hotInfo, addSuccess, addFail);
         } else {  // 若未传入鼠标位置，则使用最近记录下的热点位置
             if (hotPos) {
                 // 根据方向矢量创建射线
                 newHotSpot = hotSpot.clone();
                 newHotSpot.material = hotSpot.material.clone();
-                hotPos.setLength(40);
+                hotPos.setLength(HOT_DISTANCE);
                 newHotSpot.position.set(
                     -hotPos.x,
                     hotPos.y,
@@ -603,6 +602,7 @@ var VRAY = {};
                     vy: hotPos.y.toFixed(4),
                     vz: hotPos.z.toFixed(4),
                     to: to,
+                    title: title,
                     mesh: newHotSpot
                 };
                 callbacks.onHotAdd(hotInfo, addSuccess, addFail);
@@ -621,14 +621,28 @@ var VRAY = {};
         });
     };
 
+    /**
+     * 容器宽高改变时应该调用的方法
+     * @param stageWidth
+     * @param stageHeight
+     */
+    VRAY.Scene.prototype.resize = function (stageWidth, stageHeight) {
+        _stageWidth = stageWidth;
+        _stageHeight = stageHeight;
+        renderer.setSize(_stageWidth, _stageHeight);
+        camera.aspect = _stageWidth / _stageHeight;
+        camera.updateProjectionMatrix();
+        renderer.render(scene, camera);
+    };
+
     var moveStart = function ($e) {
         if (!_lockScene) {
             clicking = true;
             var e = $e.originalEvent;
             if (e.touches) {
                 if (e.touches.length == 1) {
-                    mousePos.x = (e.touches[0].clientX / SCREEN_WIDTH) * 2 - 1;
-                    mousePos.y = -(e.touches[0].clientY / SCREEN_HEIGHT) * 2 + 1;
+                    mousePos.x = (e.touches[0].clientX / _stageWidth) * 2 - 1;
+                    mousePos.y = -(e.touches[0].clientY / _stageHeight) * 2 + 1;
                     startPoint1.x = e.touches[0].clientX;
                     startPoint1.y = e.touches[0].clientY;
                 } else if (e.touches.length > 1) {
@@ -702,8 +716,8 @@ var VRAY = {};
                     ui.$hotTitle.hide();
                 }
             }
-            mousePos.x = ($e.pageX / SCREEN_WIDTH) * 2 - 1;
-            mousePos.y = -($e.pageY / SCREEN_HEIGHT) * 2 + 1;
+            mousePos.x = ($e.pageX / _stageWidth) * 2 - 1;
+            mousePos.y = -($e.pageY / _stageHeight) * 2 + 1;
         }
     };
 
@@ -729,13 +743,13 @@ var VRAY = {};
                         // $editHotDialog.find('input').val(targetHot.title);
                         // if (e.changedTouches && e.changedTouches.length > 0) {
                         //     $editHotDialog.css({
-                        //         left: e.changedTouches[0].clientX - $editHotDialog.SCREEN_WIDTH() / 2,
-                        //         top: e.changedTouches[0].clientY - $editHotDialog.SCREEN_HEIGHT() / 2
+                        //         left: e.changedTouches[0].clientX - $editHotDialog._stageWidth() / 2,
+                        //         top: e.changedTouches[0].clientY - $editHotDialog._stageHeight() / 2
                         //     })
                         // } else {
                         //     $editHotDialog.css({
-                        //         left: e.clientX - $editHotDialog.SCREEN_WIDTH() / 2,
-                        //         top: e.clientY - $editHotDialog.SCREEN_HEIGHT() / 2
+                        //         left: e.clientX - $editHotDialog._stageWidth() / 2,
+                        //         top: e.clientY - $editHotDialog._stageHeight() / 2
                         //     })
                         // }
                         // $editHotDialog.show();
@@ -799,10 +813,10 @@ var VRAY = {};
             _stereoMode = !!val;
             if (_stereoMode) {
                 raycaster.set(sceneCenter, camera.getWorldDirection());
-                stereoRenderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
+                stereoRenderer.setSize(_stageWidth, _stageHeight);
             } else {
                 raycaster.setFromCamera(mousePos, camera);
-                renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
+                renderer.setSize(_stageWidth, _stageHeight);
             }
         },
         get: function () {
@@ -863,14 +877,5 @@ var VRAY = {};
         }
     };
 
-    // 监听窗口大小改变事件
-    window.addEventListener('resize', function () {
-        SCREEN_WIDTH = window.innerWidth;
-        SCREEN_HEIGHT = window.innerHeight;
-        renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
-        camera.aspect = SCREEN_WIDTH / SCREEN_HEIGHT;
-        camera.updateProjectionMatrix();
-        renderer.render(scene, camera);
-    }, false);
 
 })(window, document, jQuery);

@@ -8,54 +8,39 @@
 body, html {
     width: 100%;
     height: 100%;
-    background-color: #000;
-
 }
 
 body {
-    overflow: hidden;
-    position: relative;
     font-family: "Microsoft YaHei", "SimSun", "Microsoft JhengHei", "SimHei", "YouYuan", sans-serif;
-    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-    -webkit-touch-callout: none;
 }
 
-canvas {
+#main {
+    overflow: hidden;
+    min-width: 300px;
     width: 100%;
     height: 100%;
     background-color: #000;
-    position: absolute;
-    display: none;
-    cursor: move;
+    position: relative;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+li {
+    list-style: none;
 }
 
 .no-cursor {
     cursor: none;
 }
 
-#operate-panel {
-    font-size: 10px;
-    position: absolute;
-    left: 90px;
-    top: 10px;
-    background-color: #fff;
-    padding: 5px;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-    z-index: 1;
-    /*display: none;*/
-}
-
 #display {
     width: 150px;
     height: 15px;
     line-height: 20px;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
 }
 
 #delta {
@@ -63,10 +48,6 @@ canvas {
     height: 15px;
     line-height: 20px;
     border: 1px solid red;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
 }
 
 #delta[readonly] {
@@ -86,23 +67,76 @@ button {
 }
 
 #nav {
-    width: 900px;
+    max-width: 900px; /* TODO 待测试 */
     left: 50%;
-    margin-left: -450px;
+    -webkit-transform: translateX(-50%);
+    -ms-transform: translateX(-50%);
+    transform: translateX(-50%);
     bottom: -170px;
     border-radius: 5px;
-    position: fixed;
-    z-index: 1;
+    position: absolute;
+    z-index: 2;
     box-sizing: border-box;
-    -moz-transition: 0.3s linear;
-    -webkit-transition: bottom 0.3s linear;
-    transition: bottom 0.3s linear;
+    -moz-transition: bottom 0.5s linear;
+    -webkit-transition: bottom 0.5s linear;
+    transition: bottom 0.5s linear;
     background-color: rgba(31, 31, 31, 0.7);
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
     padding: 0 30px;
-    display: none;
+}
+
+#gallery {
+    overflow: hidden;
+    height: 95px;
+    padding-top: 18px;
+}
+
+#gallery > div {
+    height: 115px;
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+#gallery ul {
+    word-break: break-all;
+    white-space: nowrap;
+}
+
+#gallery li {
+    border: 2px solid rgba(255, 255, 255, 0);
+    position: relative;
+    cursor: pointer;
+    margin-right: 5px;
+    height: 90px;
+    width: 160px;
+    display: inline-block;
+}
+
+#gallery li span {
+    color: #fff;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 18px;
+    line-height: 18px;
+    width: 100%;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    padding-left: 12px;
+    background-color: rgba(31, 31, 31, 0.6);
+}
+
+#gallery li.active {
+    border: 2px solid rgba(255, 255, 255, 1);
+}
+
+#gallery li.active span, #gallery li:hover span {
+    display: block;
+}
+
+#gallery img {
+    width: 160px;
+    height: 90px;
 }
 
 #nav.show {
@@ -119,16 +153,12 @@ button {
     left: 50%;
     margin-left: -60px;
     bottom: -50px;
-    position: fixed;
-    z-index: 1;
+    position: absolute;
+    z-index: 2;
     box-sizing: border-box;
     -moz-transition: 0.2s linear;
     -webkit-transition: bottom 0.2s linear;
     transition: bottom 0.2s linear;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
 }
 
 #miniNav.show {
@@ -170,13 +200,6 @@ button {
     cursor: pointer;
     border-top-left-radius: 5px;
     border-top-right-radius: 5px;
-}
-
-#scene-panel {
-    /*width: 100%;*/
-    height: 95px;
-    overflow: hidden;
-    margin: 18px auto 0;
 }
 
 #opera-panel-PC {
@@ -339,92 +362,37 @@ button {
     display: none;
 }
 
-#up-btn, #down-btn {
+#left-btn, #right-btn {
     width: 10px;
     height: 80px;
     line-height: 80px;
     position: absolute;
     top: 25px;
     text-align: center;
-    /*background-size: auto 70%;*/
     color: #fff;
-    z-index: 1;
 }
 
-.tab:hover, #up-btn:hover, #down-btn:hover {
+.tab:hover, #left-btn:hover, #right-btn:hover {
     cursor: pointer;
 }
 
-#up-btn {
+#left-btn {
     left: 10px;
     background: url("../img/icon/arrow_left_nor.png") no-repeat center center;
 }
 
-#up-btn:hover {
+#left-btn:hover {
     background: url("../img/icon/arrow_left_hov.png") no-repeat center center;
 }
 
-#down-btn {
+#right-btn {
     right: 10px;
     background: url("../img/icon/arrow_right_nor.png") no-repeat center center;
 }
 
-#down-btn:hover {
+#right-btn:hover {
     right: 10px;
     background: url("../img/icon/arrow_right_hov.png") no-repeat center center;
-}
-
-#gallery {
-    width: 100%;
-    height: 130px;
-    overflow-x: auto;
-    overflow-y: hidden;
-}
-
-#gallery ul {
-    width: 10000px;
-}
-
-#gallery li {
-    border: 2px solid rgba(255, 255, 255, 0);
-    position: relative;
-    cursor: pointer;
-    float: left;
-    margin-right: 5px;
-    height: 90px;
-    width: 160px;
-    list-style: none;
-}
-
-#gallery li span {
-    color: #fff;
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    height: 18px;
-    line-height: 18px;
-    width: 100%;
-    /*text-align: center;*/
-    -moz-box-sizing: border-box;
-    -webkit-box-sizing: border-box;
-    -o-box-sizing: border-box;
-    -ms-box-sizing: border-box;
-    box-sizing: border-box;
-    padding-left: 12px;
-    background-color: rgba(31, 31, 31, 0.6);
-}
-
-#gallery li.active {
-    border: 2px solid rgba(255, 255, 255, 1);
-}
-
-#gallery li.active span, #gallery li:hover span {
-    display: block;
-}
-
-#gallery ul img {
-    width: 160px;
-    height: 90px;
 }
 
 .opeBtn.active, .opeBtn:active {
@@ -449,10 +417,6 @@ button {
     outline: none;
     cursor: pointer;
     background-color: #d4d4d4;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
 }
 
 .btn:hover {
@@ -485,10 +449,6 @@ button {
     margin-top: -15px;
     margin-left: -15px;
     font-size: 28px;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
     pointer-events: none;
 }
 
@@ -514,18 +474,19 @@ button {
     height: 60px;
 }
 
+.dialog.seller-info {
+    width: 600px;
+    height: 400px;
+}
+
 .dialog.seller-info .body {
-    width: 80%;
-    height: 327px;
     margin-left: 10%;
     font-size: 18px;
     line-height: 25px;
     text-align: center;
     box-sizing: border-box;
-    word-wrap: break-word;
-    word-break: break-all;
     overflow: auto;
-    padding-bottom:10px;
+    padding-bottom: 10px;
 }
 
 .dialog.seller-info table {
@@ -540,23 +501,37 @@ button {
     vertical-align: top;
     font-weight: normal;
 }
-.dialog .footer{
-    position:absolute;
-    width:100%;
+
+.dialog .footer {
+    position: absolute;
+    width: 100%;
 }
-@media screen and (max-width: 500px) {
-    .dialog.seller-info {
-        width: 95% !important;
-        position:absolute;
-        top:15%;
-        padding-bottom:70px;
-        height:auto;
+
+@media screen and (max-width: 900px) {
+
+    #nav {
+        max-width: none;
+        width: 100%;
+        left: 0;
+        transform: translateX(0);
+        border-radius: 0;
     }
 
-    .dialog.seller-info .body {
+    #nav.show {
+        bottom: 0;
+    }
+
+}
+
+@media screen and (max-width: 600px) {
+    .dialog.seller-info {
+        width: 95%;
+        padding-bottom: 70px;
         height: auto;
     }
+
     .dialog.seller-info table {
-        margin-top:30px;
+        margin-top: 30px;
     }
+
 }

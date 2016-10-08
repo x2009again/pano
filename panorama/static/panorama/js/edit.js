@@ -15,7 +15,6 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
     var spaceList = ret.spaceList;
     var hotImg = '/static/panorama/img/foot_step.png';
 
-    var container = document.getElementById('container');
     var $loading = $('#loading');
     var $mask = $('#mask');
     var $body = $(document.body);
@@ -72,8 +71,10 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
     document.getElementById('seller-name').value = seller.name || '';
     document.getElementById('seller-desc').value = seller.desc || '';
 
+    var container = document.getElementById('main');
     var entry = sceneInfo.entry;
     var options = {
+        // container: container,
         logoUrl: logoUrl,
         hotImg: hotImg,
         spaceList: spaceList,
@@ -81,7 +82,7 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
         smoothStart: false,
         autoPlay: true,
         autoRotate: false,
-        fps: false,
+        fps: true,
         callbacks: {
             onLoad: onLoad,
             onShowing: onShowing,
@@ -117,7 +118,7 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
         } else {
             $playBtn.fadeIn(1000);
         }
-        sceneContainer = vrayScene.container;
+        sceneContainer = vrayScene.stage;
         bindUIListener();
         animate();
     }
@@ -136,32 +137,40 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
         $loading.stop().fadeOut(700);
     }
 
+    // 使用插件回调来添加热点
     function onAddingHot(clickedPos) {
+        rClickedPos = null;
         showAddingHotDialog(clickedPos);
     }
 
+    /**
+     * 调用addHot方法后的回调
+     * @param hotInfo 热点的数据（用于保存到服务器）
+     * @param success 保存成功需要执行的方法，需要传入参数：热点id（在该空间必须唯一）
+     * @param fail 保存失败的回调，可选参数：错误信息
+     */
     function onHotAdd(hotInfo, success, fail) {
+        console.log(hotInfo);
         $.post('add_hot', {
             scene_id: sceneId,
             space_id: vrayScene.spaceId,
             vx: hotInfo.vx,
             vy: hotInfo.vy,
             vz: hotInfo.vz,
-            title: '',
+            title: hotInfo.title,
             to: hotInfo.to
         }, function (data) {
-            console.log(data);
             if (data.success) {
                 $addHotDialog.hide();
                 vrayScene.lockScene = false;
                 success(data.hotId);
             } else {
                 fail('某个错');
-                alert('添加失败');
             }
         });
     }
 
+    var rClickedPos = null;  // 右键点击的位置
     /**
      * 显示添加热点对话框
      * @param pos
@@ -291,8 +300,6 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
                             }
                         } else {  // false表示删除
                             i++;
-                            console.log(vrayScene.spacesDict);
-                            console.log(key);
                             if (vrayScene.spacesDict[key]) {  // 如果存在于列表中则删除
                                 vrayScene.removeSpace(key);
                                 $('#space_id_' + key).remove();
@@ -510,34 +517,35 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
         // 容器右键菜单
         $(sceneContainer).on('mousedown', function (e) {
             if (e.which == 3) {
-                if (vrayScene.addingHot) {
+                if (vrayScene.addingHot) {  // 结束选择热点
                     vrayScene.addingHot = false;
                 } else {
+                    rClickedPos = {x: e.pageX, y: e.pageY};
                     $contextMenu.css({left: e.pageX, top: e.pageY}).show();
                 }
                 return false;
             }
         });
-
-        // 显示添加热点对话框
+        // 右键菜单中选择 添加热点
         $addHotBtn.click(function () {
             showAddingHotDialog({x: $addHotBtn.offset().left, y: $addHotBtn.offset().top});
         });
-
+        // 确认添加热点
+        $addHotDialog.find('.add-btn').click(function () {
+            var toSpaceId = $addHotDialog.find('select').val();
+            var title = $.trim($addHotDialog.find('input').val());
+            if (toSpaceId == vrayScene.spaceId) {
+                alert('不可与当前场景相同！');
+                return false;
+            }
+            vrayScene.addHot(toSpaceId, rClickedPos, title);
+        });
         // 隐藏对话框
         $addHotDialog.find('i').click(function () {
             $addHotDialog.hide();
             vrayScene.lockScene = false;
         });
 
-        $addHotDialog.find('.add-btn').click(function () {
-            var toSpaceId = $addHotDialog.find('select').val();
-            if (toSpaceId == vrayScene.spaceId) {
-                alert('不可与当前场景相同！');
-                return false;
-            }
-            vrayScene.addHot(toSpaceId);
-        });
 
         $addHotDialog.find('.redo-btn').click(function () {
             $addHotDialog.hide();
@@ -615,5 +623,10 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
         } else {
             alert('操作修改！');
         }
-    }
+    };
+
+    // 监听窗口大小改变事件
+    window.addEventListener('resize', function () {
+        vrayScene.resize(window.innerWidth, window.innerHeight);
+    }, false);
 });

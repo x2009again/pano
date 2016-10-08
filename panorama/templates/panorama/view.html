@@ -14,8 +14,8 @@
     <link rel="stylesheet" type="text/css" href="{% static 'panorama/css/view.css' %}"/>
 </head>
 <body>
-<div id="mask"></div>
-<div id="loading">
+<div id="mask" class="show"></div>
+<div id="loading" class="show">
     <div>
         <div></div>
         <div></div>
@@ -29,98 +29,70 @@
         <div></div>
     </div>
 </div>
-<img src="{% static 'panorama/img/play.png' %}" id="play-btn">
-<div class="dialog seller-info">
-    <div class="header">
-        <span class="title">商家信息</span>
-        <i class="close-btn">×</i>
+<div id="main">
+    <img src="{% static 'panorama/img/play.png' %}" id="play-btn">
+    <div class="dialog seller-info">
+        <div class="header">
+            <span class="title">商家信息</span>
+            <i class="close-btn">×</i>
+        </div>
+        <div class="body">
+            <img id="seller-logo" src="">
+            <div id="seller-name">萧山建材城</div>
+            <table>
+                <tr>
+                    <th>电话：</th>
+                    <td id="seller-phone">0571-67652213</td>
+                </tr>
+                <tr>
+                    <th>地址：</th>
+                    <td id="seller-address">杭州市萧山区启迪路198号杭州湾信息港杭州市萧山区杭州市萧山区启迪路198号杭州湾信息港杭州市萧山区</td>
+                </tr>
+            </table>
+        </div>
+        <div class="footer">技术支持：场景大师</div>
     </div>
-    <div class="body">
-        <img id="seller-logo" src="{% static 'panorama/img/logo/logo.png' %}">
-        <div id="seller-name">萧山建材城</div>
-        <table>
-            <tr>
-                <th>电话：</th>
-                <td id="seller-phone">0571-67652213</td>
-            </tr>
-            <tr>
-                <th>地址：</th>
-                <td id="seller-address">杭州市萧山区启迪路198号杭州湾信息港杭州市萧山区杭州市萧山区启迪路198号杭州湾信息港杭州市萧山区</td>
-            </tr>
-        </table>
-    </div>
-    <div class="footer">技术支持：场景大师</div>
-</div>
 
-<div id="nav">
-    <!-- 操作面板 -->
-    <div id="up-btn"></div>
-    <div id="down-btn"></div>
-    <div id="scene-panel">
+    <div id="nav">
+        <!-- 操作面板 -->
+        <div id="left-btn"></div>
+        <div id="right-btn"></div>
         <div id="gallery">
-            <ul></ul>
+            <div>
+                <ul></ul>
+            </div>
         </div>
-    </div>
-    <div id="opera-panel-PC">
-        <div style="float:left;">
-            <div id="fullBtn" class="opeBtn fullBtn"></div>
-            <div class="opeBtn infoBtn"></div>
+        <div id="opera-panel-PC">
+            <div style="float:left;">
+                <div id="fullBtn" class="opeBtn fullBtn"></div>
+                <div class="opeBtn infoBtn"></div>
 
+            </div>
+            <div style="float:right;">
+                <div class="opeBtn hideBtn"></div>
+            </div>
         </div>
-        <div style="float:right;">
+        <div id="opera-panel-mobile">
+            <div class="opeBtn" id="walk-mode"></div>
+            <div class="opeBtn" id="vr-open"></div>
+            <div class="opeBtn infoBtn"></div>
             <div class="opeBtn hideBtn"></div>
         </div>
     </div>
-    <div id="opera-panel-mobile">
-        <div class="opeBtn" id="walk-mode"></div>
-        <div class="opeBtn" id="vr-open"></div>
-        <div class="opeBtn infoBtn"></div>
-        <div class="opeBtn hideBtn"></div>
+    <div id="miniNav">
+        <div id="showNav"></div>
+    </div>
+    <div class="opeBtn" id="vr-close">退出VR</div>
+    <!--<div class="opeBtn" id="vrSetting">VR设置</div>-->
+    <div id="rotateMobile"></div>
+    <script src="{% static 'panorama/lib/three.js/Detector.js' %}"></script>
+    <div id="cross" class="cross">+</div>
+    <div id="double-cross">
+        <div class="cross">+</div>
+        <div class="cross">+</div>
     </div>
 </div>
-<div id="miniNav">
-    <div id="showNav"></div>
-</div>
-<div class="opeBtn" id="vr-close">退出VR</div>
-<!--<div class="opeBtn" id="vrSetting">VR设置</div>-->
-<div id="rotateMobile"></div>
 
-<div id="context-menu">
-    <ul>
-        <li>新建</li>
-        <li>修改</li>
-        <li>删除</li>
-    </ul>
-</div>
-
-<div id="operate-panel">
-    <input type="text" id="display" disabled="disabled" value="资源载入中(0%)" title="">
-    <button id="avgOpacity">透明度→0.5</button>
-    <label>相机：</label>
-    <button id="up">抬起</button>
-    <button id="down">低下</button>
-    <label>大球：</label>
-    <button id="come0">近</button>
-    <button id="away0">远</button>
-    <button id="rotateY0">y-</button>
-    <button id="rotateY1">y+</button>
-    <button id="rotateZ0">z-</button>
-    <button id="rotateZ1">z+</button>
-    <button id="rotateX0">x-</button>
-    <button id="rotateX1">x+</button>
-    <label>幅度：</label>
-    <input type="text" id="delta" title="" readonly="readonly">
-    <button class="btn active" id="auto-rotate">自动播放</button>
-    <button class="btn" id="add-hot">添加热点</button>
-    <button class="btn" id="to-edit">编辑信息</button>
-    <!--<a href="generate_page" class="btn" target="_blank">编辑信息</a>-->
-</div>
-<script src="{% static 'panorama/lib/three.js/Detector.js' %}"></script>
-<div id="cross" class="cross">+</div>
-<div id="double-cross">
-    <div class="cross">+</div>
-    <div class="cross">+</div>
-</div>
 <!-- 警告对话框 -->
 <div class="dialog alert">
     <div class="header">
@@ -148,15 +120,9 @@
 <script src="{% static 'panorama/lib/tweenjs/Tween.js' %}"></script>
 <script src="{% static 'panorama/lib/bezierEasing.js' %}"></script>
 <script src="{% static 'panorama/js/utils.js' %}"></script>
+<!-- 横向滚动 -->
 <script src="{% static 'panorama/lib/jquery.mousewheel.min.js' %}"></script>
 <script src="{% static 'panorama/js/vray.scene.js' %}"></script>
-<script>
-    $.get('init_scene', {space_id: getParam('space_id'), scene_id: getParam('scene_id')}, function (ret) {
-        window.sceneInfo = ret.scene;
-        window.seller = ret.seller;
-        window.spaceList = ret.spaceList;
-        $.getScript("{% static 'panorama/js/view.js' %}");
-    });
-</script>
+<script src="{% static 'panorama/js/view.js' %}"></script>
 </body>
 </html>

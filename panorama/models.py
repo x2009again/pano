@@ -53,6 +53,6 @@ class Hot(models.Model):
     热点
     """
     scene_space = models.ForeignKey(SceneSpace, verbose_name='场景', related_name='scene_space_id', null=False)
-    title = models.CharField(verbose_name='hover名称', max_length=20, null=False)
+    title = models.CharField(verbose_name='hover名称', max_length=20, null=True)
     vector = models.CharField(verbose_name='向量/位置', max_length=100, null=True)
     transition = models.CharField(verbose_name='转场动作', max_length=300, null=True)

@@ -1,9 +1,7 @@
 import json
-import os
 from django.http import HttpResponse, JsonResponse
-from django.shortcuts import render
+from django.shortcuts import render_to_response
 from django.views.decorators.csrf import csrf_exempt
-from django.conf import settings
 from panorama.models import *
 
 STATIC_PREFIX = '/static/panorama/'
@@ -18,11 +16,11 @@ def index(request):
 
 
 def view(request):
-    return render(request, 'panorama/view.html')
+    return render_to_response('panorama/view.html')
 
 
 def edit(request):
-    return render(request, 'panorama/edit.html')
+    return render_to_response('panorama/edit.html')
 
 
 def init_scene(request):
@@ -131,12 +129,13 @@ def update_scene(request):
             return JsonResponse({'success': False, 'err_msg': '不存在场景：%s' % scene_id})
         scene = scene_filter[0]
         entry_id = scene.entry_id
-        SceneSpace.objects.filter(scene=scene).delete()
+        SceneSpace.objects.filter(scene=scene).delete()  # 先删除已经存在的关联
         ordinal = 1
         for os in ordered_spaces:
             space_name = os['name']
             if not space_name:
                 space_name = Space.objects.get(pk=os.id).name
+            # 创建新的关联
             SceneSpace(scene=scene, space_id=os['id'], space_name=space_name, ordinal=ordinal).save()
             ordinal += 1
             if os['id'] == entry_id:

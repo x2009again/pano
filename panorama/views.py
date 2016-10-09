@@ -47,7 +47,7 @@ def init_scene(request):
                 for h in hot_filter:
                     vector = json.loads(h.vector) if h.vector else {}
                     transition = json.loads(h.transition) if h.transition else {}
-                    hots.append(dict(vector, **transition, title=h.title))
+                    hots.append(dict(vector, title=h.title, **transition))
             space_list.append({
                 'id': space.id,
                 'name': ss.space_name if ss.space_name else space.name,

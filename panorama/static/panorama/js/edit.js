@@ -44,8 +44,8 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
     var $sellerLogo = $("#seller-logo");
     var $playBtn = $('#play-btn');
 
-    // TODO 选择热点位置
-    var $pickHotBtn = $('#pick-hot');
+    var $morePanel = $('#more-panel');
+    var $pickHot = $('#pick-hot');
 
     var sceneContainer = null;
 
@@ -140,6 +140,7 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
     // 使用插件回调来添加热点
     function onAddingHot(clickedPos) {
         rClickedPos = null;
+        $pickHot.removeClass('active');
         showAddingHotDialog(clickedPos);
     }
 
@@ -200,7 +201,12 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
 
     function bindUIListener() {
 
-        $pickHotBtn.click(function () {
+        $('#more-btn').click(function () {
+            $morePanel.toggleClass('show');
+        });
+
+        $pickHot.click(function () {
+            $(this).toggleClass('active');
             if (!sceneId) {
                 alert('请先保存场景后再添加热点！');
             } else {
@@ -518,6 +524,7 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
         $(sceneContainer).on('mousedown', function (e) {
             if (e.which == 3) {
                 if (vrayScene.addingHot) {  // 结束选择热点
+                    $pickHot.removeClass('active');
                     vrayScene.addingHot = false;
                 } else {
                     rClickedPos = {x: e.pageX, y: e.pageY};
@@ -551,6 +558,7 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
             $addHotDialog.hide();
             vrayScene.lockScene = false;
             vrayScene.addingHot = true;
+            $pickHot.addClass('active');
         });
 
         $editHotDialog.find('i').click(function () {

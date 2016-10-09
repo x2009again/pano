@@ -81,8 +81,8 @@ var VRAY = {};
             smoothStart: false,
             autoPlay: false,
             autoRotate: true,
-            logoUrl: 'img/logo/logo.png',
-            hotImg: 'img/foot_step.png',
+            logoUrl: null,
+            hotImg: '/static/panorama/img/foot_step.png',
             fps: false
         };
 

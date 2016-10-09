@@ -76,7 +76,7 @@ DATABASES = {
         'PORT': '3306',
         'NAME': 'panorama',
         'USER': 'dc228131295c94f91998adc126dc181fd',
-        'PASSWORD': '7bca3850-ad07',
+        'PASSWORD': '713f1994-a174',
         'HOST': '192.168.1.13',
     },
     'sqlite3': {

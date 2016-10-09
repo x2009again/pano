@@ -194,19 +194,20 @@
 }
 
 .dialog .body {
+    position: absolute;
+    top: 40px;
+    right: 10%;
+    bottom: 30px;
+    left: 10%;
     width: 80%;
-    margin-left: 10%;
     font-size: 18px;
     line-height: 25px;
     text-align: center;
-    box-sizing: border-box;
-    word-wrap: break-word;
-    word-break: break-all;
     overflow: auto;
 }
 
 .dialog .footer {
-    height: 33px;
+    height: 30px;
     bottom: 0;
     text-align: center;
     color: #999999;

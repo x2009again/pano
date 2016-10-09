@@ -31,7 +31,7 @@
 |方法名 | 概述 |
 |------|------ |
 |[play](#play_7) | 播放场景 |
-|[showSpace](#showSpace_8) | 切换场景 |
+|[showSpace](#showspace_8) | 切换场景 |
     
 ### 4. 事件
     

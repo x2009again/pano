@@ -480,13 +480,9 @@ button {
 }
 
 .dialog.seller-info .body {
-    margin-left: 10%;
     font-size: 18px;
     line-height: 25px;
     text-align: center;
-    box-sizing: border-box;
-    overflow: auto;
-    padding-bottom: 10px;
 }
 
 .dialog.seller-info table {
@@ -505,6 +501,7 @@ button {
 .dialog .footer {
     position: absolute;
     width: 100%;
+    background: #fff;
 }
 
 @media screen and (max-width: 900px) {
@@ -521,13 +518,15 @@ button {
         bottom: 0;
     }
 
+    .dialog.seller-info {
+        width: 80%;
+    }
+
 }
 
-@media screen and (max-width: 600px) {
+@media screen and (max-height: 500px) {
     .dialog.seller-info {
-        width: 95%;
-        padding-bottom: 70px;
-        height: auto;
+        height: 90%;
     }
 
     .dialog.seller-info table {

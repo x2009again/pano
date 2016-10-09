@@ -30,8 +30,8 @@
 
 |方法名 | 概述 |
 |------|------ |
-|[play](./#m_play) | 播放场景 |
-|[showSpace](./#m_showSpace) | 切换场景 |
+|[play](#m_play) | 播放场景 |
+|[showSpace](#m_showSpace) | 切换场景 |
     
 ### 4. 事件
     

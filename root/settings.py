@@ -74,10 +74,10 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'PORT': '3306',
-        'NAME': 'panorama',
-        'USER': 'root',
-        'PASSWORD': 'root',
-        'HOST': '127.0.0.1',
+        'NAME': 'dc228131295c94f91998adc126dc181fd',
+        'USER': 'c6991f10-36d8',
+        'PASSWORD': '',
+        'HOST': '192.168.1.13',
     },
     'sqlite3': {
         'ENGINE': 'django.db.backends.sqlite3',

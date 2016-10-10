@@ -37,12 +37,6 @@ li {
     cursor: none;
 }
 
-#display {
-    width: 150px;
-    height: 15px;
-    line-height: 20px;
-}
-
 #delta {
     width: 30px;
     height: 15px;

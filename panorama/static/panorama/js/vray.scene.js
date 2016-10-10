@@ -20,8 +20,7 @@ var VRAY = {};
     var startPoint1 = {x: 0, y: 0}, startPoint2 = {x: 0, y: 0};
 
     var _lockScene = true;  // 锁定场景
-    var clicking = false,// 是否点击了canvas
-        transiting = false,  // 正在进行过渡动画
+    var transiting = false,  // 正在进行过渡动画
         _addingHot = false;  // 正在添加热点
 
     var intersects = [];  // 鼠标与热点的交点
@@ -70,6 +69,8 @@ var VRAY = {};
         onHotAdd: function (hotInfo, success, fail) {
         }
     };
+
+    var cameraFov = 75;
 
     // TODO 临时
     var $srcProcess = $('#src-process');
@@ -121,7 +122,7 @@ var VRAY = {};
         textureLoader = new THREE.TextureLoader();
 
         scene = new THREE.Scene();
-        camera = new THREE.PerspectiveCamera(75, _stageWidth / _stageHeight, 0.1, 1000);
+        camera = new THREE.PerspectiveCamera(cameraFov, _stageWidth / _stageHeight, 0.1, 1000);
         raycaster = new THREE.Raycaster();
 
         this.materials = {};  // 材质集合
@@ -247,7 +248,7 @@ var VRAY = {};
         // 进入场景（普通）
         var start = function () {
             camera.position.set(0.001, 0, 0);
-            camera.fov = 75;
+            camera.fov = cameraFov;
             camera.lookAt(sceneCenter);
         };
 
@@ -270,7 +271,7 @@ var VRAY = {};
         var _this = this;
         if (_this.options.smoothStart) {
             new TWEEN.Tween({fov: camera.fov, positionY: 20})
-                .to({fov: 75, positionY: 0.01}, 2500)
+                .to({fov: cameraFov, positionY: 0.01}, 2500)
                 .easing(TWEEN.Easing.Quadratic.InOut)
                 .onUpdate(function () {
                     camera.fov = this.fov;
@@ -319,10 +320,14 @@ var VRAY = {};
             deviceControls.enabled = false;
 
             var $canvas = $(_this.stage);
-            $canvas.on('mousedown touchstart', moveStart.bind(_this));
-            $canvas.on('mousemove touchmove', movePass.bind(_this));
-            $canvas.on('mouseup touchend', moveEnd.bind(_this));
-            $canvas.on('DOMMouseScroll mousewheel', zoom.bind(_this));
+            // 鼠标事件
+            $canvas.on('mousemove', mouseMove.bind(_this));
+            $canvas.on('click', mouseClick.bind(_this));
+            $canvas.on('DOMMouseScroll mousewheel', mouseWheel.bind(_this));
+            // 触摸事件
+            $canvas.on('touchstart', touchStart.bind(_this));
+            $canvas.on('touchmove', touchMove.bind(_this));
+            $canvas.on('touchend', touchEnd.bind(_this));
         }
     };
 
@@ -635,38 +640,9 @@ var VRAY = {};
         renderer.render(scene, camera);
     };
 
-    var moveStart = function ($e) {
-        if (!_lockScene) {
-            clicking = true;
-            var e = $e.originalEvent;
-            if (e.touches) {
-                if (e.touches.length == 1) {
-                    mousePos.x = (e.touches[0].clientX / _stageWidth) * 2 - 1;
-                    mousePos.y = -(e.touches[0].clientY / _stageHeight) * 2 + 1;
-                    startPoint1.x = e.touches[0].clientX;
-                    startPoint1.y = e.touches[0].clientY;
-                } else if (e.touches.length > 1) {
-                    startPoint1.x = e.touches[0].clientX;
-                    startPoint1.y = e.touches[0].clientY;
-                    startPoint2.x = e.touches[1].clientX;
-                    startPoint2.y = e.touches[1].clientY;
-                }
-            } else {
-                startPoint1.x = $e.pageX;
-                startPoint1.y = $e.pageY;
-            }
-        }
-    };
-
-    var movePass = function ($e) {
+    var mouseMove = function ($e) {
         if (!_lockScene && $e.which != 3) {
-            // TODO 待兼容移动端...
-            // var e = event.originalEvent;
-
-            if (clicking && (parseInt(startPoint1.x) != parseInt($e.pageX) || parseInt(startPoint1.y) != parseInt($e.pageY))) {
-                clicking = false;
-                orbitControls.autoRotate = false;
-            }
+            (parseInt(startPoint1.x) != parseInt($e.pageX) || parseInt(startPoint1.y) != parseInt($e.pageY)) && (orbitControls.autoRotate = false);
             if (_addingHot) {  // 开始添加热点
                 raycaster.setFromCamera(mousePos, camera);
                 intersects = raycaster.intersectObjects([spheres[1]]);
@@ -716,20 +692,16 @@ var VRAY = {};
                     ui.$hotTitle.hide();
                 }
             }
+
             mousePos.x = ($e.pageX / _stageWidth) * 2 - 1;
             mousePos.y = -($e.pageY / _stageHeight) * 2 + 1;
         }
     };
 
-    var moveEnd = function ($e) {
-        if (!_lockScene && clicking) {
-            var e = $e.originalEvent;
+    var mouseClick = function ($e) {
+        if (!_lockScene) {
             if (_addingHot) {  // 添加脚印
-                if (e.changedTouches && e.changedTouches.length > 0) {
-                    callbacks.onAddingHot({x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY});
-                } else {
-                    callbacks.onAddingHot({x: $e.pageX, y: $e.pageY});
-                }
+                callbacks.onAddingHot({x: $e.pageX, y: $e.pageY});
             } else {
                 if (intersects.length > 0) {  // 单击热点
                     if ($e.which == 3) {  // 热点上右击
@@ -782,23 +754,85 @@ var VRAY = {};
         }
     };
 
-    var zoom = function (event) {
-        var e = event.originalEvent;
-        e = e || window.event;
-        e.preventDefault();
-        if (_lockScene) return false;
-        var fovDelta;
-        if (e.wheelDelta) {  // IE、Opera、Chrome
-            fovDelta = e.wheelDelta > 0 ? 1 : -1;
-        } else if (e.detail) {  // Firefox
-            fovDelta = e.detail > 0 ? 1 : -1;
-        }
-        if ((fovDelta > 0 && camera.fov < 110) || (fovDelta < 0 && camera.fov > 40)) {
-            camera.fov += fovDelta;
-            orbitControls.rotateSpeed = camera.fov > 75 ? 0.07 : camera.fov / 75 * 0.07;
-            camera.updateProjectionMatrix();
+    var mouseWheel = function ($e) {
+        if (!_lockScene) {
+            var e = $e.originalEvent;
+            var fovDelta;
+            if (e.wheelDelta) {  // IE、Opera、Chrome
+                fovDelta = e.wheelDelta > 0 ? 1 : -1;
+            } else if (e.detail) {  // Firefox
+                fovDelta = e.detail > 0 ? 1 : -1;
+            }
+            if ((fovDelta > 0 && camera.fov < 110) || (fovDelta < 0 && camera.fov > 40)) {
+                camera.fov += fovDelta;
+                orbitControls.rotateSpeed = camera.fov > 75 ? 0.07 : camera.fov / 75 * 0.07;
+                camera.updateProjectionMatrix();
+            }
         }
     };
+
+    var clicking = false;  // 是否点击了canvas
+    var touchStart = function ($e) {
+        if (!_lockScene) {
+            clicking = true;
+            var e = $e.originalEvent;
+            if (e.touches) {
+                startPoint1.x = e.touches[0].clientX;
+                startPoint1.y = e.touches[0].clientY;
+                if (e.touches.length > 1) {  // 双指触碰
+                    startPoint2.x = e.touches[1].clientX;
+                    startPoint2.y = e.touches[1].clientY;
+                }
+            }
+        }
+    };
+
+    // TODO 回弹效果
+    var touchMove = function ($e) {
+        if (!_lockScene) {
+            var e = $e.originalEvent;
+            if (e.touches) {  // 触摸操作
+                var touch0X = e.touches[0].clientX;
+                var touch0Y = e.touches[0].clientY;
+                if (clicking && (parseInt(startPoint1.x) != parseInt(touch0X) || parseInt(startPoint1.y) != parseInt(touch0Y))) {
+                    // 标为移动操作
+                    clicking = false;
+                    orbitControls.autoRotate = false;
+                }
+                if (e.touches.length > 1) {  // 如果是双指操作
+                    var lastDistance = Math.sqrt(Math.pow(startPoint2.x - startPoint1.x, 2) + Math.pow(startPoint2.y - startPoint1.y, 2));
+                    var currentDistance = Math.sqrt(Math.pow(e.touches[1].clientX - touch0X, 2) + Math.pow(e.touches[1].clientY - touch0Y, 2));
+                    camera.fov = cameraFov + (lastDistance - currentDistance ) / 5;
+                    camera.fov = camera.fov > 110 ? 110 : camera.fov < 40 ? 40 : camera.fov;
+                    orbitControls.rotateSpeed = camera.fov > 75 ? 0.04 : camera.fov / 75 * 0.04;
+                    camera.updateProjectionMatrix();
+                }
+            }
+        }
+    };
+    var touchEnd = function ($e) {
+        if (!_lockScene && !_addingHot && clicking) {
+            if (spaceHots.length > 0) {
+                var e = $e.originalEvent;
+                if (e.changedTouches && e.changedTouches.length > 0) {
+                    mousePos.x = (e.changedTouches[0].clientX / _stageWidth) * 2 - 1;
+                    mousePos.y = -(e.changedTouches[0].clientY / _stageHeight) * 2 + 1;
+                    raycaster.setFromCamera(mousePos, camera);
+                    intersects = raycaster.intersectObjects(spaceHots);
+                    if (intersects.length > 0) {// 触击热点
+                        this.showSpace(intersects[0].object);
+                        ui.$hotTitle.hide();
+                    } else if (spaceHots.length > 0) {  // 触击空白处
+                        alert('触击空白处');
+                    }
+                }
+
+            }
+        }
+        cameraFov = camera.fov;
+    };
+
+    // TODO 使用准星进行热点跳转功能
 
     // 定义spacesDict属性（只读）
     Object.defineProperty(VRAY.Scene.prototype, "spacesDict", {

@@ -35,6 +35,8 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
     var $walkMode = $('#walk-mode');
     var $vrOpen = $('#vr-open');
     var $vrClose = $('#vr-close');
+    var $hotTitle = $('#hot-title');
+    var $display = $('#display'); // TODO 临时
     // var $scenePanel = $('#scene-panel');
 
     var i, j, k;  // 计数器
@@ -72,11 +74,13 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
         smoothStart: false,
         autoPlay: true,
         autoRotate: false,
-        fps: true,
+        fps: false,
         callbacks: {
             onLoad: onLoad,
             onShowing: onShowing,
-            onShown: onShown
+            onShown: onShown,
+            onOverHot: onOverHot,
+            onLeaveHot: onLeaveHot
         }
     };
 
@@ -145,6 +149,36 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
         $gallery.find('.active').removeClass('active');
         $('#space_id_' + vrayScene.spaceId).addClass('active');
     }
+
+    var switchSpaceDelayer = null;
+    // 鼠标在热点上时
+    function onOverHot(selectedHot, mousePos) {
+        if (selectedHot.title && mousePos) {
+            $hotTitle.html(selectedHot.title).css({
+                left: mousePos.x - $hotTitle.width() - 20,
+                top: mousePos.y - 25 / 2
+            }).show();
+        } else {
+            $hotTitle.hide();
+        }
+        if (vrayScene.walkMode && !switchSpaceDelayer) {
+            switchSpaceDelayer = window.setTimeout(function () {
+                window.clearTimeout(switchSpaceDelayer);
+                switchSpaceDelayer = null;
+                vrayScene.showSpace(selectedHot);
+            }, 2000)
+        }
+    }
+
+    // 鼠标离开热点时
+    function onLeaveHot() {
+        $hotTitle.hide();
+        if (switchSpaceDelayer) {
+            window.clearTimeout(switchSpaceDelayer);
+            switchSpaceDelayer = null;
+        }
+    }
+
 
     window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
     function animate() {

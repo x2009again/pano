@@ -2,6 +2,9 @@
  * Created by CK on 2016/8/26.
  */
 ;
+/** @namespace e.touches */
+/** @namespace e.changedTouches */
+/** @namespace space.cache_url */
 var VRAY = {};
 (function (window, document, $, undefined) {
     "use strict";
@@ -22,13 +25,9 @@ var VRAY = {};
     var intersects = [];  // 鼠标与热点的交点
     var selectedHot = null;  // 鼠标按下的热点
 
-    var showDelayer = null;  // 准线瞄准操作延迟计时器
+    var hotLeaved = true;
 
-    var ui = {
-        $hotTitle: $('#hot-title')
-    };
-
-    var stage = null;
+    var _stage = null;
 
     var STAGE_WIDTH = window.innerWidth,
         STAGE_HEIGHT = window.innerHeight,
@@ -61,6 +60,18 @@ var VRAY = {};
          * 场景切换完毕
          */
         onShown: function () {
+        },
+        /**
+         * 选择器在热点上移动时
+         * @param selectedHot
+         * @param mousePos 鼠标相对于容器的位置
+         */
+        onOverHot: function (selectedHot, mousePos) {
+        },
+        /**
+         * 选择器离开热点时
+         */
+        onLeaveHot: function () {
         },
         /**
          * 添加热点时点击container的回调
@@ -115,14 +126,14 @@ var VRAY = {};
         // 立体效果渲染器
         stereoRenderer = new THREE.StereoEffect(renderer);
         stereoRenderer.setSize(STAGE_WIDTH, STAGE_HEIGHT);
-        stage = renderer.domElement;
+        _stage = renderer.domElement;
         // 设置样式
-        stage.style.cursor = 'move';
-        stage.style.zIndex = '1';
-        stage.style.display = 'none';
-        stage.style.position = 'absolute';
-        stage.style.backgroundColor = '#000';
-        this.options.container.appendChild(stage);
+        _stage.style.cursor = 'move';
+        _stage.style.zIndex = '1';
+        _stage.style.display = 'none';
+        _stage.style.position = 'absolute';
+        _stage.style.backgroundColor = '#000';
+        this.options.container.appendChild(_stage);
 
         textureLoader = new THREE.TextureLoader();
 
@@ -133,9 +144,6 @@ var VRAY = {};
         _lockScene = true;  // 锁定场景（无法切换、拖动空间，添加、修改热点）
 
         var _this = this;
-
-        ui.$hotTitle = $('<span id="hot-title">');
-        $(document.body).append(ui.$hotTitle);
 
         // 热点添加指示
         hotSpot = new THREE.Mesh(new THREE.PlaneGeometry(3, 3), new THREE.MeshBasicMaterial({
@@ -223,7 +231,7 @@ var VRAY = {};
             scene.add(hotSpot);
             renderer.render(scene, camera);
             // TODO 移除所有jquery依赖
-            $(stage).fadeIn(1500);
+            $(_stage).fadeIn(1500);
 
             if (_this.options.devMode) {
                 spheres[0].material = spheres[1].material;
@@ -306,7 +314,7 @@ var VRAY = {};
         }
 
         function initControls() {
-            orbitControls = new THREE.OrbitControls(camera, stage);
+            orbitControls = new THREE.OrbitControls(camera, _stage);
             orbitControls.autoRotateSpeed = 0.07;
             orbitControls.enableRotate = true;
             orbitControls.enableDamping = true;
@@ -321,7 +329,7 @@ var VRAY = {};
             deviceControls.connect();
             deviceControls.enabled = false;
 
-            var $canvas = $(stage);
+            var $canvas = $(_stage);
             // 鼠标事件
             $canvas.on('mousemove', mouseMove.bind(_this));
             $canvas.on('click', mouseClick.bind(_this));
@@ -330,6 +338,9 @@ var VRAY = {};
             $canvas.on('touchstart', touchStart.bind(_this));
             $canvas.on('touchmove', touchMove.bind(_this));
             $canvas.on('touchend', touchEnd.bind(_this));
+
+            // 方向变化事件
+            window.addEventListener('deviceorientation', onDeviceOrientation);
         }
     };
 
@@ -366,6 +377,7 @@ var VRAY = {};
             return false;
         }
         transiting = true;
+        callbacks.onLeaveHot();
         var lastSpaceId = _spaceId;
         _spaceId = targetSpaceId;
 
@@ -459,7 +471,6 @@ var VRAY = {};
      * @param space
      */
     VRAY.Scene.prototype.addSpace = function (space) {
-        var _this = this;
         if (!_spacesDict[space.id]) {
             _spacesDict[space.id] = space;
             textureLoader.load(space.url, function (texture) {
@@ -643,7 +654,7 @@ var VRAY = {};
     };
 
     var mouseMove = function ($e) {
-        if (!_lockScene && $e.which != 3) {
+        if (!(_lockScene || transiting || $e.which == 3)) {
             (parseInt(startPoint1.x) != parseInt($e.pageX) || parseInt(startPoint1.y) != parseInt($e.pageY)) && (orbitControls.autoRotate = false);
             if (_addingHot) {  // 开始添加热点
                 raycaster.setFromCamera(mousePos, camera);
@@ -669,29 +680,12 @@ var VRAY = {};
                 if (intersects.length > 0) {
                     selectedHot = intersects[0].object;
                     selectedHot.material.color.set(0xffffff);
-                    // 使用准星进行热点跳转
-                    if ((_stereoMode || _walkMode) && !showDelayer) {
-                        showDelayer = setTimeout(function () {
-                            ui.$hotTitle.hide();
-                            this.showSpace(selectedHot);
-                            clearTimeout(showDelayer);
-                            showDelayer = null;
-                        }, 1000);
-                    }
-                } else {
-                    clearTimeout(showDelayer);
-                    showDelayer = null;
-                }
 
-                if (!transiting && intersects.length > 0) {
-                    if (selectedHot.title) {
-                        ui.$hotTitle.html(selectedHot.title).css({
-                            left: $e.pageX - ui.$hotTitle.width() - 20,
-                            top: $e.pageY - 25 / 2
-                        }).show();
-                    }
-                } else {
-                    ui.$hotTitle.hide();
+                    hotLeaved = false;
+                    callbacks.onOverHot(selectedHot, {x: $e.pageX, y: $e.pageY});  // TODO 应该使用相对于容器的位置
+                } else if (!hotLeaved) {
+                    hotLeaved = true;  // onLeaveHot只执行一次
+                    callbacks.onLeaveHot();
                 }
             }
 
@@ -706,35 +700,10 @@ var VRAY = {};
                 callbacks.onAddingHot({x: $e.pageX, y: $e.pageY});
             } else {
                 if (intersects.length > 0) {  // 单击热点
-                    if ($e.which == 3) {  // 热点上右击
-                        // TODO 执行回调，传入参数（点击的位置，热点的位置——vx,vy,vz）
-                        // orbitControls.enabled = false;
-                        // targetStep = selectIntersection.object;
-                        // animating = false;
-                        // selectIntersection = null;  // 防止出现热点描述
-                        // var targetHot = _spacesDict[spaceId].hots[targetStep.hotId];
-                        // $editHotDialog.find('select').val(targetHot.to);
-                        // $editHotDialog.find('input').val(targetHot.title);
-                        // if (e.changedTouches && e.changedTouches.length > 0) {
-                        //     $editHotDialog.css({
-                        //         left: e.changedTouches[0].clientX - $editHotDialog.STAGE_WIDTH() / 2,
-                        //         top: e.changedTouches[0].clientY - $editHotDialog.STAGE_HEIGHT() / 2
-                        //     })
-                        // } else {
-                        //     $editHotDialog.css({
-                        //         left: e.clientX - $editHotDialog.STAGE_WIDTH() / 2,
-                        //         top: e.clientY - $editHotDialog.STAGE_HEIGHT() / 2
-                        //     })
-                        // }
-                        // $editHotDialog.show();
-                    } else {  // 热点上左击
+                    if ($e.which == 1) {  // 热点上左击
                         this.showSpace(selectedHot);
-                        ui.$hotTitle.hide();
                     }
                 } else if (spaceHots.length > 0) {  // 点击空白处
-                    // if (event.which == 3) {  // 右击弹出右键菜单
-                    //
-                    // }
                     // hoverPoint = raycaster.intersectObjects([spheres[1]]);
                     // if (e.button != '2' && hoverPoint && hoverPoint.length > 0) {
                     //     var step = spaceHots[0];
@@ -813,7 +782,7 @@ var VRAY = {};
         }
     };
     var touchEnd = function ($e) {
-        if (!_lockScene && !_addingHot && clicking) {
+        if (!_lockScene && !_stereoMode && clicking) {
             if (spaceHots.length > 0) {
                 var e = $e.originalEvent;
                 if (e.changedTouches && e.changedTouches.length > 0) {
@@ -823,7 +792,6 @@ var VRAY = {};
                     intersects = raycaster.intersectObjects(spaceHots);
                     if (intersects.length > 0) {// 触击热点
                         this.showSpace(intersects[0].object);
-                        ui.$hotTitle.hide();
                     } else if (spaceHots.length > 0) {  // 触击空白处
                         alert('触击空白处');
                     }
@@ -834,8 +802,34 @@ var VRAY = {};
         cameraFov = camera.fov;
     };
 
-    // TODO 使用准星进行热点跳转功能
+    var onDeviceOrientation = function () {
+        if (_walkMode) {
+            raycaster.set(sceneCenter, camera.getWorldDirection());
+            intersects = raycaster.intersectObjects(spaceHots);
+            // 全部热点置为默认颜色
+            for (var k = 0; k < spaceHots.length; k++) {
+                spaceHots[k].material.color.set(0x000000);
+            }
+            // 高亮选中的热点
+            if (intersects.length > 0) {
+                selectedHot = intersects[0].object;
+                selectedHot.material.color.set(0xffffff);
 
+                hotLeaved = false;
+                callbacks.onOverHot(selectedHot);  // TODO 应该使用相对于容器的位置
+            } else if (!hotLeaved) {
+                hotLeaved = true;  // onLeaveHot只执行一次
+                callbacks.onLeaveHot();
+            }
+        }
+    };
+
+    // 定义stage属性（只读）
+    Object.defineProperty(VRAY.Scene.prototype, "stage", {
+        get: function () {
+            return _stage;
+        }
+    });
     // 定义spaceId属性（只读）
     Object.defineProperty(VRAY.Scene.prototype, "spaceId", {
         get: function () {
@@ -862,10 +856,10 @@ var VRAY = {};
         set: function (val) {
             _stereoMode = !!val;
             if (_stereoMode) {
-                raycaster.set(sceneCenter, camera.getWorldDirection());
+                // raycaster.set(sceneCenter, camera.getWorldDirection());
                 stereoRenderer.setSize(STAGE_WIDTH, STAGE_HEIGHT);
             } else {
-                raycaster.setFromCamera(mousePos, camera);
+                // raycaster.setFromCamera(mousePos, camera);
                 renderer.setSize(STAGE_WIDTH, STAGE_HEIGHT);
             }
         },
@@ -917,8 +911,8 @@ var VRAY = {};
 
     VRAY.Scene.prototype.update = function () {
         TWEEN.update();
-        if (orbitControls) orbitControls.update();
-        if (deviceControls) deviceControls.update();
+        if (orbitControls.enabled) orbitControls.update();
+        if (deviceControls.enabled) deviceControls.update();
         stats && stats.update();
         if (_stereoMode) {
             stereoRenderer.render(scene, camera);

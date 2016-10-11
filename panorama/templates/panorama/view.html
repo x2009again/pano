@@ -92,7 +92,11 @@
         <div class="cross">+</div>
         <div class="cross">+</div>
     </div>
+
+    <span id="hot-title"></span>
 </div>
+
+<input type="text" id="display" disabled="disabled">
 
 <!-- 警告对话框 -->
 <div class="dialog alert">
@@ -110,9 +114,9 @@
     }
 </script>
 <script src="//cdn.bootcss.com/jquery/2.2.4/jquery.min.js"></script>
-<script>window.jQuery || document.write('<script src="/lib/jquery_2_2_4.min.js"><\/script>')</script>
+<script>window.jQuery || document.write('<script src="{% static 'panorama/lib/jquery_2_2_4.min.js' %}"><\/script>')</script>
 <script src="//cdn.bootcss.com/jquery-easing/1.3/jquery.easing.min.js"></script>
-<script>$.easing.easeInOutQuad || document.write('<script src="/lib/jquery.easing_1_3.min.js"><\/script>')</script>
+<script>$.easing.easeInOutQuad || document.write('<script src="{% static 'panorama/lib/jquery.easing_1_3.min.js' %}"><\/script>')</script>
 <script src="{% static 'panorama/lib/three.js/stats.min.js' %}"></script>
 <script src="{% static 'panorama/lib/three.js/three.js' %}"></script>
 <script src="{% static 'panorama/lib/three.js/StereoEffect.js' %}"></script>

@@ -2,6 +2,14 @@
  * Created by ck on 2016/6/15.
  */
 
+/** @namespace ret.scene */
+/** @namespace ret.seller */
+/** @namespace ret.err_msg */
+/** @namespace VRAY */
+/** @namespace space.thumb_url */
+/** @namespace space.space_dict */
+/** @namespace space.create_time */
+
 "use strict";
 var sceneId = getParam('scene_id');
 $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, function (ret) {
@@ -46,6 +54,7 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
 
     var $morePanel = $('#more-panel');
     var $pickHot = $('#pick-hot');
+    var $hotTitle = $('#hot-title');
 
     var sceneContainer = null;
 
@@ -88,7 +97,9 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
             onShowing: onShowing,
             onShown: onShown,
             onAddingHot: onAddingHot,
-            onHotAdd: onHotAdd
+            onHotAdd: onHotAdd,
+            onOverHot: onOverHot,
+            onLeaveHot: onLeaveHot
         }
     };
     var vrayScene = new VRAY.Scene(options);
@@ -135,6 +146,23 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
         $('#space_id_' + spaceId).addClass('active');
         $mask.hide();
         $loading.stop().fadeOut(700);
+    }
+
+    // 鼠标在热点上时
+    function onOverHot(selectedHot, mousePos) {
+        if (selectedHot.title && mousePos) {
+            $hotTitle.html(selectedHot.title).css({
+                left: mousePos.x - $hotTitle.width() - 20,
+                top: mousePos.y - 25 / 2
+            }).show();
+        } else {
+            $hotTitle.hide();
+        }
+    }
+
+    // 鼠标离开热点时
+    function onLeaveHot() {
+        $hotTitle.hide();
     }
 
     // 使用插件回调来添加热点
@@ -552,7 +580,6 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
             vrayScene.lockScene = false;
         });
 
-
         $addHotDialog.find('.redo-btn').click(function () {
             $addHotDialog.hide();
             vrayScene.lockScene = false;
@@ -560,58 +587,6 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
             $pickHot.addClass('active');
         });
 
-        $editHotDialog.find('i').click(function () {
-            $editHotDialog.hide();
-            footStep.visible = false;
-            canDo = true;
-            orbitControls.enabled = true;
-            animate();
-        });
-
-        $editHotDialog.find('.del-btn').click(function () {
-            $.get('del_hot', {
-                srcId: spaceId,
-                hotId: targetStep.hotId
-            }, function (data) {
-                if (data.success) {
-                    canDo = true;
-                    orbitControls.enabled = true;
-                    delete vrayScene.spacesDict[spaceId].hots[targetStep.hotId];
-                    spheres[1].remove(targetStep);
-                    $editHotDialog.hide();
-                    updateCurrentSteps();
-                } else {
-                    alert('删除失败');
-                }
-                animate();
-            });
-        });
-
-        $editHotDialog.find('.update-btn').click(function () {
-            if ($editHotDialog.find('select').val() == spaceId) {
-                alert('不可与当前场景相同！');
-                return false;
-            }
-            $.post('update_hot', {
-                srcId: spaceId,
-                hotId: targetStep.hotId,
-                title: $editHotDialog.find('input[name=title]').val(),
-                to: $editHotDialog.find('select').val()
-            }, function (data) {
-                if (data.success) {
-                    var hot = vrayScene.spacesDict[spaceId].hots[targetStep.hotId];
-                    hot.to = data.hot.to;
-                    hot.title = data.hot.title;
-                    targetStep.title = hot.title;
-                    canDo = true;
-                    orbitControls.enabled = true;
-                    $editHotDialog.hide();
-                } else {
-                    alert('更新失败');
-                }
-                animate();
-            });
-        });
     }
 
     window.getResultStr = function (result) {

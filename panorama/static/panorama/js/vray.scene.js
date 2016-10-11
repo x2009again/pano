@@ -19,10 +19,6 @@ var VRAY = {};
 
     var startPoint1 = {x: 0, y: 0}, startPoint2 = {x: 0, y: 0};
 
-    var _lockScene = true;  // 锁定场景
-    var transiting = false,  // 正在进行过渡动画
-        _addingHot = false;  // 正在添加热点
-
     var intersects = [];  // 鼠标与热点的交点
     var selectedHot = null;  // 鼠标按下的热点
 
@@ -32,12 +28,24 @@ var VRAY = {};
         $hotTitle: $('#hot-title')
     };
 
-    var spaceHots = [];
+    var stage = null;
 
-    var _stereoMode = false, _walkMode = false, _stageWidth = window.innerWidth, _stageHeight = window.innerHeight;
+    var STAGE_WIDTH = window.innerWidth,
+        STAGE_HEIGHT = window.innerHeight,
+        spaceList = [],
+        spaceHots = [],
+        materialDict = {},  // 材质集合
+        transiting = false;  // 正在进行过渡动画
 
-    var spaceList = [];
-    var _spacesDict = {};
+    // 可访问变量
+    var _stereoMode = false,
+        _walkMode = false,
+        _spacesDict = {},
+        _spaceId = {},
+        _spaceCount = {},
+        _lockScene = true,  // 锁定场景
+        _addingHot = false;  // 正在添加热点
+
     var callbacks = {
         /**
          * 首屏加载完毕
@@ -72,11 +80,9 @@ var VRAY = {};
 
     var cameraFov = 75;
 
-    // TODO 临时
-    var $srcProcess = $('#src-process');
     VRAY.Scene = function (opt) {
         // 默认设置
-        this.defaults = {
+        var defaults = {
             container: document.body,
             devMode: false,
             smoothStart: false,
@@ -88,12 +94,12 @@ var VRAY = {};
         };
 
         spaceList = opt.spaceList;
-        this.options = $.extend({}, this.defaults, opt);
+        this.options = $.extend({}, defaults, opt);
         $.extend(callbacks, this.options.callbacks);
+        Object.freeze(this.options);  // 冻结初始化参数
         var entry = opt.entry || spaceList[0].id;
-        // TODO 设置为只读属性
-        this.spaceId = entry;
-        this.spaceCount = spaceList.length;
+        _spaceId = entry;
+        _spaceCount = spaceList.length;
 
         var i;
         for (i = 0; i < spaceList.length; i++) {
@@ -102,30 +108,27 @@ var VRAY = {};
 
         // 渲染器
         renderer = new THREE.WebGLRenderer({antialias: true});
-        renderer.setSize(_stageWidth, _stageHeight);
+        renderer.setSize(STAGE_WIDTH, STAGE_HEIGHT);
         renderer.sortObjects = false;
         renderer.setClearColor(0x000000);
 
         // 立体效果渲染器
         stereoRenderer = new THREE.StereoEffect(renderer);
-        stereoRenderer.setSize(_stageWidth, _stageHeight);
-        this.stage = renderer.domElement;
-        this.stage.id = 'scene-canvas';
+        stereoRenderer.setSize(STAGE_WIDTH, STAGE_HEIGHT);
+        stage = renderer.domElement;
         // 设置样式
-        this.stage.style.cursor = 'move';
-        this.stage.style.zIndex = '1';
-        this.stage.style.display = 'none';
-        this.stage.style.position = 'absolute';
-        this.stage.style.backgroundColor = '#000';
-        this.options.container.appendChild(this.stage);
+        stage.style.cursor = 'move';
+        stage.style.zIndex = '1';
+        stage.style.display = 'none';
+        stage.style.position = 'absolute';
+        stage.style.backgroundColor = '#000';
+        this.options.container.appendChild(stage);
 
         textureLoader = new THREE.TextureLoader();
 
         scene = new THREE.Scene();
-        camera = new THREE.PerspectiveCamera(cameraFov, _stageWidth / _stageHeight, 0.1, 1000);
+        camera = new THREE.PerspectiveCamera(cameraFov, STAGE_WIDTH / STAGE_HEIGHT, 0.1, 1000);
         raycaster = new THREE.Raycaster();
-
-        this.materials = {};  // 材质集合
 
         _lockScene = true;  // 锁定场景（无法切换、拖动空间，添加、修改热点）
 
@@ -151,27 +154,25 @@ var VRAY = {};
         for (i = 0; i < spaceList.length; i++) {
             var space = spaceList[i];
             (!space.hots) && (space.hots = {});
-            // TODO 移除i
-            (function (space, i) {
+            (function (space) {
                 // 先加载小图
                 if (space.cache_url) {
                     textureLoader.load(space.cache_url, function (texture) {
                         texture.minFilter = texture.magFilter = THREE.LinearFilter;  // 避免image is not power of two的警告
                         loadedSize++;
-                        _this.materials[space.id] = new THREE.MeshBasicMaterial({
+                        materialDict[space.id] = new THREE.MeshBasicMaterial({
                             map: texture,
                             transparent: true,
                             side: THREE.DoubleSide
                         });
-                        $srcProcess.val('资源载入中(' + parseInt((i + 1) / _this.spaceCount * 100) + '%)');
                         // 再加载大图
                         textureLoader.load(space.url, function (texture) {
-                            _this.materials[space.id] = new THREE.MeshBasicMaterial({
+                            materialDict[space.id] = new THREE.MeshBasicMaterial({
                                 map: texture,
                                 transparent: true,
                                 side: THREE.DoubleSide
                             });
-                            _this.spaceId == space.id && (spheres[0].material = spheres[1].material = _this.materials[_this.spaceId]);
+                            _spaceId == space.id && (spheres[0].material = spheres[1].material = materialDict[_spaceId]);
                         });
                         if (space.id == entry) {
                             createScene();
@@ -182,7 +183,7 @@ var VRAY = {};
                     // 直接加载大图
                     textureLoader.load(space.url, function (texture) {
                         loadedSize++;
-                        _this.materials[space.id] = new THREE.MeshBasicMaterial({
+                        materialDict[space.id] = new THREE.MeshBasicMaterial({
                             map: texture,
                             transparent: true,
                             side: THREE.DoubleSide
@@ -193,7 +194,7 @@ var VRAY = {};
                         }
                     });
                 }
-            })(space, i);
+            })(space);
         }
 
         if (_this.options.fps) {
@@ -213,7 +214,7 @@ var VRAY = {};
             tempMesh.needsUpdate = true;
             spheres.push(tempMesh);
             scene.add(tempMesh);
-            tempMesh = new THREE.Mesh(new THREE.SphereGeometry(50, 80, 80), _this.materials[_this.spaceId]);
+            tempMesh = new THREE.Mesh(new THREE.SphereGeometry(50, 80, 80), materialDict[_spaceId]);
             tempMesh.scale.x = -1;
             tempMesh.position.set(0, 0, 0);
             tempMesh.needsUpdate = true;
@@ -221,7 +222,8 @@ var VRAY = {};
             scene.add(tempMesh);
             scene.add(hotSpot);
             renderer.render(scene, camera);
-            $(_this.stage).fadeIn(1500);
+            // TODO 移除所有jquery依赖
+            $(stage).fadeIn(1500);
 
             if (_this.options.devMode) {
                 spheres[0].material = spheres[1].material;
@@ -304,7 +306,7 @@ var VRAY = {};
         }
 
         function initControls() {
-            orbitControls = new THREE.OrbitControls(camera, _this.stage);
+            orbitControls = new THREE.OrbitControls(camera, stage);
             orbitControls.autoRotateSpeed = 0.07;
             orbitControls.enableRotate = true;
             orbitControls.enableDamping = true;
@@ -319,7 +321,7 @@ var VRAY = {};
             deviceControls.connect();
             deviceControls.enabled = false;
 
-            var $canvas = $(_this.stage);
+            var $canvas = $(stage);
             // 鼠标事件
             $canvas.on('mousemove', mouseMove.bind(_this));
             $canvas.on('click', mouseClick.bind(_this));
@@ -338,19 +340,19 @@ var VRAY = {};
      */
     VRAY.Scene.prototype.showSpace = function (point) {
         if (_lockScene || transiting) return false;
-        var spaceHot = typeof(point.hotId) == "undefined" ? null : _spacesDict[this.spaceId].hots[point.hotId];
+        var spaceHot = typeof(point.hotId) == "undefined" ? null : _spacesDict[_spaceId].hots[point.hotId];
         var targetSpaceId = spaceHot ? spaceHot.to : point.to;
-        if (this.spaceId == targetSpaceId) {
+        if (_spaceId == targetSpaceId) {
             return false;
         }
         var animateTime = 800;
         var timer = null;
         var _this = this;
-        if (!this.materials[targetSpaceId]) {
+        if (!materialDict[targetSpaceId]) {
             callbacks.onShowing();
             (function (point) {
                 timer = window.setInterval(function () {
-                    if (_this.materials[targetSpaceId]) {
+                    if (materialDict[targetSpaceId]) {
                         window.clearInterval(timer);
                         timer = null;
                         _this.showSpace(point);
@@ -359,13 +361,13 @@ var VRAY = {};
             })(point);
             return false;
         }
-        if (this.materials[targetSpaceId].disabled) {
+        if (materialDict[targetSpaceId].disabled) {
             console.log('no space ' + targetSpaceId);
             return false;
         }
         transiting = true;
-        var lastSpaceId = this.spaceId;
-        this.spaceId = targetSpaceId;
+        var lastSpaceId = _spaceId;
+        _spaceId = targetSpaceId;
 
         // 先删除小球上的热点
         var hots = _spacesDict[lastSpaceId].hots;
@@ -381,8 +383,8 @@ var VRAY = {};
             spheres[0].material = spheres[1].material;
         }
         callbacks.onShown(targetSpaceId);
-        this.materials[targetSpaceId].opacity = 0;
-        spheres[1].material = this.materials[targetSpaceId];  //修改小球材质
+        materialDict[targetSpaceId].opacity = 0;
+        spheres[1].material = materialDict[targetSpaceId];  //修改小球材质
 
         if (spaceHot && (spaceHot.px || spaceHot.py || spaceHot.pz || spaceHot.rx || spaceHot.ry || spaceHot.rz)) {
             logoMesh.visible = false;
@@ -461,16 +463,16 @@ var VRAY = {};
         if (!_spacesDict[space.id]) {
             _spacesDict[space.id] = space;
             textureLoader.load(space.url, function (texture) {
-                _this.materials[space.id] = new THREE.MeshBasicMaterial({
+                materialDict[space.id] = new THREE.MeshBasicMaterial({
                     map: texture,
                     transparent: true,
                     side: THREE.DoubleSide
                 });
-                _this.materials[space.id].disabled = false;
+                materialDict[space.id].disabled = false;
             });
-            this.spaceCount++;
+            _spaceCount++;
         } else {
-            _this.materials[space.id].disabled = false;
+            materialDict[space.id].disabled = false;
         }
     };
 
@@ -481,8 +483,8 @@ var VRAY = {};
     VRAY.Scene.prototype.removeSpace = function (spaceId) {
         if (_spacesDict[spaceId]) {
             delete _spacesDict[spaceId];
-            this.materials[spaceId].disabled = true;
-            this.spaceCount--;
+            materialDict[spaceId].disabled = true;
+            _spaceCount--;
         }
     };
 
@@ -491,7 +493,7 @@ var VRAY = {};
      * @param onlyGather 是否仅收集热点
      */
     VRAY.Scene.prototype.initHotSpots = function (onlyGather) {
-        var targetSpace = _spacesDict[this.spaceId];
+        var targetSpace = _spacesDict[_spaceId];
         spaceHots = [];
         targetSpace.hots || (targetSpace.hots = {});
         Object.keys(targetSpace.hots).forEach(function (k) {
@@ -535,7 +537,7 @@ var VRAY = {};
      * @param title
      */
     VRAY.Scene.prototype.addHot = function (to, pos, title) {
-        if (to == this.spaceId) {
+        if (to == _spaceId) {
             console.error('不可与当前场景相同');
             return false;
         }
@@ -545,7 +547,7 @@ var VRAY = {};
         var addSuccess = function (hotId) {
             spheres[1].add(newHotSpot);
             // 本地记录热点数据
-            _spacesDict[_this.spaceId].hots[hotId] = hotInfo;
+            _spacesDict[_spaceId].hots[hotId] = hotInfo;
             newHotSpot.title = hotInfo.title;
             console.log('"vx":' + hotInfo.vx + ',"vy":' + hotInfo.vy + ',"vz":' + hotInfo.vz + ',');
             // 重新收集当前空间的热点
@@ -558,8 +560,8 @@ var VRAY = {};
 
         if (pos) {
             // 根据鼠标位置创建射线
-            pos.x = (pos.x / _stageWidth) * 2 - 1;
-            pos.y = -(pos.y / _stageHeight) * 2 + 1;
+            pos.x = (pos.x / STAGE_WIDTH) * 2 - 1;
+            pos.y = -(pos.y / STAGE_HEIGHT) * 2 + 1;
             newRay = new THREE.Raycaster();
             newRay.setFromCamera(pos, camera);
 
@@ -632,10 +634,10 @@ var VRAY = {};
      * @param stageHeight
      */
     VRAY.Scene.prototype.resize = function (stageWidth, stageHeight) {
-        _stageWidth = stageWidth;
-        _stageHeight = stageHeight;
-        renderer.setSize(_stageWidth, _stageHeight);
-        camera.aspect = _stageWidth / _stageHeight;
+        STAGE_WIDTH = stageWidth;
+        STAGE_HEIGHT = stageHeight;
+        renderer.setSize(STAGE_WIDTH, STAGE_HEIGHT);
+        camera.aspect = STAGE_WIDTH / STAGE_HEIGHT;
         camera.updateProjectionMatrix();
         renderer.render(scene, camera);
     };
@@ -693,8 +695,8 @@ var VRAY = {};
                 }
             }
 
-            mousePos.x = ($e.pageX / _stageWidth) * 2 - 1;
-            mousePos.y = -($e.pageY / _stageHeight) * 2 + 1;
+            mousePos.x = ($e.pageX / STAGE_WIDTH) * 2 - 1;
+            mousePos.y = -($e.pageY / STAGE_HEIGHT) * 2 + 1;
         }
     };
 
@@ -715,13 +717,13 @@ var VRAY = {};
                         // $editHotDialog.find('input').val(targetHot.title);
                         // if (e.changedTouches && e.changedTouches.length > 0) {
                         //     $editHotDialog.css({
-                        //         left: e.changedTouches[0].clientX - $editHotDialog._stageWidth() / 2,
-                        //         top: e.changedTouches[0].clientY - $editHotDialog._stageHeight() / 2
+                        //         left: e.changedTouches[0].clientX - $editHotDialog.STAGE_WIDTH() / 2,
+                        //         top: e.changedTouches[0].clientY - $editHotDialog.STAGE_HEIGHT() / 2
                         //     })
                         // } else {
                         //     $editHotDialog.css({
-                        //         left: e.clientX - $editHotDialog._stageWidth() / 2,
-                        //         top: e.clientY - $editHotDialog._stageHeight() / 2
+                        //         left: e.clientX - $editHotDialog.STAGE_WIDTH() / 2,
+                        //         top: e.clientY - $editHotDialog.STAGE_HEIGHT() / 2
                         //     })
                         // }
                         // $editHotDialog.show();
@@ -815,8 +817,8 @@ var VRAY = {};
             if (spaceHots.length > 0) {
                 var e = $e.originalEvent;
                 if (e.changedTouches && e.changedTouches.length > 0) {
-                    mousePos.x = (e.changedTouches[0].clientX / _stageWidth) * 2 - 1;
-                    mousePos.y = -(e.changedTouches[0].clientY / _stageHeight) * 2 + 1;
+                    mousePos.x = (e.changedTouches[0].clientX / STAGE_WIDTH) * 2 - 1;
+                    mousePos.y = -(e.changedTouches[0].clientY / STAGE_HEIGHT) * 2 + 1;
                     raycaster.setFromCamera(mousePos, camera);
                     intersects = raycaster.intersectObjects(spaceHots);
                     if (intersects.length > 0) {// 触击热点
@@ -834,6 +836,20 @@ var VRAY = {};
 
     // TODO 使用准星进行热点跳转功能
 
+    // 定义spaceId属性（只读）
+    Object.defineProperty(VRAY.Scene.prototype, "spaceId", {
+        get: function () {
+            return _spaceId;
+        }
+    });
+
+    // 定义spaceCount属性（只读）
+    Object.defineProperty(VRAY.Scene.prototype, "spaceCount", {
+        get: function () {
+            return _spaceCount;
+        }
+    });
+
     // 定义spacesDict属性（只读）
     Object.defineProperty(VRAY.Scene.prototype, "spacesDict", {
         get: function () {
@@ -847,10 +863,10 @@ var VRAY = {};
             _stereoMode = !!val;
             if (_stereoMode) {
                 raycaster.set(sceneCenter, camera.getWorldDirection());
-                stereoRenderer.setSize(_stageWidth, _stageHeight);
+                stereoRenderer.setSize(STAGE_WIDTH, STAGE_HEIGHT);
             } else {
                 raycaster.setFromCamera(mousePos, camera);
-                renderer.setSize(_stageWidth, _stageHeight);
+                renderer.setSize(STAGE_WIDTH, STAGE_HEIGHT);
             }
         },
         get: function () {

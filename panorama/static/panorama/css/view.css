@@ -61,7 +61,7 @@ button {
 }
 
 #nav {
-    max-width: 900px; /* TODO 待测试 */
+    max-width: 900px;
     left: 50%;
     -webkit-transform: translateX(-50%);
     -ms-transform: translateX(-50%);

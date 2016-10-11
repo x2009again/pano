@@ -510,7 +510,6 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
                     }
                 } else {
                     alert(ret.err_msg);
-                    // TODO return false;
                 }
             });
         });

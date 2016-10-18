@@ -4,11 +4,6 @@
 <head>
     <meta charset=utf-8>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <!-- uc强制竖屏 -->
-    <meta name="screen-orientation" content="landscape">
-    <!-- QQ强制竖屏 -->
-    <meta name="x5-orientation" content="landscape">
-
     <title>全景漫屏</title>
     <link rel="stylesheet" type="text/css" href="{% static 'panorama/css/common.css' %}"/>
     <link rel="stylesheet" type="text/css" href="{% static 'panorama/css/view.css' %}"/>
@@ -29,7 +24,6 @@
         <div></div>
     </div>
 </div>
-{#<input type="text" value="" disabled="disabled" id="display">#}
 <div id="main">
     <img src="{% static 'panorama/img/play.png' %}" id="play-btn">
     <div class="dialog seller-info">
@@ -125,7 +119,6 @@
 <script src="{% static 'panorama/lib/tweenjs/Tween.js' %}"></script>
 <script src="{% static 'panorama/lib/bezierEasing.js' %}"></script>
 <script src="{% static 'panorama/js/utils.js' %}"></script>
-<!-- 横向滚动 -->
 <script src="{% static 'panorama/lib/jquery.mousewheel.min.js' %}"></script>
 <script src="{% static 'panorama/js/vray.scene.js' %}"></script>
 <script src="{% static 'panorama/js/view.js' %}"></script>

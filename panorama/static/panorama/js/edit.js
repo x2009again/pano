@@ -587,6 +587,9 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
             $pickHot.addClass('active');
         });
 
+        $('.range').change(function () {
+            console.log($(this).val());
+        });
     }
 
     window.getResultStr = function (result) {

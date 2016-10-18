@@ -37,8 +37,13 @@
     
 |事件名 | 概述 |
 |------|------- |
-|play | 播放场景 |
-|showSpace | 切换场景 |
+|onOverHot | 选择器在热点上移动时 |
+|onLeaveHot | 选择器离开热点时 |
+|onAddingHot | 添加热点时点击container的回调 |
+|onLoad | 首屏加载完毕 |
+|onShowing | 下一个场景载入中 |
+|onShown | 场景切换完毕 |
+|onHotAdd | 热点添加前 |
 
 ---
 

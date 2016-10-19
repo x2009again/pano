@@ -58,22 +58,26 @@
 </div>
 
 <div id="transform-panel">
-    <input type="range" min="0.3" max="1" step="0.01" value="1" title="透明度" id="opacity"/>
-    <input type="range" min="0" max="1.5" step="0.01" value="0" title="x轴" id="x-axis"/>
-    <input type="range" min="0" max="1.5" step="0.01" value="0" title="y轴" id="y-axis"/>
-    <input type="range" min="0" max="1.5" step="0.01" value="0" title="z轴" id="z-axis"/>
-    <input type="range" min="0" max="60" step="1" value="0" title="视线距离" id="distance"/>
+    <button id="reset-transform">重置</button>
+    <input type="range" min="0.3" max="1" step="0.01" data-default="1" value="1" title="透明度" id="opacity"/>
+    <input type="range" min="0" max="1.5" step="0.01" data-default="0" value="0" title="x轴" id="x-axis"/>
+    <input type="range" min="0" max="1.5" step="0.01" data-default="0" value="0" title="y轴" id="y-axis"/>
+    <input type="range" min="0" max="1.5" step="0.01" data-default="0" value="0" title="z轴" id="z-axis"/>
+    <input type="range" min="0" max="45" step="1" data-default="0" value="0" title="视线距离" id="distance"/>
+    <button id="save-transform">保存</button>
 </div>
 
-<div id="more-panel">
-    <svg id="pick-hot"
-         xmlns:svg="http://www.w3.org/2000/svg"
-         xmlns="http://www.w3.org/2000/svg"
-         viewBox="0 0 200 200"
-         version="1.1">
-        <path d="m 62.5,31.433332 c 0,-13.7632 -11.2,-24.9333336 -25,-24.9333336 -13.8,0 -25,11.1701336 -25,24.9333336 0,13.7632 11.2,24.933334 25,24.933334 13.8,0 25,-11.170134 25,-24.933334 z m 43.75,12.466667 c 10.35,0 18.75,-8.3776 18.75,-18.7 0,-10.3224 -8.4,-18.7000006 -18.75,-18.7000006 -10.35,0 -18.75,8.3776006 -18.75,18.7000006 0,10.3224 8.4,18.7 18.75,18.7 z m 62.5,-24.933334 c -10.35,0 -18.75,8.3776 -18.75,18.700001 0,10.3224 8.4,18.7 18.75,18.7 10.35,0 18.75,-8.3776 18.75,-18.7 0,-10.322401 -8.4,-18.700001 -18.75,-18.700001 z M 104.9,56.603533 C 89.85,56.366666 72.725,58.685466 59.0125,70.803066 45.2875,82.920666 47,113.18973 66.4,121.33047 c 19.4125,8.12826 23.6875,22.19066 18.4875,39.69386 -5.2,17.5032 3.675,32.47567 25.8625,32.47567 38.25,0 51.75,-35.74193 51.75,-75.78487 0,-43.546064 -17.1625,-60.500731 -57.6,-61.111597 z"/>
-    </svg>
-</div>
+<ul id="more-panel">
+    <li id="pick-hot">
+        <svg
+                xmlns:svg="http://www.w3.org/2000/svg"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 200 200"
+                version="1.1">
+            <path d="m 62.5,31.433332 c 0,-13.7632 -11.2,-24.9333336 -25,-24.9333336 -13.8,0 -25,11.1701336 -25,24.9333336 0,13.7632 11.2,24.933334 25,24.933334 13.8,0 25,-11.170134 25,-24.933334 z m 43.75,12.466667 c 10.35,0 18.75,-8.3776 18.75,-18.7 0,-10.3224 -8.4,-18.7000006 -18.75,-18.7000006 -10.35,0 -18.75,8.3776006 -18.75,18.7000006 0,10.3224 8.4,18.7 18.75,18.7 z m 62.5,-24.933334 c -10.35,0 -18.75,8.3776 -18.75,18.700001 0,10.3224 8.4,18.7 18.75,18.7 10.35,0 18.75,-8.3776 18.75,-18.7 0,-10.322401 -8.4,-18.700001 -18.75,-18.700001 z M 104.9,56.603533 C 89.85,56.366666 72.725,58.685466 59.0125,70.803066 45.2875,82.920666 47,113.18973 66.4,121.33047 c 19.4125,8.12826 23.6875,22.19066 18.4875,39.69386 -5.2,17.5032 3.675,32.47567 25.8625,32.47567 38.25,0 51.75,-35.74193 51.75,-75.78487 0,-43.546064 -17.1625,-60.500731 -57.6,-61.111597 z"/>
+        </svg>
+    </li>
+</ul>
 
 <svg id="more-btn"
      xmlns:svg="http://www.w3.org/2000/svg"
@@ -199,9 +203,9 @@
 </div>
 
 <script src="//cdn.bootcss.com/jquery/2.2.4/jquery.min.js"></script>
-<script>window.jQuery || document.write('<script src="/lib/jquery_2_2_4.min.js"><\/script>')</script>
+<script>window.jQuery || document.write('<script src="{% static 'panorama/lib/jquery_2_2_4.min.js' %}"><\/script>')</script>
 <script src="//cdn.bootcss.com/jquery-easing/1.3/jquery.easing.min.js"></script>
-<script>$.easing.easeInOutQuad || document.write('<script src="/lib/jquery.easing_1_3.min.js"><\/script>')</script>
+<script>$.easing.easeInOutQuad || document.write('<script src="{% static 'panorama/lib/jquery.easing_1_3.min.js' %}"><\/script>')</script>
 <script src="{% static 'panorama/lib/jquery-ui.min.js' %}"></script>
 <script src="{% static 'panorama/lib/three.js/stats.min.js' %}"></script>
 <script src="{% static 'panorama/lib/three.js/three.js' %}"></script>

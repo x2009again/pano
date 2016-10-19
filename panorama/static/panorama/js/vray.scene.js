@@ -44,7 +44,8 @@ var VRAY = {};
         _spaceId = {},
         _spaceCount = {},
         _lockScene = true,  // 锁定场景
-        _addingHot = false;  // 正在添加热点
+        _addingHot = false,  // 正在添加热点
+        _editingHot = true;  // 正在创建转场效果
 
     var callbacks = {
         /**
@@ -87,6 +88,22 @@ var VRAY = {};
          * @param fail
          */
         onHotAdd: function (hotInfo, success, fail) {
+        },
+        /**
+         * 添加热点转场时的回调
+         * @param hotInfo 需要编辑的热点
+         */
+        onEditingHot: function (hotInfo) {
+
+        },
+        /**
+         *
+         * @param transform 转场动画数据
+         * @param success
+         * @param fail
+         */
+        onEditedHot: function (transform, success, fail) {
+
         }
     };
 
@@ -329,6 +346,9 @@ var VRAY = {};
 
             var $canvas = $(_stage);
             // 鼠标事件
+            $canvas.on('mousedown', function () {
+                clicking = true;
+            });
             $canvas.on('mousemove', mouseMove.bind(_this));
             $canvas.on('click', mouseClick.bind(_this));
             $canvas.on('DOMMouseScroll mousewheel', mouseWheel.bind(_this));
@@ -646,7 +666,9 @@ var VRAY = {};
 
     var mouseMove = function ($e) {
         if (!(_lockScene || transiting || $e.which == 3)) {
-            (parseInt(startPoint1.x) != parseInt($e.pageX) || parseInt(startPoint1.y) != parseInt($e.pageY)) && (orbitControls.autoRotate = false);
+            if (parseInt(startPoint1.x) != parseInt($e.pageX) || parseInt(startPoint1.y) != parseInt($e.pageY)) {
+                orbitControls.autoRotate = clicking = false;
+            }
             if (_addingHot) {  // 开始添加热点
                 raycaster.setFromCamera(mousePos, camera);
                 intersects = raycaster.intersectObjects([spheres[1]]);
@@ -670,8 +692,11 @@ var VRAY = {};
                 // 高亮选中的热点
                 if (intersects.length > 0) {
                     selectedHot = intersects[0].object;
-                    selectedHot.material.color.set(0xffffff);
-
+                    if (_editingHot) {  // 添加转场
+                        selectedHot.material.color.set(0x0077ff);
+                    } else {
+                        selectedHot.material.color.set(0xffffff);
+                    }
                     hotLeaved = false;
                     callbacks.onOverHot(selectedHot, {x: $e.pageX, y: $e.pageY});  // TODO 应该使用相对于容器的位置
                 } else if (!hotLeaved) {
@@ -693,8 +718,12 @@ var VRAY = {};
                 callbacks.onAddingHot({x: $e.pageX, y: $e.pageY});
             } else {
                 if (intersects.length > 0) {  // 单击热点
-                    if ($e.which == 1) {  // 热点上左击
-                        this.showSpace(selectedHot);
+                    if ($e.which == 1 && clicking) {  // 热点上左击
+                        if (_editingHot) {
+                            callbacks.onEditingHot(_spacesDict[_spaceId].hots[selectedHot.hotId]);
+                        } else {
+                            this.showSpace(selectedHot);
+                        }
                     }
                 } else if (spaceHots.length > 0) {  // 点击空白处
                     // hoverPoint = raycaster.intersectObjects([spheres[1]]);
@@ -818,13 +847,26 @@ var VRAY = {};
     };
 
     // 小球沿着视线前进
-    VRAY.Scene.prototype.forward = function () {
-        spheres[1].translateOnAxis(camera.getWorldDirection(), 1);
+    VRAY.Scene.prototype.getTransformation = function () {
+        return {
+            'rotation': spheres[1].rotation,
+            'position': spheres[1].position
+        }
     };
 
-    // 小球沿着视线后退
-    VRAY.Scene.prototype.backward = function () {
-        spheres[1].translateOnAxis(camera.getWorldDirection(), -1);
+    // 小球沿着视线前进
+    VRAY.Scene.prototype.resetTransform = function () {
+        spheres[1].material.opacity = 1;
+        spheres[1].position.set(0, 0, 0);
+        spheres[1].rotation.set(0, 0, 0);
+    };
+
+    var moved = 0;
+    // 小球沿着视线前进
+    VRAY.Scene.prototype.forward = function (step) {
+        moved += step;
+        spheres[1].position.set(0, 0, 0);
+        spheres[1].translateOnAxis(camera.getWorldDirection(), moved);
     };
 
     // 定义xAngle属性（只写）
@@ -927,6 +969,16 @@ var VRAY = {};
         },
         get: function () {
             return _addingHot;
+        }
+    });
+
+    // 定义editingHot属性
+    Object.defineProperty(VRAY.Scene.prototype, "editingHot", {
+        set: function (val) {
+            _editingHot = !!val;
+        },
+        get: function () {
+            return _editingHot;
         }
     });
 

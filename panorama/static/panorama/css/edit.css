@@ -703,7 +703,7 @@ svg:hover {
     transition: transform 0.5s ease-in-out;
 }
 
-#more-panel svg.active {
+#more-panel li.active svg{
     transform: scale(1.5, 1.5);
     fill: #0071f3;
 }

@@ -72,13 +72,13 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
     var logoUrl = '';
     if (seller.logo) {
         logoUrl = seller.logo;
-        document.getElementById('seller-logo').src = seller.logo;
+        $sellerLogo.attr('src', logoUrl);
     } else {
         logoUrl = '/media/seller-logo/logo.png';
-        document.getElementById('dialog-img-ele').style.display = 'none';
+        $('#dialog-img-ele').hide();
     }
-    document.getElementById('seller-name').value = seller.name || '';
-    document.getElementById('seller-desc').value = seller.desc || '';
+    $('#seller-name').val(seller.name || '');
+    $('#seller-desc').val(seller.desc || '');
 
     var container = document.getElementById('main');
     var entry = sceneInfo.entry;
@@ -99,7 +99,8 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
             onAddingHot: onAddingHot,
             onHotAdd: onHotAdd,
             onOverHot: onOverHot,
-            onLeaveHot: onLeaveHot
+            onLeaveHot: onLeaveHot,
+            onEditingHot: onEditingHot
         }
     };
     var vrayScene = new VRAY.Scene(options);
@@ -150,8 +151,9 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
 
     // 鼠标在热点上时
     function onOverHot(selectedHot, mousePos) {
-        if (selectedHot.title && mousePos) {
-            $hotTitle.html(selectedHot.title).css({
+        var hotTitle = vrayScene.editingHot ? '点击添加转场动画' : (selectedHot.title || '');
+        if (hotTitle && mousePos) {
+            $hotTitle.html(hotTitle).css({
                 left: mousePos.x - $hotTitle.width() - 20,
                 top: mousePos.y - 25 / 2
             }).show();
@@ -197,6 +199,10 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
                 fail('某个错');
             }
         });
+    }
+
+    function onEditingHot(hotInfo) {
+        console.log(hotInfo);
     }
 
     var rClickedPos = null;  // 右键点击的位置
@@ -588,6 +594,7 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
         });
 
         var lastDistance = 0;
+        var moved = 0;
         $('#transform-panel').find('input').on('input', function () {
             switch (true) {
                 case this.id == 'x-axis':
@@ -604,10 +611,27 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
                     break;
                 case this.id == 'distance':
                     var distance = parseInt(this.value);
-                    distance > lastDistance ? vrayScene.forward() : vrayScene.backward();
+                    vrayScene.forward(distance - lastDistance);
                     lastDistance = distance;
                     break;
             }
+        });
+        $('#reset-transform').click(function () {
+            $('#transform-panel').find('input').each(function () {
+                $(this).val($(this).data('default'));
+                vrayScene.resetTransform();
+            })
+        });
+        $('#save-transform').click(function () {
+            var transformation = vrayScene.getTransformation();
+            console.log({
+                rx: transformation.rotation.x.toFixed(4),
+                ry: transformation.rotation.y.toFixed(4),
+                rz: transformation.rotation.z.toFixed(4),
+                px: transformation.position.x.toFixed(4),
+                py: transformation.position.y.toFixed(4),
+                pz: transformation.position.z.toFixed(4)
+            });
         });
     }
 

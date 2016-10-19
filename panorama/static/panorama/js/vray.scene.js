@@ -678,6 +678,8 @@ var VRAY = {};
                     hotLeaved = true;  // onLeaveHot只执行一次
                     callbacks.onLeaveHot();
                 }
+            } else {
+                intersects = [];
             }
 
             mousePos.x = ($e.pageX / STAGE_WIDTH) * 2 - 1;
@@ -950,6 +952,5 @@ var VRAY = {};
             renderer.render(scene, camera);
         }
     };
-
 
 })(window, document, jQuery);

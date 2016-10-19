@@ -587,8 +587,27 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
             $pickHot.addClass('active');
         });
 
-        $('.range').change(function () {
-            console.log($(this).val());
+        var lastDistance = 0;
+        $('#transform-panel').find('input').on('input', function () {
+            switch (true) {
+                case this.id == 'x-axis':
+                    vrayScene.xAngle = this.value;
+                    break;
+                case this.id == 'y-axis':
+                    vrayScene.yAngle = this.value;
+                    break;
+                case this.id == 'z-axis':
+                    vrayScene.zAngle = this.value;
+                    break;
+                case this.id == 'opacity':
+                    vrayScene.opacity = this.value;
+                    break;
+                case this.id == 'distance':
+                    var distance = parseInt(this.value);
+                    distance > lastDistance ? vrayScene.forward() : vrayScene.backward();
+                    lastDistance = distance;
+                    break;
+            }
         });
     }
 

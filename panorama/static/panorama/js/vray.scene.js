@@ -5,6 +5,7 @@
 /** @namespace e.touches */
 /** @namespace e.changedTouches */
 /** @namespace space.cache_url */
+// TODO 移除所有jquery依赖
 var VRAY = {};
 (function (window, document, $, undefined) {
     "use strict";
@@ -95,7 +96,6 @@ var VRAY = {};
         // 默认设置
         var defaults = {
             container: document.body,
-            devMode: false,
             smoothStart: false,
             autoPlay: false,
             autoRotate: true,
@@ -144,18 +144,6 @@ var VRAY = {};
         _lockScene = true;  // 锁定场景（无法切换、拖动空间，添加、修改热点）
 
         var _this = this;
-
-        // 热点添加指示
-        hotSpot = new THREE.Mesh(new THREE.PlaneGeometry(3, 3), new THREE.MeshBasicMaterial({
-            map: textureLoader.load(_this.options.hotImg),
-            transparent: true,
-            side: THREE.DoubleSide,
-            color: 0x000000,
-            opacity: 0.3
-        }));
-        hotSpot.position.set(-30, 0, 0);
-        hotSpot.lookAt(camera.position);
-        hotSpot.visible = false;
 
         // 拉取静态资源
         var loadedSize = 0;
@@ -228,14 +216,22 @@ var VRAY = {};
             tempMesh.needsUpdate = true;
             spheres.push(tempMesh);
             scene.add(tempMesh);
-            scene.add(hotSpot);
-            renderer.render(scene, camera);
-            // TODO 移除所有jquery依赖
-            $(_stage).fadeIn(1500);
 
-            if (_this.options.devMode) {
-                spheres[0].material = spheres[1].material;
-            }
+            // 热点添加指示
+            hotSpot = new THREE.Mesh(new THREE.PlaneGeometry(3, 3), new THREE.MeshBasicMaterial({
+                map: textureLoader.load(_this.options.hotImg),
+                transparent: true,
+                side: THREE.DoubleSide,
+                color: 0x000000,
+                opacity: 0.3
+            }));
+            hotSpot.position.set(-30, 0, 0);
+            hotSpot.lookAt(camera.position);
+            hotSpot.visible = false;
+            scene.add(hotSpot);
+
+            spheres[0].material = spheres[1].material;
+
             logoMaterial = new THREE.MeshBasicMaterial({
                 map: textureLoader.load(_this.options.logoUrl),
                 transparent: true,
@@ -247,8 +243,10 @@ var VRAY = {};
             logoMesh.lookAt(sceneCenter);
             spheres[1].add(logoMesh);
 
-            _this.initHotSpots();
+            initHotSpots();
             spheres[0].material = spheres[1].material;
+            renderer.render(scene, camera);
+            $(_stage).fadeIn(3000);
 
             _this.options.smoothStart ? smoothStart() : start();
             _this.options.autoPlay && _this.play();
@@ -376,6 +374,9 @@ var VRAY = {};
             console.log('no space ' + targetSpaceId);
             return false;
         }
+        // 重置小球位置
+        spheres[1].rotation.set(0, 0, 0);
+        spheres[1].position.set(0, 0, 0);
         transiting = true;
         callbacks.onLeaveHot();
         var lastSpaceId = _spaceId;
@@ -391,9 +392,7 @@ var VRAY = {};
         }
         console.log('from：' + lastSpaceId + ' → to：' + targetSpaceId);
 
-        if (this.options.devMode) {
-            spheres[0].material = spheres[1].material;
-        }
+        spheres[0].material = spheres[1].material;
         callbacks.onShown(targetSpaceId);
         materialDict[targetSpaceId].opacity = 0;
         spheres[1].material = materialDict[targetSpaceId];  //修改小球材质
@@ -437,11 +436,8 @@ var VRAY = {};
                 }).onComplete(function () {
                     spheres[0].position.set(0, 0, 0);
                     spheres[0].rotation.set(0, 0, 0);
-                    if (!_this.options.devMode) {
-                        spheres[0].material = spheres[1].material;//大球复制小球材质
-                    }
                     logoMesh.visible = true;
-                    _this.initHotSpots();
+                    initHotSpots();
                     transiting = false;
                 });
             tween0.start();
@@ -456,11 +452,8 @@ var VRAY = {};
                 }).onComplete(function () {
                 spheres[0].position.set(0, 0, 0);
                 spheres[1].position.set(0, 0, 0);
-                if (!_this.options.devMode) {
-                    spheres[0].material = spheres[1].material;  //大球复制小球材质
-                }
                 logoMesh.visible = true;
-                _this.initHotSpots();
+                initHotSpots();
                 transiting = false;
             }).start();
         }
@@ -500,48 +493,6 @@ var VRAY = {};
     };
 
     /**
-     * 初始化/收集热点
-     * @param onlyGather 是否仅收集热点
-     */
-    VRAY.Scene.prototype.initHotSpots = function (onlyGather) {
-        var targetSpace = _spacesDict[_spaceId];
-        spaceHots = [];
-        targetSpace.hots || (targetSpace.hots = {});
-        Object.keys(targetSpace.hots).forEach(function (k) {
-            var hot = targetSpace.hots[k];
-            if (onlyGather) {  // 仅收集当前空间中的热点用于拾取
-                spaceHots.push(hot.mesh);
-            } else {  // 初始化当前空间的热点
-                var hotRay = hot.ray;
-                if (!hotRay) {
-                    hotRay = new THREE.Raycaster();
-                    hotRay.set(sceneCenter, new THREE.Vector3(hot.vx, hot.vy, hot.vz));
-                    hot.ray = hotRay;
-                }
-                var tempIntersects = hotRay.intersectObjects([spheres[1]]);
-                if (tempIntersects.length > 0) {
-                    var tempHotSpot = hotSpot.clone();
-                    tempHotSpot.visible = true;
-                    tempHotSpot.material = hotSpot.material.clone();
-                    hotPos = tempIntersects[0].point.clone();
-                    hotPos.setLength(HOT_DISTANCE);
-                    tempHotSpot.position.set(
-                        -hotPos.x,
-                        hotPos.y,
-                        hotPos.z
-                    );
-                    tempHotSpot.hotId = k;
-                    tempHotSpot.title = hot.title;
-                    tempHotSpot.lookAt(camera.position);
-                    spheres[1].add(tempHotSpot);
-                    hot.mesh = tempHotSpot;
-                    spaceHots.push(hot.mesh);
-                }
-            }
-        });
-    };
-
-    /**
      * 添加热点
      * @param to
      * @param pos 鼠标 “相对容器” 的位置格式：{x: 1, y: 1}
@@ -552,8 +503,6 @@ var VRAY = {};
             console.error('不可与当前场景相同');
             return false;
         }
-        var _this = this;
-
         var newRay, newHotPos, newHotSpot, hotInfo;
         var addSuccess = function (hotId) {
             spheres[1].add(newHotSpot);
@@ -562,7 +511,7 @@ var VRAY = {};
             newHotSpot.title = hotInfo.title;
             console.log('"vx":' + hotInfo.vx + ',"vy":' + hotInfo.vy + ',"vz":' + hotInfo.vz + ',');
             // 重新收集当前空间的热点
-            _this.initHotSpots(true);
+            initHotSpots(true);
         };
 
         var addFail = function (err) {
@@ -651,6 +600,48 @@ var VRAY = {};
         camera.aspect = STAGE_WIDTH / STAGE_HEIGHT;
         camera.updateProjectionMatrix();
         renderer.render(scene, camera);
+    };
+
+    /**
+     * 初始化/收集热点
+     * @param onlyGather 是否仅收集热点
+     */
+    var initHotSpots = function (onlyGather) {
+        var targetSpace = _spacesDict[_spaceId];
+        spaceHots = [];
+        targetSpace.hots || (targetSpace.hots = {});
+        Object.keys(targetSpace.hots).forEach(function (k) {
+            var hot = targetSpace.hots[k];
+            if (onlyGather) {  // 仅收集当前空间中的热点用于拾取
+                spaceHots.push(hot.mesh);
+            } else {  // 初始化当前空间的热点
+                var hotRay = hot.ray;
+                if (!hotRay) {
+                    hotRay = new THREE.Raycaster();
+                    hotRay.set(sceneCenter, new THREE.Vector3(hot.vx, hot.vy, hot.vz));
+                    hot.ray = hotRay;
+                }
+                var tempIntersects = hotRay.intersectObjects([spheres[1]]);
+                if (tempIntersects.length > 0) {
+                    var tempHotSpot = hotSpot.clone();
+                    tempHotSpot.visible = true;
+                    tempHotSpot.material = hotSpot.material.clone();
+                    hotPos = tempIntersects[0].point.clone();
+                    hotPos.setLength(HOT_DISTANCE);
+                    tempHotSpot.position.set(
+                        -hotPos.x,
+                        hotPos.y,
+                        hotPos.z
+                    );
+                    tempHotSpot.hotId = k;
+                    tempHotSpot.title = hot.title;
+                    tempHotSpot.lookAt(camera.position);
+                    spheres[1].add(tempHotSpot);
+                    hot.mesh = tempHotSpot;
+                    spaceHots.push(hot.mesh);
+                }
+            }
+        });
     };
 
     var mouseMove = function ($e) {
@@ -823,6 +814,45 @@ var VRAY = {};
             }
         }
     };
+
+    // 小球沿着视线前进
+    VRAY.Scene.prototype.forward = function () {
+        spheres[1].translateOnAxis(camera.getWorldDirection(), 1);
+    };
+
+    // 小球沿着视线后退
+    VRAY.Scene.prototype.backward = function () {
+        spheres[1].translateOnAxis(camera.getWorldDirection(), -1);
+    };
+
+    // 定义xAngle属性（只写）
+    Object.defineProperty(VRAY.Scene.prototype, "xAngle", {
+        set: function (xAngle) {
+            // spheres[1].rotateOnAxis(camera.getWorldDirection(), Math.min(1.5, Math.max(0, xAngle)));
+            spheres[1].rotation.x = Math.min(1.5, Math.max(0, xAngle));
+        }
+    });
+
+    // 定义yAngle属性（只写）
+    Object.defineProperty(VRAY.Scene.prototype, "yAngle", {
+        set: function (yAngle) {
+            spheres[1].rotation.y = Math.min(1.5, Math.max(0, yAngle));
+        }
+    });
+
+    // 定义zAngle属性（只写）
+    Object.defineProperty(VRAY.Scene.prototype, "zAngle", {
+        set: function (zAngle) {
+            spheres[1].rotation.z = Math.min(1.5, Math.max(0, zAngle));
+        }
+    });
+
+    // 定义opacity属性（只写）
+    Object.defineProperty(VRAY.Scene.prototype, "opacity", {
+        set: function (opacity) {
+            spheres[1].material.opacity = Math.min(1, Math.max(0.3, opacity));
+        }
+    });
 
     // 定义stage属性（只读）
     Object.defineProperty(VRAY.Scene.prototype, "stage", {

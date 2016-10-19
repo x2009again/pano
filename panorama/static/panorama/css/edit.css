@@ -708,14 +708,17 @@ svg:hover {
     fill: #0071f3;
 }
 
-.range {
+#transform-panel {
     position: absolute;
     z-index: 2;
     right: 0;
-    top: 100px;
+    top: 50%;
+    margin-top: -200px;
+    width: 140px;
+    height: 400px;
+}
+
+#transform-panel input {
+    margin-top: 60px;
     outline: none;
-    transform-origin: 50% 100%;
-    -webkit-transform-origin: 50% 100%;
-    transform: rotate(90deg);
-    -webkit-transform: rotate(90deg);
 }

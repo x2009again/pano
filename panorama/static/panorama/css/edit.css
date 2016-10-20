@@ -22,6 +22,10 @@ body {
     user-select: none;
 }
 
+ul, li{
+    list-style: none;
+}
+
 /*定义滚动条高宽及背景 高宽分别对应横竖滚动条的尺寸*/
 ::-webkit-scrollbar {
     width: 8px;
@@ -656,22 +660,19 @@ body {
     background-color: red;
 }
 
-svg {
+svg:hover {
+    opacity: 1 !important;
+}
+
+#more-btn {
+    right: 30px;
+    bottom: 30px;
     width: 30px;
     height: 30px;
     position: absolute;
     z-index: 2;
     cursor: pointer;
     opacity: 0.5;
-}
-
-svg:hover {
-    opacity: 1;
-}
-
-#more-btn {
-    right: 30px;
-    bottom: 30px;
 }
 
 #more-panel {
@@ -682,6 +683,7 @@ svg:hover {
     bottom: 60px;
     width: 50px;
     height: 0;
+    z-index: 2;
     overflow: hidden;
     -moz-transition: height 0.5s ease-in-out;
     -webkit-transition: height 0.5s ease-in-out;
@@ -690,10 +692,14 @@ svg:hover {
 }
 
 #more-panel.show {
-    height: 50px;
+    height: 100px;
 }
 
 #more-panel svg {
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    opacity: 0.5;
     margin-left: 5px;
     margin-top: 5px;
     transform: scale(1);

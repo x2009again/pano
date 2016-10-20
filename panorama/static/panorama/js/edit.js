@@ -56,6 +56,12 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
     var $pickHot = $('#pick-hot');
     var $hotTitle = $('#hot-title');
 
+    var $opacityInput = $('#opacity');
+    var $xAxisInput = $('#x-axis');
+    var $yAxisInput = $('#y-axis');
+    var $zAxisInput = $('#z-axis');
+    var $distanceInput = $('#distance');
+
     var sceneContainer = null;
 
     if (sceneInfo && sceneInfo.title) {
@@ -201,8 +207,13 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
         });
     }
 
-    function onEditingHot(hotInfo) {
-        console.log(hotInfo);
+    function onEditingHot(transformation) {
+        $opacityInput.val(0.5);
+        $xAxisInput.val(transformation.rx);
+        $yAxisInput.val(transformation.ry);
+        $zAxisInput.val(transformation.rz);
+        $distanceInput.val(transformation.distance);
+        console.log(transformation);
     }
 
     var rClickedPos = null;  // 右键点击的位置
@@ -594,7 +605,6 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
         });
 
         var lastDistance = 0;
-        var moved = 0;
         $('#transform-panel').find('input').on('input', function () {
             switch (true) {
                 case this.id == 'x-axis':
@@ -611,11 +621,14 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
                     break;
                 case this.id == 'distance':
                     var distance = parseInt(this.value);
-                    vrayScene.forward(distance - lastDistance);
+                    vrayScene.moveSpace(distance - lastDistance);
                     lastDistance = distance;
                     break;
             }
+        }).dblclick(function () {
+            $(this).attr('step', window.prompt('请输入步长'));
         });
+
         $('#reset-transform').click(function () {
             $('#transform-panel').find('input').each(function () {
                 $(this).val($(this).data('default'));
@@ -624,14 +637,7 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
         });
         $('#save-transform').click(function () {
             var transformation = vrayScene.getTransformation();
-            console.log({
-                rx: transformation.rotation.x.toFixed(4),
-                ry: transformation.rotation.y.toFixed(4),
-                rz: transformation.rotation.z.toFixed(4),
-                px: transformation.position.x.toFixed(4),
-                py: transformation.position.y.toFixed(4),
-                pz: transformation.position.z.toFixed(4)
-            });
+            console.log(transformation);
         });
     }
 

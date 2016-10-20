@@ -25,6 +25,7 @@ var VRAY = {};
 
     var intersects = [];  // 鼠标与热点的交点
     var selectedHot = null;  // 鼠标按下的热点
+    var hot2beEdit = null;
 
     var hotLeaved = true;
 
@@ -45,7 +46,7 @@ var VRAY = {};
         _spaceCount = {},
         _lockScene = true,  // 锁定场景
         _addingHot = false,  // 正在添加热点
-        _editingHot = true;  // 正在创建转场效果
+        _editingHot = false;  // 正在创建转场效果
 
     var callbacks = {
         /**
@@ -91,9 +92,9 @@ var VRAY = {};
         },
         /**
          * 添加热点转场时的回调
-         * @param hotInfo 需要编辑的热点
+         * @param hotId 需要编辑的热点
          */
-        onEditingHot: function (hotInfo) {
+        onEditingHot: function (hotId) {
 
         },
         /**
@@ -712,6 +713,7 @@ var VRAY = {};
         }
     };
 
+    var moveDirection;
     var mouseClick = function ($e) {
         if (!_lockScene) {
             if (_addingHot) {  // 添加脚印
@@ -720,7 +722,9 @@ var VRAY = {};
                 if (intersects.length > 0) {  // 单击热点
                     if ($e.which == 1 && clicking) {  // 热点上左击
                         if (_editingHot) {
-                            callbacks.onEditingHot(_spacesDict[_spaceId].hots[selectedHot.hotId]);
+                            hot2beEdit = selectedHot;
+                            var transformation = this.resetTransform();
+                            callbacks.onEditingHot(transformation);
                         } else {
                             this.showSpace(selectedHot);
                         }
@@ -847,47 +851,79 @@ var VRAY = {};
     };
 
     // 小球沿着视线前进
-    VRAY.Scene.prototype.getTransformation = function () {
-        return {
-            'rotation': spheres[1].rotation,
-            'position': spheres[1].position
+    VRAY.Scene.prototype.getTransformation = function (hotId) {
+        if (hotId) {
+            var hot = _spacesDict[_spaceId].hots[selectedHot.hotId];
+            var px = hot.px || 0, py = hot.py || 0, pz = hot.pz || 0;
+            return {
+                rx: hot.rx || 0,
+                ry: hot.ry || 0,
+                rz: hot.rz || 0,
+                px: px,
+                py: py,
+                pz: pz,
+                distance: -new THREE.Vector3(px, py, pz).length()
+            };
+        } else {
+            var rotation = spheres[1].rotation;
+            var position = spheres[1].position;
+            return {
+                rx: rotation.x.toFixed(4),
+                ry: rotation.y.toFixed(4),
+                rz: rotation.z.toFixed(4),
+                px: position.x.toFixed(4),
+                py: position.y.toFixed(4),
+                pz: position.z.toFixed(4),
+                distance: -position.length()
+            };
         }
     };
 
-    // 小球沿着视线前进
+    /**
+     * 重置转场动画
+     * @returns {{rx, ry, rz, px, py, pz, distance}}
+     */
     VRAY.Scene.prototype.resetTransform = function () {
-        spheres[1].material.opacity = 1;
-        spheres[1].position.set(0, 0, 0);
-        spheres[1].rotation.set(0, 0, 0);
+        spheres[0].material = materialDict[_spaceId];
+        console.log(_spacesDict[_spaceId].hots[hot2beEdit.hotId]);
+        spheres[1].material = materialDict[_spacesDict[_spaceId].hots[hot2beEdit.hotId].to];
+        spheres[1].material.opacity = 0.5;
+        var transformation = this.getTransformation(hot2beEdit.hotId);
+        spheres[0].position.set(transformation.px, transformation.py, transformation.pz);
+        spheres[0].rotation.set(transformation.rx, transformation.ry, transformation.rz);
+        moveDirection = new THREE.Vector3(-hot2beEdit.position.x, -hot2beEdit.position.y, -hot2beEdit.position.z).normalize();
+        console.log(spheres[0].rotation);
+        console.log(spheres[0].position);
+        return transformation;
     };
 
     var moved = 0;
-    // 小球沿着视线前进
-    VRAY.Scene.prototype.forward = function (step) {
+    // 小球沿着热点前进/后退
+    VRAY.Scene.prototype.moveSpace = function (step) {
         moved += step;
-        spheres[1].position.set(0, 0, 0);
-        spheres[1].translateOnAxis(camera.getWorldDirection(), moved);
+        spheres[0].position.set(0, 0, 0);
+        console.log(moved);
+        spheres[0].translateOnAxis(moveDirection, moved);
     };
 
     // 定义xAngle属性（只写）
     Object.defineProperty(VRAY.Scene.prototype, "xAngle", {
         set: function (xAngle) {
-            // spheres[1].rotateOnAxis(camera.getWorldDirection(), Math.min(1.5, Math.max(0, xAngle)));
-            spheres[1].rotation.x = Math.min(1.5, Math.max(0, xAngle));
+            spheres[0].rotation.x = Math.min(1.5, Math.max(-1.5, xAngle));
         }
     });
 
     // 定义yAngle属性（只写）
     Object.defineProperty(VRAY.Scene.prototype, "yAngle", {
         set: function (yAngle) {
-            spheres[1].rotation.y = Math.min(1.5, Math.max(0, yAngle));
+            spheres[0].rotation.y = Math.min(1.5, Math.max(-1.5, yAngle));
         }
     });
 
     // 定义zAngle属性（只写）
     Object.defineProperty(VRAY.Scene.prototype, "zAngle", {
         set: function (zAngle) {
-            spheres[1].rotation.z = Math.min(1.5, Math.max(0, zAngle));
+            spheres[0].rotation.z = Math.min(1.5, Math.max(-1.5, zAngle));
         }
     });
 

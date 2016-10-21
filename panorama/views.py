@@ -41,20 +41,20 @@ def init_scene(request):
         spaces_of_scene = SceneSpace.objects.filter(scene=scene).order_by('ordinal')
         for ss in spaces_of_scene:
             space = ss.space
-            hots = []
+            hot_info_dict = {}
             hot_filter = Hot.objects.filter(scene_space=ss)
             if hot_filter.exists():
                 for h in hot_filter:
                     vector = json.loads(h.vector) if h.vector else {}
                     transition = json.loads(h.transition) if h.transition else {}
-                    hots.append(dict(vector, title=h.title, **transition))
+                    hot_info_dict[h.id] = dict(vector, id=h.id, title=h.title, **transition)
             space_list.append({
                 'id': space.id,
                 'name': ss.space_name if ss.space_name else space.name,
                 'url': STATIC_PREFIX + space.url,
                 'cache_url': space.cache_url and (STATIC_PREFIX + space.cache_url),
                 'thumb_url': space.thumb_url and (STATIC_PREFIX + space.thumb_url),
-                'hots': hots,
+                'hotInfoDict': hot_info_dict,
                 'create_time': timezone.localtime(space.create_time)
             })
     elif space_id:

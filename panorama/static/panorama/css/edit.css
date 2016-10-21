@@ -22,7 +22,7 @@ body {
     user-select: none;
 }
 
-ul, li{
+ul, li {
     list-style: none;
 }
 
@@ -695,13 +695,16 @@ svg:hover {
     height: 100px;
 }
 
+#more-panel li {
+    margin-left: 8px;
+    margin-top: 10px;
+}
+
 #more-panel svg {
     width: 30px;
     height: 30px;
     cursor: pointer;
     opacity: 0.5;
-    margin-left: 5px;
-    margin-top: 5px;
     transform: scale(1);
     -moz-transition: transform 0.5s ease-in-out;
     -webkit-transition: transform 0.5s ease-in-out;
@@ -709,22 +712,33 @@ svg:hover {
     transition: transform 0.5s ease-in-out;
 }
 
-#more-panel li.active svg{
+#more-panel li.active svg {
     transform: scale(1.5, 1.5);
     fill: #0071f3;
 }
 
-#transform-panel {
+#edit-panel {
     position: absolute;
     z-index: 2;
     right: 0;
     top: 50%;
-    margin-top: -200px;
-    width: 140px;
-    height: 400px;
+    width: 180px;
+    text-align: center;
+    transform: translateY(-50%);
 }
 
-#transform-panel input {
-    margin-top: 60px;
+#edit-panel .range i {
+    font-style: normal;
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+    line-height: 15px;
+    vertical-align: middle;
+    text-align: center;
+    cursor: pointer;
+}
+
+#edit-panel input {
+    vertical-align: middle;
     outline: none;
 }

@@ -28,7 +28,7 @@ var VRAY = {};
     var hot2beEdit = null;
 
     var hotLeaved = true;
-
+    var currentSpace = null;
     var _stage = null;
 
     var STAGE_WIDTH = window.innerWidth,
@@ -91,20 +91,18 @@ var VRAY = {};
         onHotAdd: function (hotInfo, success, fail) {
         },
         /**
-         * 添加热点转场时的回调
+         * 编辑热点转场时的回调
          * @param hotId 需要编辑的热点
          */
         onEditingHot: function (hotId) {
-
         },
         /**
-         *
-         * @param transform 转场动画数据
-         * @param success
-         * @param fail
+         * 保存热点数据前
+         * @param hotInfo
+         * @param saveSuccess
+         * @param saveFail
          */
-        onEditedHot: function (transform, success, fail) {
-
+        onHotEdited: function (hotInfo, saveSuccess, saveFail) {
         }
     };
 
@@ -167,7 +165,7 @@ var VRAY = {};
         var loadedSize = 0;
         for (i = 0; i < spaceList.length; i++) {
             var space = spaceList[i];
-            (!space.hots) && (space.hots = {});
+            (!space.hotInfoDict) && (space.hotInfoDict = {});
             (function (space) {
                 // 先加载小图
                 if (space.cache_url) {
@@ -189,6 +187,7 @@ var VRAY = {};
                             _spaceId == space.id && (spheres[0].material = spheres[1].material = materialDict[_spaceId]);
                         });
                         if (space.id == entry) {
+                            currentSpace = space;
                             createScene();
                             callbacks.onLoad();
                         }
@@ -203,6 +202,7 @@ var VRAY = {};
                             side: THREE.DoubleSide
                         });
                         if (space.id == entry) {
+                            currentSpace = space;
                             createScene();
                             callbacks.onLoad();
                         }
@@ -347,8 +347,9 @@ var VRAY = {};
 
             var $canvas = $(_stage);
             // 鼠标事件
-            $canvas.on('mousedown', function () {
+            $canvas.on('mousedown', function ($e) {
                 clicking = true;
+                startPoint1 = {x: $e.pageX, y: $e.pageY};
             });
             $canvas.on('mousemove', mouseMove.bind(_this));
             $canvas.on('click', mouseClick.bind(_this));
@@ -370,7 +371,7 @@ var VRAY = {};
      */
     VRAY.Scene.prototype.showSpace = function (point) {
         if (_lockScene || transiting) return false;
-        var spaceHot = typeof(point.hotId) == "undefined" ? null : _spacesDict[_spaceId].hots[point.hotId];
+        var spaceHot = typeof(point.hotId) == "undefined" ? null : currentSpace.hotInfoDict[point.hotId];
         var targetSpaceId = spaceHot ? spaceHot.to : point.to;
         if (_spaceId == targetSpaceId) {
             return false;
@@ -391,6 +392,7 @@ var VRAY = {};
             })(point);
             return false;
         }
+        currentSpace = _spacesDict[_spaceId];
         if (materialDict[targetSpaceId].disabled) {
             console.log('no space ' + targetSpaceId);
             return false;
@@ -404,11 +406,11 @@ var VRAY = {};
         _spaceId = targetSpaceId;
 
         // 先删除小球上的热点
-        var hots = _spacesDict[lastSpaceId].hots;
-        if (hots) {
-            Object.keys(hots).forEach(function (k) {
-                spheres[1].remove(hots[k].mesh);
-                delete hots[k].mesh;// mesh会每次重新生成
+        var hotInfoDict = _spacesDict[lastSpaceId].hotInfoDict;
+        if (hotInfoDict) {
+            Object.keys(hotInfoDict).forEach(function (k) {
+                spheres[1].remove(hotInfoDict[k].mesh);
+                delete hotInfoDict[k].mesh;// mesh会每次重新生成
             });
         }
         console.log('from：' + lastSpaceId + ' → to：' + targetSpaceId);
@@ -528,7 +530,7 @@ var VRAY = {};
         var addSuccess = function (hotId) {
             spheres[1].add(newHotSpot);
             // 本地记录热点数据
-            _spacesDict[_spaceId].hots[hotId] = hotInfo;
+            currentSpace.hotInfoDict[hotId] = hotInfo;
             newHotSpot.title = hotInfo.title;
             console.log('"vx":' + hotInfo.vx + ',"vy":' + hotInfo.vy + ',"vz":' + hotInfo.vz + ',');
             // 重新收集当前空间的热点
@@ -628,19 +630,18 @@ var VRAY = {};
      * @param onlyGather 是否仅收集热点
      */
     var initHotSpots = function (onlyGather) {
-        var targetSpace = _spacesDict[_spaceId];
         spaceHots = [];
-        targetSpace.hots || (targetSpace.hots = {});
-        Object.keys(targetSpace.hots).forEach(function (k) {
-            var hot = targetSpace.hots[k];
+        currentSpace.hotInfoDict || (currentSpace.hotInfoDict = {});
+        Object.keys(currentSpace.hotInfoDict).forEach(function (k) {
+            var hotInfo = currentSpace.hotInfoDict[k];
             if (onlyGather) {  // 仅收集当前空间中的热点用于拾取
-                spaceHots.push(hot.mesh);
+                spaceHots.push(hotInfo.mesh);
             } else {  // 初始化当前空间的热点
-                var hotRay = hot.ray;
+                var hotRay = hotInfo.ray;
                 if (!hotRay) {
                     hotRay = new THREE.Raycaster();
-                    hotRay.set(sceneCenter, new THREE.Vector3(hot.vx, hot.vy, hot.vz));
-                    hot.ray = hotRay;
+                    hotRay.set(sceneCenter, new THREE.Vector3(hotInfo.vx, hotInfo.vy, hotInfo.vz));
+                    hotInfo.ray = hotRay;
                 }
                 var tempIntersects = hotRay.intersectObjects([spheres[1]]);
                 if (tempIntersects.length > 0) {
@@ -655,11 +656,12 @@ var VRAY = {};
                         hotPos.z
                     );
                     tempHotSpot.hotId = k;
-                    tempHotSpot.title = hot.title;
+                    tempHotSpot.title = hotInfo.title;
                     tempHotSpot.lookAt(camera.position);
                     spheres[1].add(tempHotSpot);
-                    hot.mesh = tempHotSpot;
-                    spaceHots.push(hot.mesh);
+                    // 用于拾取热点
+                    hotInfo.mesh = tempHotSpot;
+                    spaceHots.push(hotInfo.mesh);
                 }
             }
         });
@@ -667,7 +669,8 @@ var VRAY = {};
 
     var mouseMove = function ($e) {
         if (!(_lockScene || transiting || $e.which == 3)) {
-            if (parseInt(startPoint1.x) != parseInt($e.pageX) || parseInt(startPoint1.y) != parseInt($e.pageY)) {
+            // 2px内认为没有拖动
+            if ((Math.abs(parseInt(startPoint1.x) - parseInt($e.pageX)) > 2) || (Math.abs(parseInt(startPoint1.y) - parseInt($e.pageY)) > 2)) {
                 orbitControls.autoRotate = clicking = false;
             }
             if (_addingHot) {  // 开始添加热点
@@ -713,7 +716,7 @@ var VRAY = {};
         }
     };
 
-    var moveDirection;
+    var moveDirection;  // 编辑热点时指定大球移动的方向
     var mouseClick = function ($e) {
         if (!_lockScene) {
             if (_addingHot) {  // 添加脚印
@@ -751,6 +754,7 @@ var VRAY = {};
         }
     };
 
+    // TODO 回弹效果
     var mouseWheel = function ($e) {
         if (!_lockScene) {
             var e = $e.originalEvent;
@@ -784,19 +788,20 @@ var VRAY = {};
         }
     };
 
-    // TODO 回弹效果
     var touchMove = function ($e) {
         if (!_lockScene) {
             var e = $e.originalEvent;
             if (e.touches) {  // 触摸操作
                 var touch0X = e.touches[0].clientX;
                 var touch0Y = e.touches[0].clientY;
-                if (clicking && (parseInt(startPoint1.x) != parseInt(touch0X) || parseInt(startPoint1.y) != parseInt(touch0Y))) {
+                // 2px内认为没有拖动
+                if (clicking && ((Math.abs(parseInt(startPoint1.x) - parseInt(touch0X)) > 2) || (Math.abs(parseInt(startPoint1.y) - parseInt(touch0Y)) > 2))) {
                     // 标为移动操作
                     clicking = false;
                     orbitControls.autoRotate = false;
                 }
                 if (e.touches.length > 1) {  // 如果是双指操作
+                    // TODO 回弹效果
                     var lastDistance = Math.sqrt(Math.pow(startPoint2.x - startPoint1.x, 2) + Math.pow(startPoint2.y - startPoint1.y, 2));
                     var currentDistance = Math.sqrt(Math.pow(e.touches[1].clientX - touch0X, 2) + Math.pow(e.touches[1].clientY - touch0Y, 2));
                     camera.fov = cameraFov + (lastDistance - currentDistance ) / 5;
@@ -850,10 +855,14 @@ var VRAY = {};
         }
     };
 
-    // 小球沿着视线前进
+    /**
+     * 获取热点的转场数据
+     * @param hotId
+     * @returns {*}
+     */
     VRAY.Scene.prototype.getTransformation = function (hotId) {
         if (hotId) {
-            var hot = _spacesDict[_spaceId].hots[selectedHot.hotId];
+            var hot = currentSpace.hotInfoDict[selectedHot.hotId];
             var px = hot.px || 0, py = hot.py || 0, pz = hot.pz || 0;
             return {
                 rx: hot.rx || 0,
@@ -861,39 +870,50 @@ var VRAY = {};
                 rz: hot.rz || 0,
                 px: px,
                 py: py,
-                pz: pz,
-                distance: -new THREE.Vector3(px, py, pz).length()
+                pz: pz
             };
         } else {
-            var rotation = spheres[1].rotation;
-            var position = spheres[1].position;
+            var rotation = spheres[0].rotation;
+            var position = spheres[0].position;
             return {
                 rx: rotation.x.toFixed(4),
                 ry: rotation.y.toFixed(4),
                 rz: rotation.z.toFixed(4),
                 px: position.x.toFixed(4),
                 py: position.y.toFixed(4),
-                pz: position.z.toFixed(4),
-                distance: -position.length()
+                pz: position.z.toFixed(4)
             };
         }
     };
 
+    VRAY.Scene.prototype.saveTransformation = function () {
+        var hotInfo = currentSpace.hotInfoDict[hot2beEdit.hotId];
+        var _this = this;
+        var saveSuccess = function () {
+            Object.assign(hotInfo, _this.getTransformation());
+            console.log(hotInfo);
+        };
+
+        var saveFail = function (err) {
+            console.error('保存失败' + (err && ':' + err));
+        };
+
+        callbacks.onHotEdited(hotInfo, saveSuccess, saveFail);
+    };
+
     /**
      * 重置转场动画
-     * @returns {{rx, ry, rz, px, py, pz, distance}}
+     * @returns {{rx, ry, rz, px, py, pz}}
      */
     VRAY.Scene.prototype.resetTransform = function () {
+        console.log('resetTransform');
         spheres[0].material = materialDict[_spaceId];
-        console.log(_spacesDict[_spaceId].hots[hot2beEdit.hotId]);
-        spheres[1].material = materialDict[_spacesDict[_spaceId].hots[hot2beEdit.hotId].to];
+        spheres[1].material = materialDict[currentSpace.hotInfoDict[hot2beEdit.hotId].to];
         spheres[1].material.opacity = 0.5;
         var transformation = this.getTransformation(hot2beEdit.hotId);
         spheres[0].position.set(transformation.px, transformation.py, transformation.pz);
         spheres[0].rotation.set(transformation.rx, transformation.ry, transformation.rz);
-        moveDirection = new THREE.Vector3(-hot2beEdit.position.x, -hot2beEdit.position.y, -hot2beEdit.position.z).normalize();
-        console.log(spheres[0].rotation);
-        console.log(spheres[0].position);
+        moveDirection = new THREE.Vector3(hot2beEdit.position.x, hot2beEdit.position.y, hot2beEdit.position.z).normalize();
         return transformation;
     };
 
@@ -902,35 +922,46 @@ var VRAY = {};
     VRAY.Scene.prototype.moveSpace = function (step) {
         moved += step;
         spheres[0].position.set(0, 0, 0);
-        console.log(moved);
         spheres[0].translateOnAxis(moveDirection, moved);
     };
 
-    // 定义xAngle属性（只写）
+    // 定义xAngle属性
     Object.defineProperty(VRAY.Scene.prototype, "xAngle", {
         set: function (xAngle) {
             spheres[0].rotation.x = Math.min(1.5, Math.max(-1.5, xAngle));
+        },
+        get: function () {
+            return spheres[0].rotation.x;
         }
     });
 
-    // 定义yAngle属性（只写）
+    // 定义yAngle属性
     Object.defineProperty(VRAY.Scene.prototype, "yAngle", {
         set: function (yAngle) {
             spheres[0].rotation.y = Math.min(1.5, Math.max(-1.5, yAngle));
+        },
+        get: function () {
+            return spheres[0].rotation.y;
         }
     });
 
-    // 定义zAngle属性（只写）
+    // 定义zAngle属性
     Object.defineProperty(VRAY.Scene.prototype, "zAngle", {
         set: function (zAngle) {
             spheres[0].rotation.z = Math.min(1.5, Math.max(-1.5, zAngle));
+        },
+        get: function () {
+            return spheres[0].rotation.z;
         }
     });
 
-    // 定义opacity属性（只写）
+    // 定义opacity属性
     Object.defineProperty(VRAY.Scene.prototype, "opacity", {
         set: function (opacity) {
             spheres[1].material.opacity = Math.min(1, Math.max(0.3, opacity));
+        },
+        get: function () {
+            return spheres[0].material.opacity;
         }
     });
 
@@ -1012,6 +1043,12 @@ var VRAY = {};
     Object.defineProperty(VRAY.Scene.prototype, "editingHot", {
         set: function (val) {
             _editingHot = !!val;
+            if (!_editingHot) {
+                spheres[1].material = materialDict[_spaceId];
+                spheres[1].material.opacity = 1;
+                spheres[0].position.set(0, 0, 0);
+                spheres[0].rotation.set(0, 0, 0);
+            }
         },
         get: function () {
             return _editingHot;

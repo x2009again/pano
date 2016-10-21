@@ -42,7 +42,7 @@ var VRAY = {};
     var _stereoMode = false,
         _walkMode = false,
         _spacesDict = {},
-        _spaceId = {},
+        _currentSpaceId = {},
         _spaceCount = {},
         _lockScene = true,  // 锁定场景
         _addingHot = false,  // 正在添加热点
@@ -125,7 +125,7 @@ var VRAY = {};
         $.extend(callbacks, this.options.callbacks);
         Object.freeze(this.options);  // 冻结初始化参数
         var entry = opt.entry || spaceList[0].id;
-        _spaceId = entry;
+        _currentSpaceId = entry;
         _spaceCount = spaceList.length;
 
         var i;
@@ -184,7 +184,7 @@ var VRAY = {};
                                 transparent: true,
                                 side: THREE.DoubleSide
                             });
-                            _spaceId == space.id && (spheres[0].material = spheres[1].material = materialDict[_spaceId]);
+                            _currentSpaceId == space.id && (spheres[0].material = spheres[1].material = materialDict[_currentSpaceId]);
                         });
                         if (space.id == entry) {
                             currentSpace = space;
@@ -228,7 +228,7 @@ var VRAY = {};
             tempMesh.needsUpdate = true;
             spheres.push(tempMesh);
             scene.add(tempMesh);
-            tempMesh = new THREE.Mesh(new THREE.SphereGeometry(50, 80, 80), materialDict[_spaceId]);
+            tempMesh = new THREE.Mesh(new THREE.SphereGeometry(50, 80, 80), materialDict[_currentSpaceId]);
             tempMesh.scale.x = -1;
             tempMesh.position.set(0, 0, 0);
             tempMesh.needsUpdate = true;
@@ -373,7 +373,7 @@ var VRAY = {};
         if (_lockScene || transiting) return false;
         var spaceHot = typeof(point.hotId) == "undefined" ? null : currentSpace.hotInfoDict[point.hotId];
         var targetSpaceId = spaceHot ? spaceHot.to : point.to;
-        if (_spaceId == targetSpaceId) {
+        if (_currentSpaceId == targetSpaceId) {
             return false;
         }
         var animateTime = 800;
@@ -392,7 +392,6 @@ var VRAY = {};
             })(point);
             return false;
         }
-        currentSpace = _spacesDict[_spaceId];
         if (materialDict[targetSpaceId].disabled) {
             console.log('no space ' + targetSpaceId);
             return false;
@@ -402,11 +401,10 @@ var VRAY = {};
         spheres[1].position.set(0, 0, 0);
         transiting = true;
         callbacks.onLeaveHot();
-        var lastSpaceId = _spaceId;
-        _spaceId = targetSpaceId;
+        var lastSpaceId = _currentSpaceId;
 
         // 先删除小球上的热点
-        var hotInfoDict = _spacesDict[lastSpaceId].hotInfoDict;
+        var hotInfoDict = currentSpace.hotInfoDict;
         if (hotInfoDict) {
             Object.keys(hotInfoDict).forEach(function (k) {
                 spheres[1].remove(hotInfoDict[k].mesh);
@@ -419,6 +417,8 @@ var VRAY = {};
         callbacks.onShown(targetSpaceId);
         materialDict[targetSpaceId].opacity = 0;
         spheres[1].material = materialDict[targetSpaceId];  //修改小球材质
+        _currentSpaceId = targetSpaceId;
+        currentSpace = _spacesDict[targetSpaceId];
 
         if (spaceHot && (spaceHot.px || spaceHot.py || spaceHot.pz || spaceHot.rx || spaceHot.ry || spaceHot.rz)) {
             logoMesh.visible = false;
@@ -522,7 +522,7 @@ var VRAY = {};
      * @param title
      */
     VRAY.Scene.prototype.addHot = function (to, pos, title) {
-        if (to == _spaceId) {
+        if (to == _currentSpaceId) {
             console.error('不可与当前场景相同');
             return false;
         }
@@ -907,7 +907,7 @@ var VRAY = {};
      */
     VRAY.Scene.prototype.resetTransform = function () {
         console.log('resetTransform');
-        spheres[0].material = materialDict[_spaceId];
+        spheres[0].material = materialDict[_currentSpaceId];
         spheres[1].material = materialDict[currentSpace.hotInfoDict[hot2beEdit.hotId].to];
         spheres[1].material.opacity = 0.5;
         var transformation = this.getTransformation(hot2beEdit.hotId);
@@ -974,7 +974,7 @@ var VRAY = {};
     // 定义spaceId属性（只读）
     Object.defineProperty(VRAY.Scene.prototype, "spaceId", {
         get: function () {
-            return _spaceId;
+            return _currentSpaceId;
         }
     });
 
@@ -1044,7 +1044,7 @@ var VRAY = {};
         set: function (val) {
             _editingHot = !!val;
             if (!_editingHot) {
-                spheres[1].material = materialDict[_spaceId];
+                spheres[1].material = materialDict[_currentSpaceId];
                 spheres[1].material.opacity = 1;
                 spheres[0].position.set(0, 0, 0);
                 spheres[0].rotation.set(0, 0, 0);

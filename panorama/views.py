@@ -193,7 +193,7 @@ def add_hot(request):
     hot = Hot(
         scene_space=ss_filter[0],
         title=title,
-        vector=json.dumps({'vx': vx, 'vy': vy, 'vz': vz}),
+        vector=json.dumps({'vx': float(vx), 'vy': float(vy), 'vz': float(vz)}),
         transition=json.dumps({'to': to})
     )
     hot.save()
@@ -201,6 +201,41 @@ def add_hot(request):
         'success': True,
         'hotID': hot.id
     })
+
+
+@csrf_exempt
+def update_hot(request):
+    """
+    更新热点
+    """
+    hot_id = request.POST.get('id')
+    title = request.POST.get('title')
+    to = request.POST.get('to')
+    px = request.POST.get('px')
+    py = request.POST.get('py')
+    pz = request.POST.get('pz')
+    rx = request.POST.get('rx')
+    ry = request.POST.get('ry')
+    rz = request.POST.get('rz')
+    h_filter = Hot.objects.filter(pk=hot_id)
+    if not to or not h_filter.exists():
+        return JsonResponse({
+            'success': False,
+            'err_msg': '参数错误'
+        })
+    hot = h_filter[0]
+    hot.title = title
+    hot.transition = json.dumps({
+        'to': to,
+        'px': float(px) or 0,
+        'py': float(py) or 0,
+        'pz': float(pz) or 0,
+        'rx': float(rx) or 0,
+        'ry': float(ry) or 0,
+        'rz': float(rz) or 0
+    })
+    hot.save()
+    return JsonResponse({'success': True})
 
 
 @csrf_exempt

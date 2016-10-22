@@ -720,11 +720,33 @@ svg:hover {
 #edit-panel {
     position: absolute;
     z-index: 2;
-    right: 0;
+    right: -180px;
     top: 50%;
     width: 180px;
     text-align: center;
     transform: translateY(-50%);
+    -moz-transition: right 0.5s ease-in-out;
+    -webkit-transition: right 0.5s ease-in-out;
+    -o-transition: right 0.5s ease-in-out;
+    transition: right 0.5s ease-in-out;
+}
+
+#edit-panel.show {
+    right: 0;
+}
+
+#edit-panel > div:nth-child(1) {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 180px;
+    height: 203px;
+    background-color: #000;
+    opacity: 0.3;
+}
+
+#edit-panel > div:nth-child(2) {
+    position: relative;
 }
 
 #edit-panel .range i {
@@ -736,6 +758,7 @@ svg:hover {
     vertical-align: middle;
     text-align: center;
     cursor: pointer;
+    color: #fff;
 }
 
 #edit-panel input {

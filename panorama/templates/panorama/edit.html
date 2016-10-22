@@ -59,40 +59,43 @@
 
 <!-- 热点编辑面板 -->
 <div id="edit-panel">
-    <label for="hot-id-input"></label>
-    <input type="text" value="" id="hot-id-input">
-    <label for="hot-title-input"></label>
-    <input type="text" value="" id="hot-title-input">
-    <label for="hot-to-input"></label>
-    <select id="hot-to-input"></select>
-    <div class="range">
-        <i>-</i>
-        <input type="range" min="0.3" max="1" step="0.01" data-default="1" value="1" title="透明度" id="opacity"/>
-        <i>+</i>
+    <div></div>
+    <div>
+        <label for="hot-id-input"></label>
+        <input type="text" value="" id="hot-id-input" disabled="disabled">
+        <label for="hot-title-input"></label>
+        <input type="text" value="" id="hot-title-input">
+        <label for="hot-to-input"></label>
+        <select id="hot-to-input"></select>
+        <div class="range">
+            <i>-</i>
+            <input type="range" min="0.3" max="1" step="0.01" data-default="1" value="1" title="透明度" id="opacity"/>
+            <i>+</i>
+        </div>
+        <div class="range">
+            <i>-</i>
+            <input type="range" min="-1.5" max="1.5" step="0.005" data-default="0" value="0" title="x轴" id="x-axis"/>
+            <i>+</i>
+        </div>
+        <div class="range">
+            <i>-</i>
+            <input type="range" min="-1.5" max="1.5" step="0.005" data-default="0" value="0" title="y轴" id="y-axis"/>
+            <i>+</i>
+        </div>
+        <div class="range">
+            <i>-</i>
+            <input type="range" min="-1.5" max="1.5" step="0.005" data-default="0" value="0" title="z轴" id="z-axis"/>
+            <i>+</i>
+        </div>
+        <div class="range">
+            <i>-</i>
+            <input type="range" min="0" max="90" step="1" data-default="0" value="0" title="视线距离" id="distance"/>
+            <i>+</i>
+        </div>
+        <button id="cancel-edit">退出编辑</button>
+        <button id="save-hot-info">保存</button>
+        <button id="reset-hot-info">重置</button>
     </div>
-    <div class="range">
-        <i>-</i>
-        <input type="range" min="-1.5" max="1.5" step="0.005" data-default="0" value="0" title="x轴" id="x-axis"/>
-        <i>+</i>
-    </div>
-    <div class="range">
-        <i>-</i>
-        <input type="range" min="-1.5" max="1.5" step="0.005" data-default="0" value="0" title="y轴" id="y-axis"/>
-        <i>+</i>
-    </div>
-    <div class="range">
-        <i>-</i>
-        <input type="range" min="-1.5" max="1.5" step="0.005" data-default="0" value="0" title="z轴" id="z-axis"/>
-        <i>+</i>
-    </div>
-    <div class="range">
-        <i>-</i>
-        <input type="range" min="0" max="90" step="1" data-default="0" value="0" title="视线距离" id="distance"/>
-        <i>+</i>
-    </div>
-    <button id="cancel-edit">退出编辑</button>
-    <button id="save-hot-info">保存</button>
-    <button id="reset-hot-info">重置</button>
 </div>
 
 <ul id="more-panel">

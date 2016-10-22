@@ -143,11 +143,11 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
     }
 
     // 场景切换完毕
-    function onShown() {
+    function onShown(spaceId) {
         $mask.hide();
         $loading.stop().fadeOut(700);
         $gallery.find('.active').removeClass('active');
-        $('#space_id_' + vrayScene.spaceId).addClass('active');
+        $('#space_id_' + spaceId).addClass('active');
     }
 
     var switchSpaceDelayer = null;

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        html, body, canvas {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            border-spacing: 0;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+<script src="https://rawgithub.com/mrdoob/three.js/master/build/three.min.js"></script>
+<script>
+    // TODO neck.rotation.order
+    function degInRad(deg) {
+        return deg * Math.PI / 180;
+    }
+    /////////////////////////////////
+    function render() {
+        requestAnimationFrame(render);
+        if (leftPressed) {
+            neck.rotation.y += degInRad(1);
+        } else if (rightPressed) {
+            neck.rotation.y -= degInRad(1);
+        }
+        if (upPressed) {
+            camera.rotation.x += degInRad(1);
+        } else if (downPressed) {
+            camera.rotation.x -= degInRad(1);
+        }
+        renderer.render(scene, camera);
+    }
+    /////////////////////////////////
+    var scene, camera, renderer, grass, neck;
+    var leftPressed = false;
+    var rightPressed = false;
+    var upPressed = false;
+    var downPressed = false;
+    /////////////////////////////////
+    window.onload = function () {
+        scene = new THREE.Scene();
+        camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+
+        renderer = new THREE.WebGLRenderer();
+        renderer.rendererSize = {
+            width: window.innerWidth,
+            height: window.innerHeight,
+            quality: 100,
+            maxQuality: 400,
+            minQuality: 20
+        };
+        renderer.setSize(renderer.rendererSize.width, renderer.rendererSize.height);
+        document.body.appendChild(renderer.domElement);
+
+        var texture, material, geometry, element;
+
+        /*THREE.ImageUtils.crossOrigin = undefined;
+         texture = THREE.ImageUtils.loadTexture( "http://s22.postimg.org/cmp4guiil/grass.jpg" );
+         texture.wrapS = THREE.RepeatWrapping;
+         texture.wrapT = THREE.RepeatWrapping;
+         texture.repeat.set( 24, 24 );
+         material = new THREE.MeshBasicMaterial( { map: texture } );*/
+        material = new THREE.MeshBasicMaterial({color: 0x00ff00});
+        material.side = THREE.DoubleSide;
+        geometry = new THREE.PlaneGeometry(24, 24);
+        grass = new THREE.Mesh(geometry, material);
+        grass.name = "grass";
+        scene.add(grass);
+
+        neck = new THREE.Object3D();
+        neck.rotateOnAxis(new THREE.Vector3(1, 0, 0), degInRad(90));
+        neck.up = new THREE.Vector3(0, 0, 1);
+        neck.position.z = 1;
+        neck.position.y = -5;
+        neck.add(camera);
+        scene.add(neck);
+
+        //THREE.DefaultLoadingManager.onLoad = render;
+
+
+        const KEYUP = 38;        // up key
+        const KEYDOWN = 40;        // down key
+        const KEYLEFT = 37;        // left key
+        const KEYRIGHT = 39;        // right key
+        const Z_ROT_INC = 81;// Q
+        const Z_ROT_DEC = 87;// W
+        const VIEW_INCREMENT = 1;        // amount to move in degrees
+        document.addEventListener('keydown', function (e) {
+            var key = e.keyCode;
+            switch (key) {
+                case KEYUP:
+                    upPressed = true;
+                    break;
+                case KEYDOWN:
+                    downPressed = true;
+                    break;
+                case KEYLEFT:
+                    leftPressed = true;
+                    break;
+                case KEYRIGHT:
+                    rightPressed = true;
+                    break;
+            }
+            console.log(upPressed, downPressed, leftPressed, rightPressed);
+        });
+
+        document.addEventListener('keyup', function (e) {
+            var key = e.keyCode;
+            switch (key) {
+                case KEYUP:
+                    upPressed = false;
+                    break;
+                case KEYDOWN:
+                    downPressed = false;
+                    break;
+                case KEYLEFT:
+                    leftPressed = false;
+                    break;
+                case KEYRIGHT:
+                    rightPressed = false;
+                    break;
+            }
+            console.log(upPressed, downPressed, leftPressed, rightPressed);
+        });
+
+        render();
+    }
+</script>
+</body>
+</html>

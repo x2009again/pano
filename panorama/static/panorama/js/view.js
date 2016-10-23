@@ -89,7 +89,7 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
     // 首屏载入成功
     function onLoad() {
         var galleryHtml = '';
-        spaceCount = vrayScene.spaceCount;
+        spaceCount = spaceList.length;
 
         if (spaceCount == 1) {
             $gallery.hide();

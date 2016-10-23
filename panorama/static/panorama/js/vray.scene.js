@@ -29,7 +29,8 @@ var VRAY = {};
 
     var hotLeaved = true;
     var currentSpace = null;
-    var _stage = null;
+
+    var cameraFov = 75;
 
     var STAGE_WIDTH = window.innerWidth,
         STAGE_HEIGHT = window.innerHeight,
@@ -39,19 +40,25 @@ var VRAY = {};
         transiting = false;  // 正在进行过渡动画
 
     // 可访问变量
-    var _stereoMode = false,
-        _walkMode = false,
-        _spacesDict = {},
-        _spaceCount = {},
+    var _stage = null,  // canvas容器
+        _stereoMode = false,  // 立体模式（只读）
+        _walkMode = false,  // 步行模式（只读）
+        _spacesDict = {},  // 空间字典（只读）
         _lockScene = true,  // 锁定场景
         _addingHot = false,  // 正在添加热点
         _editingHot = false;  // 正在创建转场效果
 
+    var options = {};
     var callbacks = {
         /**
          * 首屏加载完毕
          */
         onLoad: function () {
+        },
+        /**
+         * 在canvas上右键的回调
+         */
+        onRightClick: function () {
         },
         /**
          * 下一个场景载入中
@@ -65,10 +72,10 @@ var VRAY = {};
         },
         /**
          * 选择器在热点上移动时
-         * @param selectedHot
+         * @param hotInfo
          * @param mousePos 鼠标相对于容器的位置
          */
-        onOverHot: function (selectedHot, mousePos) {
+        onOverHot: function (hotInfo, mousePos) {
         },
         /**
          * 选择器离开热点时
@@ -91,9 +98,9 @@ var VRAY = {};
         },
         /**
          * 编辑热点转场时的回调
-         * @param hotId 需要编辑的热点
+         * @param hotInfo 热点信息
          */
-        onEditingHot: function (hotId) {
+        onEditingHot: function (hotInfo) {
         },
         /**
          * 保存热点数据前
@@ -105,8 +112,6 @@ var VRAY = {};
         }
     };
 
-    var cameraFov = 75;
-
     VRAY.Scene = function (opt) {
         // 默认设置
         var defaults = {
@@ -116,15 +121,14 @@ var VRAY = {};
             autoRotate: true,
             logoUrl: null,
             hotImg: '/static/panorama/img/foot_step.png',
+            debug: false,
             fps: false
         };
 
         spaceList = opt.spaceList;
-        this.options = $.extend({}, defaults, opt);
-        $.extend(callbacks, this.options.callbacks);
-        Object.freeze(this.options);  // 冻结初始化参数
+        Object.assign(options, defaults, opt);
+        Object.assign(callbacks, opt.callbacks);
         var entry = opt.entry || spaceList[0].id;
-        _spaceCount = spaceList.length;
 
         var i;
         for (i = 0; i < spaceList.length; i++) {
@@ -147,7 +151,7 @@ var VRAY = {};
         _stage.style.display = 'none';
         _stage.style.position = 'absolute';
         _stage.style.backgroundColor = '#000';
-        this.options.container.appendChild(_stage);
+        options.container.appendChild(_stage);
 
         textureLoader = new THREE.TextureLoader();
 
@@ -220,7 +224,7 @@ var VRAY = {};
             })(space);
         }
 
-        if (_this.options.fps) {
+        if (options.fps) {
             stats = new Stats();
             stats.dom.style.left = 'initial';
             stats.dom.style.right = 0;
@@ -246,7 +250,7 @@ var VRAY = {};
 
             // 热点添加指示
             hotSpot = new THREE.Mesh(new THREE.PlaneGeometry(3, 3), new THREE.MeshBasicMaterial({
-                map: textureLoader.load(_this.options.hotImg),
+                map: textureLoader.load(options.hotImg),
                 transparent: true,
                 side: THREE.DoubleSide,
                 color: 0x000000,
@@ -260,7 +264,7 @@ var VRAY = {};
             spheres[0].material = spheres[1].material;
 
             logoMaterial = new THREE.MeshBasicMaterial({
-                map: textureLoader.load(_this.options.logoUrl),
+                map: textureLoader.load(options.logoUrl),
                 transparent: true,
                 side: THREE.DoubleSide
             });
@@ -275,8 +279,8 @@ var VRAY = {};
             renderer.render(scene, camera);
             $(_stage).fadeIn(3000);
 
-            _this.options.smoothStart ? smoothStart() : start();
-            _this.options.autoPlay && _this.play();
+            options.smoothStart ? smoothStart() : start();
+            options.autoPlay && _this.play();
 
         }
 
@@ -289,7 +293,7 @@ var VRAY = {};
 
         // 进入场景（平滑过渡）
         var smoothStart = function () {
-            if (_this.options.autoRotate) spheres[1].rotation.y = -Math.PI / 2;  // 用于向右旋转球体
+            if (options.autoRotate) spheres[1].rotation.y = -Math.PI / 2;  // 用于向右旋转球体
             spheres[1].rotation.set(0, 0, 0);
             camera.position.set(0, 20, 0);
             camera.fov = 160;
@@ -304,7 +308,7 @@ var VRAY = {};
     VRAY.Scene.prototype.play = function () {
 
         var _this = this;
-        if (_this.options.smoothStart) {
+        if (options.smoothStart) {
             new TWEEN.Tween({fov: camera.fov, positionY: 20})
                 .to({fov: cameraFov, positionY: 0.01}, 2500)
                 .easing(TWEEN.Easing.Quadratic.InOut)
@@ -324,7 +328,7 @@ var VRAY = {};
                 initControls();
             }).delay(300).start();
 
-            if (_this.options.autoRotate) {  // 如果需要在平滑进入时自动旋转
+            if (options.autoRotate) {  // 如果需要在平滑进入时自动旋转
                 new TWEEN.Tween({rotateY: -Math.PI / 2})
                     .to({rotateY: 0}, 3000)
                     .easing(TWEEN.Easing.Quadratic.InOut)
@@ -348,25 +352,22 @@ var VRAY = {};
             orbitControls.enableZoom = false;
             orbitControls.enableKeys = false;
             orbitControls.enablePan = false;
-            orbitControls.autoRotate = _this.options.autoRotate;
+            orbitControls.autoRotate = options.autoRotate;
             // 初始化设备控制器
             deviceControls = new THREE.DeviceOrientationControls(camera, true);
             deviceControls.connect();
             deviceControls.enabled = false;
 
-            var $canvas = $(_stage);
+            var $container = $(options.container);
             // 鼠标事件
-            $canvas.on('mousedown', function ($e) {
-                clicking = true;
-                startPoint1 = {x: $e.pageX, y: $e.pageY};
-            });
-            $canvas.on('mousemove', mouseMove.bind(_this));
-            $canvas.on('click', mouseClick.bind(_this));
-            $canvas.on('DOMMouseScroll mousewheel', mouseWheel.bind(_this));
+            $container.on('mousedown', mouseDown.bind(_this));
+            $container.on('mousemove', mouseMove.bind(_this));
+            $container.on('mouseup', mouseUp.bind(_this));
+            $container.on('DOMMouseScroll mousewheel', mouseWheel.bind(_this));
             // 触摸事件
-            $canvas.on('touchstart', touchStart.bind(_this));
-            $canvas.on('touchmove', touchMove.bind(_this));
-            $canvas.on('touchend', touchEnd.bind(_this));
+            $container.on('touchstart', touchStart.bind(_this));
+            $container.on('touchmove', touchMove.bind(_this));
+            $container.on('touchend', touchEnd.bind(_this));
 
             // 方向变化事件
             window.addEventListener('deviceorientation', onDeviceOrientation);
@@ -419,7 +420,6 @@ var VRAY = {};
         console.log('from：' + currentSpace.id + ' → to：' + targetSpaceId);
 
         spheres[0].material = spheres[1].material;
-        console.log(callbacks.onShown);
         callbacks.onShown(targetSpaceId);
         materialDict[targetSpaceId].opacity = 0;
         spheres[1].material = materialDict[targetSpaceId];  //修改小球材质
@@ -502,7 +502,6 @@ var VRAY = {};
                 });
                 materialDict[space.id].disabled = false;
             });
-            _spaceCount++;
         } else {
             materialDict[space.id].disabled = false;
         }
@@ -516,7 +515,6 @@ var VRAY = {};
         if (_spacesDict[spaceId]) {
             delete _spacesDict[spaceId];
             materialDict[spaceId].disabled = true;
-            _spaceCount--;
         }
     };
 
@@ -656,8 +654,6 @@ var VRAY = {};
         spheres[0].material = materialDict[currentSpace.id];
         spheres[1].material = materialDict[currentSpace.hotInfoDict[hot2beEdit.hotId].to];
         spheres[1].material.opacity = 0.5;
-        console.log(selectedHot.hotId);
-        console.log(currentSpace.hotInfoDict[selectedHot.hotId]);
         var hotInfo = currentSpace.hotInfoDict[selectedHot.hotId];
         spheres[0].position.set(hotInfo.px, hotInfo.py, hotInfo.pz);
         spheres[0].rotation.set(hotInfo.rx, hotInfo.ry, hotInfo.rz);
@@ -729,6 +725,11 @@ var VRAY = {};
         });
     };
 
+    var mouseDown = function ($e) {
+        clicking = true;
+        startPoint1 = {x: $e.pageX, y: $e.pageY};
+    };
+
     var mouseMove = function ($e) {
         if (!(_lockScene || transiting || $e.which == 3)) {
             // 2px内认为没有拖动
@@ -779,22 +780,23 @@ var VRAY = {};
     };
 
     var moveDirection;  // 编辑热点时指定大球移动的方向
-    var mouseClick = function ($e) {
-        if (!_lockScene) {
+    var mouseUp = function ($e) {
+        if (!_lockScene || !clicking) {
             if (_addingHot) {  // 添加脚印
                 callbacks.onAddingHot({x: $e.pageX, y: $e.pageY});
             } else {
                 if (intersects.length > 0) {  // 单击热点
-                    if ($e.which == 1 && clicking) {  // 热点上左击
-                        if (_editingHot) {
+                    if (options.debug) {
+                        if ($e.which == 3 || (_editingHot && $e.which == 1)) {  // 编辑状态下左击或右击热点
                             hot2beEdit = selectedHot;
-                            var hotInfo = this.resetHot();
-                            callbacks.onEditingHot(hotInfo);
+                            callbacks.onEditingHot(this.resetHot());
                         } else {
                             this.showSpace(selectedHot);
                         }
+                    } else {
+                        this.showSpace(selectedHot);
                     }
-                } else if (spaceHots.length > 0) {  // 点击空白处
+                } else if (spaceHots.length > 0) {  // 单击空白处
                     // hoverPoint = raycaster.intersectObjects([spheres[1]]);
                     // if (e.button != '2' && hoverPoint && hoverPoint.length > 0) {
                     //     var step = spaceHots[0];
@@ -917,36 +919,57 @@ var VRAY = {};
         }
     };
 
-    // 小球沿着热点前进/后退
-    VRAY.Scene.prototype.moveSpace = function (distance) {
-        spheres[0].position.set(0, 0, 0);
-        spheres[0].translateOnAxis(moveDirection, distance);
+    var tempTransform = {
+        rotationX: 0,
+        rotationY: 0,
+        rotationZ: 0,
+        distance: 0
     };
 
-    // 定义xAngle属性
-    Object.defineProperty(VRAY.Scene.prototype, "xAngle", {
-        set: function (xAngle) {
-            spheres[0].rotation.x = Math.min(1.5, Math.max(-1.5, xAngle));
+    function applyTransform() {
+        spheres[0].position.set(0, 0, 0);
+        spheres[0].rotation.set(tempTransform.rotationX, tempTransform.rotationY, tempTransform.rotationZ);
+        spheres[0].translateOnAxis(moveDirection, tempTransform.distance);
+    }
+
+    // 定义distance属性
+    Object.defineProperty(VRAY.Scene.prototype, "distance", {
+        set: function (distance) {
+            tempTransform.distance = Math.min(90, Math.max(0, distance));
+            applyTransform();
+        },
+        get: function () {
+            return spheres[0].position.length();
+        }
+    });
+
+    // 定义rotationX属性
+    Object.defineProperty(VRAY.Scene.prototype, "rotationX", {
+        set: function (rotationX) {
+            tempTransform.rotationX = Math.min(1.5, Math.max(-1.5, rotationX));
+            applyTransform();
         },
         get: function () {
             return spheres[0].rotation.x;
         }
     });
 
-    // 定义yAngle属性
-    Object.defineProperty(VRAY.Scene.prototype, "yAngle", {
-        set: function (yAngle) {
-            spheres[0].rotation.y = Math.min(1.5, Math.max(-1.5, yAngle));
+    // 定义rotationY属性
+    Object.defineProperty(VRAY.Scene.prototype, "rotationY", {
+        set: function (rotationY) {
+            tempTransform.rotationY = Math.min(1.5, Math.max(-1.5, rotationY));
+            applyTransform();
         },
         get: function () {
             return spheres[0].rotation.y;
         }
     });
 
-    // 定义zAngle属性
-    Object.defineProperty(VRAY.Scene.prototype, "zAngle", {
-        set: function (zAngle) {
-            spheres[0].rotation.z = Math.min(1.5, Math.max(-1.5, zAngle));
+    // 定义rotationZ属性
+    Object.defineProperty(VRAY.Scene.prototype, "rotationZ", {
+        set: function (rotationZ) {
+            tempTransform.rotationZ = Math.min(1.5, Math.max(-1.5, rotationZ));
+            applyTransform();
         },
         get: function () {
             return spheres[0].rotation.z;
@@ -956,10 +979,10 @@ var VRAY = {};
     // 定义opacity属性
     Object.defineProperty(VRAY.Scene.prototype, "opacity", {
         set: function (opacity) {
-            spheres[1].material.opacity = Math.min(1, Math.max(0.3, opacity));
+            spheres[1].material.opacity = Math.min(0.8, Math.max(0.3, opacity));
         },
         get: function () {
-            return spheres[0].material.opacity;
+            return spheres[1].material.opacity;
         }
     });
 
@@ -973,13 +996,6 @@ var VRAY = {};
     Object.defineProperty(VRAY.Scene.prototype, "spaceId", {
         get: function () {
             return currentSpace.id;
-        }
-    });
-
-    // 定义spaceCount属性（只读）
-    Object.defineProperty(VRAY.Scene.prototype, "spaceCount", {
-        get: function () {
-            return _spaceCount;
         }
     });
 
@@ -1066,8 +1082,8 @@ var VRAY = {};
 
     VRAY.Scene.prototype.update = function () {
         TWEEN.update();
-        if (orbitControls.enabled) orbitControls.update();
-        if (deviceControls.enabled) deviceControls.update();
+        if (orbitControls && orbitControls.enabled) orbitControls.update();
+        if (deviceControls && deviceControls.enabled) deviceControls.update();
         stats && stats.update();
         if (_stereoMode) {
             stereoRenderer.render(scene, camera);

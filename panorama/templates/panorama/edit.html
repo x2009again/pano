@@ -59,40 +59,65 @@
 
 <!-- 热点编辑面板 -->
 <div id="edit-panel">
-    <div></div>
-    <div>
-        <label for="hot-id-input"></label>
-        <input type="text" value="" id="hot-id-input" disabled="disabled">
-        <label for="hot-title-input"></label>
-        <input type="text" value="" id="hot-title-input">
-        <label for="hot-to-input"></label>
-        <select id="hot-to-input"></select>
+    <div class="panel-header" id="cancel-edit" title="退出编辑">&gt;&gt;</div>
+    <div class="panel-body">
+        <label for="input-hot-id">热点编号：</label>
+        <input type="text" value="" id="input-hot-id" disabled="disabled">
+        <label for="input-hot-title">标题：</label>
+        <input type="text" value="" id="input-hot-title">
+        <label for="input-hot-to">跳转至：</label>
+        <select id="input-hot-to"></select>
+        <label for="input-opacity">透明度：</label>
         <div class="range">
             <i>-</i>
-            <input type="range" min="0.3" max="1" step="0.01" data-default="1" value="1" title="透明度" id="opacity"/>
+            <input type="range" min="0.3" max="0.8" step="0.01" data-default="0.5" value="0.5" id="input-opacity"/>
             <i>+</i>
         </div>
-        <div class="range">
-            <i>-</i>
-            <input type="range" min="-1.5" max="1.5" step="0.005" data-default="0" value="0" title="x轴" id="x-axis"/>
-            <i>+</i>
-        </div>
-        <div class="range">
-            <i>-</i>
-            <input type="range" min="-1.5" max="1.5" step="0.005" data-default="0" value="0" title="y轴" id="y-axis"/>
-            <i>+</i>
-        </div>
-        <div class="range">
-            <i>-</i>
-            <input type="range" min="-1.5" max="1.5" step="0.005" data-default="0" value="0" title="z轴" id="z-axis"/>
-            <i>+</i>
-        </div>
-        <div class="range">
-            <i>-</i>
-            <input type="range" min="0" max="90" step="1" data-default="0" value="0" title="视线距离" id="distance"/>
-            <i>+</i>
-        </div>
-        <button id="cancel-edit">退出编辑</button>
+        <fieldset>
+            <legend>旋转</legend>
+            <label for="input-rotation-x">x轴：</label>
+            <div class="range">
+                <i>-</i>
+                <input type="range" min="-1.5" max="1.5" step="0.005" data-default="0" value="0" id="input-rotation-x"/>
+                <i>+</i>
+            </div>
+            <label for="input-rotation-y">y轴：</label>
+            <div class="range">
+                <i>-</i>
+                <input type="range" min="-1.5" max="1.5" step="0.005" data-default="0" value="0" id="input-rotation-y"/>
+                <i>+</i>
+            </div>
+            <label for="input-rotation-z">z轴：</label>
+            <div class="range">
+                <i>-</i>
+                <input type="range" min="-1.5" max="1.5" step="0.005" data-default="0" value="0" id="input-rotation-z"/>
+                <i>+</i>
+            </div>
+        </fieldset>
+        <fieldset>
+            <legend>平移</legend>
+            <label for="input-position-x">x轴：</label>
+            <div class="range">
+                <i>-</i>
+                <input type="range" min="0" max="80" step="1" data-default="0" value="0" id="input-position-x"/>
+                <i>+</i>
+            </div>
+            <label for="input-position-y">y轴：</label>
+            <div class="range">
+                <i>-</i>
+                <input type="range" min="0" max="80" step="1" data-default="0" value="0" id="input-position-y"/>
+                <i>+</i>
+            </div>
+            <label for="input-position-z">z轴：</label>
+            <div class="range">
+                <i>-</i>
+                <input type="range" min="0" max="80" step="1" data-default="0" value="0" id="input-position-z"/>
+                <i>+</i>
+            </div>
+        </fieldset>
+    </div>
+    <div class="panel-footer">
+        <button id="delete-hot-btn">删除热点</button>
         <button id="save-hot-info">保存</button>
         <button id="reset-hot-info">重置</button>
     </div>

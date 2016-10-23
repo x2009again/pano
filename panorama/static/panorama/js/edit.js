@@ -58,14 +58,16 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
     var $transformHotBtn = $('#transform-hot');
     var $hotTitle = $('#hot-title');
 
-    var $hotIdInput = $('#hot-id-input');
-    var $hotTitleInput = $('#hot-title-input');
-    var $hotToInput = $('#hot-to-input');
-    var $opacityInput = $('#opacity');
-    var $xAxisInput = $('#x-axis');
-    var $yAxisInput = $('#y-axis');
-    var $zAxisInput = $('#z-axis');
-    var $distanceInput = $('#distance');
+    var $hotIdInput = $('#input-hot-id');
+    var $hotTitleInput = $('#input-hot-title');
+    var $hotToInput = $('#input-hot-to');
+    var $opacityInput = $('#input-opacity');
+    var $rotationXInput = $('#input-rotation-x');
+    var $rotationYInput = $('#input-rotation-y');
+    var $rotationZInput = $('#input-rotation-z');
+    var $positionXInput = $('#input-position-x');
+    var $positionYInput = $('#input-position-y');
+    var $positionZInput = $('#input-position-z');
 
     var sceneContainer = null;
 
@@ -102,7 +104,8 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
         smoothStart: false,
         autoPlay: true,
         autoRotate: false,
-        fps: true,
+        debug: true,
+        fps: false,
         callbacks: {
             onLoad: onLoad,
             onShowing: onShowing,
@@ -111,7 +114,7 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
             beforeHotAdded: beforeHotAdded,
             onOverHot: onOverHot,
             onLeaveHot: onLeaveHot,
-            onEditingHot: onEditingHot,
+            onEditingHot: resetEditPanel,
             beforeHotSaved: beforeHotSaved
         }
     };
@@ -214,7 +217,7 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
     }
 
     // 选中热点进入编辑时的回调
-    function onEditingHot(hotInfo) {
+    function resetEditPanel(hotInfo) {
         $hotIdInput.val(hotInfo.id);// 热点ID
         $hotTitleInput.val(hotInfo.title);  // 热点标题
         var spacesDict = vrayScene.spacesDict;
@@ -229,10 +232,12 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
         }
         $editPanel.find('select').html(optionsHtml);
         $opacityInput.val(0.5);  // 透明度
-        $xAxisInput.val(hotInfo.rx);
-        $yAxisInput.val(hotInfo.ry);
-        $zAxisInput.val(hotInfo.rz);
-        $distanceInput.val(Math.sqrt(hotInfo.px * hotInfo.px + hotInfo.py * hotInfo.py + hotInfo.pz * hotInfo.pz));  // 移动距离
+        $rotationXInput.val(hotInfo.rx);
+        $rotationYInput.val(hotInfo.ry);
+        $rotationZInput.val(hotInfo.rz);
+        $positionXInput.val(hotInfo.px);
+        $positionYInput.val(hotInfo.py);
+        $positionZInput.val(hotInfo.pz);
         $editPanel.addClass('show');  // 显示编辑面板
     }
 
@@ -642,7 +647,7 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
                     rClickedPos = {x: e.pageX, y: e.pageY};
                     $contextMenu.css({left: e.pageX, top: e.pageY}).show();
                 }
-                return false;
+                e.stopPropagation();
             }
         });
         // 右键菜单中选择 添加热点
@@ -674,20 +679,20 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
 
         $editPanel.find('.range input').on('input', function () {
             switch (true) {
-                case this.id == 'x-axis':
-                    vrayScene.xAngle = this.value;
+                case this.id == 'input-x-axis':
+                    vrayScene.rotationX = this.value;
                     break;
-                case this.id == 'y-axis':
-                    vrayScene.yAngle = this.value;
+                case this.id == 'input-y-axis':
+                    vrayScene.rotationY = this.value;
                     break;
-                case this.id == 'z-axis':
-                    vrayScene.zAngle = this.value;
+                case this.id == 'input-z-axis':
+                    vrayScene.rotationZ = this.value;
                     break;
-                case this.id == 'opacity':
+                case this.id == 'input-opacity':
                     vrayScene.opacity = this.value;
                     break;
-                case this.id == 'distance':
-                    vrayScene.moveSpace(parseFloat(this.value));
+                case this.id == 'input-distance':
+                    vrayScene.distance = this.value;
                     break;
             }
         }).dblclick(function () {
@@ -698,38 +703,41 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
             var inputEle = $(this).parent().find('input')[0];
             var val = $(this).text() == '-' ? parseFloat(inputEle.value) - parseFloat(inputEle.step) : parseFloat(inputEle.value) + parseFloat(inputEle.step);
             switch (true) {
-                case inputEle.id == 'x-axis':
-                    vrayScene.xAngle = val;
-                    $xAxisInput.val(vrayScene.xAngle);
+                case inputEle.id == 'input-x-axis':
+                    vrayScene.rotationX = val;
+                    $rotationXInput.val(vrayScene.rotationX);
                     break;
-                case inputEle.id == 'y-axis':
-                    vrayScene.yAngle = val;
-                    $yAxisInput.val(vrayScene.yAngle);
+                case inputEle.id == 'input-y-axis':
+                    vrayScene.rotationY = val;
+                    $rotationYInput.val(vrayScene.rotationY);
                     break;
-                case inputEle.id == 'z-axis':
-                    vrayScene.zAngle = val;
-                    $zAxisInput.val(vrayScene.zAngle);
+                case inputEle.id == 'input-z-axis':
+                    vrayScene.rotationZ = val;
+                    $rotationZInput.val(vrayScene.rotationZ);
                     break;
-                case inputEle.id == 'opacity':
+                case inputEle.id == 'input-opacity':
+                    console.log(val);
                     vrayScene.opacity = val;
                     $opacityInput.val(vrayScene.opacity);
+                    console.log(vrayScene.opacity);
                     break;
-                case this.id == 'distance':
-                    vrayScene.moveSpace(parseFloat(this.value));
+                case inputEle.id == 'input-distance':
+                    console.log(val);
+                    vrayScene.distance = val;
+                    $distanceInput.val(vrayScene.distance);
                     break;
             }
         });
 
         $('#reset-hot-info').click(function () {
-            $editPanel.find('input').each(function () {
-                $(this).val($(this).data('default'));
-            });
-            vrayScene.resetHot();
+            resetEditPanel(vrayScene.resetHot());
         });
         $('#save-hot-info').click(function () {
             vrayScene.saveHot($hotToInput.val(), $hotTitleInput.val());
         });
         $('#cancel-edit').click(function () {
+            $editPanel.removeClass('show');
+            $transformHotBtn.removeClass('active');
             vrayScene.editingHot = false;
         });
     }

@@ -198,7 +198,7 @@ ul, li {
 }
 
 .space-ele .ele-name {
-    width: 200px;
+    width: 195px;
     height: 120px;
     line-height: 120px;
     float: left;
@@ -660,63 +660,6 @@ ul, li {
     background-color: red;
 }
 
-svg:hover {
-    opacity: 1 !important;
-}
-
-#more-btn {
-    right: 30px;
-    bottom: 30px;
-    width: 30px;
-    height: 30px;
-    position: absolute;
-    z-index: 2;
-    cursor: pointer;
-    opacity: 0.5;
-}
-
-#more-panel {
-    padding-top: 30px;
-    padding-left: 30px;
-    position: absolute;
-    right: 20px;
-    bottom: 60px;
-    width: 50px;
-    height: 0;
-    z-index: 2;
-    overflow: hidden;
-    -moz-transition: height 0.5s ease-in-out;
-    -webkit-transition: height 0.5s ease-in-out;
-    -o-transition: height 0.5s ease-in-out;
-    transition: height 0.5s ease-in-out;
-}
-
-#more-panel.show {
-    height: 100px;
-}
-
-#more-panel li {
-    margin-left: 8px;
-    margin-top: 10px;
-}
-
-#more-panel svg {
-    width: 30px;
-    height: 30px;
-    cursor: pointer;
-    opacity: 0.5;
-    transform: scale(1);
-    -moz-transition: transform 0.5s ease-in-out;
-    -webkit-transition: transform 0.5s ease-in-out;
-    -o-transition: transform 0.5s ease-in-out;
-    transition: transform 0.5s ease-in-out;
-}
-
-#more-panel li.active svg {
-    transform: scale(1.5, 1.5);
-    fill: #0071f3;
-}
-
 /* 编辑热点面板 */
 #edit-panel {
     position: absolute;
@@ -774,7 +717,7 @@ svg:hover {
 
 #edit-panel fieldset {
     color: #fff;
-    padding-left: 5px;
+    padding: 10px 0 10px 5px;
 }
 
 #edit-panel label {

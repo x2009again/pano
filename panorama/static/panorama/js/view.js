@@ -152,9 +152,9 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
 
     var switchSpaceDelayer = null;
     // 鼠标在热点上时
-    function onOverHot(selectedHot, mousePos) {
-        if (selectedHot.title && mousePos) {
-            $hotTitle.html(selectedHot.title).css({
+    function onOverHot(hotInfo, mousePos) {
+        if (hotInfo.title && mousePos) {
+            $hotTitle.html(hotInfo.title).css({
                 left: mousePos.x - $hotTitle.width() - 20,
                 top: mousePos.y - 25 / 2
             }).show();
@@ -165,7 +165,7 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
             switchSpaceDelayer = window.setTimeout(function () {
                 window.clearTimeout(switchSpaceDelayer);
                 switchSpaceDelayer = null;
-                vrayScene.showSpace(selectedHot);
+                vrayScene.showSpace(hotInfo.to, hotInfo.id);
             }, 2000)
         }
     }
@@ -224,7 +224,7 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
 
         // 切换场景
         $gallery.on('click', 'li', function () {
-            vrayScene.showSpace({to: $(this).data('index')});
+            vrayScene.showSpace($(this).data('index'));
             return false;
         });
 

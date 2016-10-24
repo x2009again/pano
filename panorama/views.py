@@ -199,7 +199,7 @@ def add_hot(request):
     hot.save()
     return JsonResponse({
         'success': True,
-        'hotID': hot.id
+        'hotId': hot.id
     })
 
 
@@ -217,11 +217,16 @@ def update_hot(request):
     rx = request.POST.get('rx')
     ry = request.POST.get('ry')
     rz = request.POST.get('rz')
-    h_filter = Hot.objects.filter(pk=hot_id)
-    if not to or not h_filter.exists():
+    if not to or not hot_id:
         return JsonResponse({
             'success': False,
             'err_msg': '参数错误'
+        })
+    h_filter = Hot.objects.filter(pk=hot_id)
+    if not h_filter.exists():
+        return JsonResponse({
+            'success': False,
+            'err_msg': '没有该热点'
         })
     hot = h_filter[0]
     hot.title = title
@@ -235,6 +240,22 @@ def update_hot(request):
         'rz': float(rz) or 0
     })
     hot.save()
+    return JsonResponse({'success': True})
+
+
+@csrf_exempt
+def delete_hot(request):
+    """
+    删除热点
+    """
+    hot_id = request.POST.get('id')
+    h_filter = Hot.objects.filter(pk=hot_id)
+    if not hot_id or not h_filter.exists():
+        return JsonResponse({
+            'success': False,
+            'err_msg': '参数错误'
+        })
+    h_filter.delete()
     return JsonResponse({'success': True})
 
 

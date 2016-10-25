@@ -515,6 +515,16 @@ button {
     background: #fff;
 }
 
+#mini-map {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 200px;
+    height: 200px;
+    z-index: 2;
+    background-color: #fff;
+}
+
 @media screen and (max-width: 900px) {
 
     #nav {
@@ -546,9 +556,8 @@ button {
 
 }
 
-
 /* TODO 临时 */
-#display{
+#display {
     position: absolute;
     left: 10px;
     top: 10px;

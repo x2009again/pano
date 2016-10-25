@@ -56,9 +56,10 @@ var VRAY = {};
         onLoad: function () {
         },
         /**
-         * 在canvas上右键的回调
+         * 相机方向变化事件
+         * @param cameraDirection 相机朝向
          */
-        onRightClick: function () {
+        onCameraChanged: function (cameraDirection) {
         },
         /**
          * 下一个场景载入中
@@ -145,7 +146,7 @@ var VRAY = {};
 
         _lockScene = true;  // 锁定场景（无法切换、拖动空间，添加、修改热点）
 
-        var _this = this;
+        var scope = this;
 
         // 拉取静态资源
         var loadedSize = 0;
@@ -264,7 +265,7 @@ var VRAY = {};
             $(_stage).fadeIn(3000);
 
             options.smoothStart ? smoothStart() : start();
-            options.autoPlay && _this.play();
+            options.autoPlay && scope.play();
 
         }
 
@@ -291,7 +292,7 @@ var VRAY = {};
      */
     VRAY.Scene.prototype.play = function () {
 
-        var _this = this;
+        var scope = this;
         if (options.smoothStart) {
             new TWEEN.Tween({fov: camera.fov, positionY: 20})
                 .to({fov: cameraFov, positionY: 0.01}, 2500)
@@ -337,6 +338,9 @@ var VRAY = {};
             orbitControls.enableKeys = false;
             orbitControls.enablePan = false;
             orbitControls.autoRotate = options.autoRotate;
+            orbitControls.addEventListener('change', function () {
+                callbacks.onCameraChanged(camera.getWorldDirection());
+            });
             // 初始化设备控制器
             deviceControls = new THREE.DeviceOrientationControls(camera, true);
             deviceControls.connect();
@@ -344,14 +348,14 @@ var VRAY = {};
 
             var $stage = $(_stage);
             // 鼠标事件
-            $stage.on('mousedown', mouseDown.bind(_this));
-            $stage.on('mousemove', mouseMove.bind(_this));
-            $stage.on('mouseup', mouseUp.bind(_this));
-            $stage.on('DOMMouseScroll mousewheel', mouseWheel.bind(_this));
+            $stage.on('mousedown', mouseDown.bind(scope));
+            $stage.on('mousemove', mouseMove.bind(scope));
+            $stage.on('mouseup', mouseUp.bind(scope));
+            $stage.on('DOMMouseScroll mousewheel', mouseWheel.bind(scope));
             // 触摸事件
-            $stage.on('touchstart', touchStart.bind(_this));
-            $stage.on('touchmove', touchMove.bind(_this));
-            $stage.on('touchend', touchEnd.bind(_this));
+            $stage.on('touchstart', touchStart.bind(scope));
+            $stage.on('touchmove', touchMove.bind(scope));
+            $stage.on('touchend', touchEnd.bind(scope));
 
             // 方向变化事件
             window.addEventListener('deviceorientation', onDeviceOrientation);
@@ -377,14 +381,14 @@ var VRAY = {};
         }
         var animateTime = 800;
         var timer = null;
-        var _this = this;
+        var scope = this;
         if (!materialDict[toSpaceId]) {
             callbacks.onShowing();
             timer = window.setInterval(function () {
                 if (materialDict[toSpaceId]) {
                     window.clearInterval(timer);
                     timer = null;
-                    _this.showSpace(SpaceId, hotId);
+                    scope.showSpace(SpaceId, hotId);
                 }
             }, 100);
             return false;

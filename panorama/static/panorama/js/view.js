@@ -77,6 +77,7 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
         fps: false,
         callbacks: {
             onLoad: onLoad,
+            onCameraChanged: onCameraChanged,
             onShowing: onShowing,
             onShown: onShown,
             onOverHot: onOverHot,
@@ -134,6 +135,10 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
         }
         bindUIListener();
         animate();
+    }
+
+    function onCameraChanged(cameraDirection) {
+        console.log(cameraDirection);
     }
 
     // 下一个场景加载中

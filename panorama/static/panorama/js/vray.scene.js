@@ -338,7 +338,7 @@ var VRAY = {};
             orbitControls.enableKeys = false;
             orbitControls.enablePan = false;
             orbitControls.autoRotate = options.autoRotate;
-            orbitControls.addEventListener('change', function () {
+            orbitControls.addEventListener('change', function (e) {
                 callbacks.onCameraChanged(camera.getWorldDirection());
             });
             // 初始化设备控制器
@@ -882,7 +882,9 @@ var VRAY = {};
 
     var onDeviceOrientation = function () {
         if (_walkMode) {
-            raycaster.set(sceneCenter, camera.getWorldDirection());
+            var cameraDirection = camera.getWorldDirection();
+            callbacks.onCameraChanged(cameraDirection);
+            raycaster.set(sceneCenter, cameraDirection);
             intersects = raycaster.intersectObjects(spaceHots);
             // 全部热点置为默认颜色
             for (var k = 0; k < spaceHots.length; k++) {
@@ -894,7 +896,7 @@ var VRAY = {};
                 selectedHot.material.color.set(0xffffff);
 
                 hotLeaved = false;
-                callbacks.onOverHot(selectedHot);  // TODO 应该使用相对于容器的位置
+                callbacks.onOverHot(currentSpace.hotInfoDict[selectedHot.hotId]);  // TODO 应该使用相对于容器的位置
             } else if (!hotLeaved) {
                 hotLeaved = true;  // onLeaveHot只执行一次
                 callbacks.onLeaveHot();

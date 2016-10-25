@@ -519,10 +519,24 @@ button {
     position: absolute;
     left: 0;
     top: 0;
-    width: 200px;
-    height: 200px;
+    width: 150px;
+    height: 150px;
     z-index: 2;
     background-color: #fff;
+}
+
+#mini-map i {
+    position: absolute;
+    width: 0;
+    height: 0;
+    left: 50%;
+    top: 50%;
+    transform: translateY(-50%) rotate(-90deg);
+    transform-origin: left center;
+    background-color: pink;
+    border-style: solid;
+    border-width: 10px 50px 10px 0;
+    border-color: white red;
 }
 
 @media screen and (max-width: 900px) {

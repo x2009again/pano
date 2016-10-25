@@ -137,8 +137,12 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
         animate();
     }
 
+    var $torch = $('#mini-map').find('i');
+
     function onCameraChanged(cameraDirection) {
-        console.log(cameraDirection);
+        // 弧度单位rad
+        var cssText = 'translateY(-50%) rotate(' + Math.atan2(cameraDirection.x, -cameraDirection.z) + 'rad)';
+        $torch.css({'transform': cssText});
     }
 
     // 下一个场景加载中

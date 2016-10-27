@@ -656,7 +656,7 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
             }
         }).dblclick(function () {
             var _this = this;
-            $(this).attr('step', window.prompt('请输入步长', _this.step));
+            $(this).attr('step', window.prompt('请输入步长', _this.step) || _this.step);
         });
 
         $('.range>i').click(function () {
@@ -729,7 +729,7 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
         });
         // 删除热点
         $('#delete-hot-btn').click(function () {
-            $.post('delete_hot', {
+            $.get('delete_hot', {
                 id: editingHotInfo.id
             }, function (data) {
                 if (data.success) {

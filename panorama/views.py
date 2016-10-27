@@ -243,12 +243,11 @@ def update_hot(request):
     return JsonResponse({'success': True})
 
 
-@csrf_exempt
 def delete_hot(request):
     """
     删除热点
     """
-    hot_id = request.POST.get('id')
+    hot_id = request.GET.get('id')
     h_filter = Hot.objects.filter(pk=hot_id)
     if not hot_id or not h_filter.exists():
         return JsonResponse({

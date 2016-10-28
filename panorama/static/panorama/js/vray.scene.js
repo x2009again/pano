@@ -6,6 +6,7 @@
 /** @namespace e.changedTouches */
 /** @namespace space.cache_url */
 // TODO 移除所有jquery依赖
+// TODO 焦点在input上时阻止键盘旋转
 var VRAY = {};
 (function (window, document, $, undefined) {
     "use strict";
@@ -609,7 +610,6 @@ var VRAY = {};
         var hotInfo = currentSpace.hotInfoDict[selectedHot.hotId];
         spheres[0].position.set(hotInfo.px || 0, hotInfo.py || 0, hotInfo.pz || 0);
         spheres[0].rotation.set(hotInfo.rx || 0, hotInfo.ry || 0, hotInfo.rz || 0);
-        console.log(hotInfo);
         return hotInfo;
     };
 
@@ -646,8 +646,14 @@ var VRAY = {};
         renderer.render(scene, camera);
     };
 
+    /**
+     * 应用热点数据
+     * @param transform
+     * @returns {*}
+     */
     VRAY.Scene.prototype.applyTransform = function (transform) {
         if (!_editingHot) return false;
+        transform.to && (spheres[1].material = materialDict[transform.to]);
         !isNaN(transform.opacity) && (spheres[1].material.opacity = Math.min(0.8, Math.max(0.3, transform.opacity)));
         !isNaN(transform.px) && (spheres[0].position.x = Math.min(70, Math.max(-70, transform.px)));
         !isNaN(transform.py) && (spheres[0].position.y = Math.min(70, Math.max(-70, transform.py)));

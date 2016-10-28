@@ -338,11 +338,11 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
                                 var space = tempSpaceDict[key];
                                 saved = false;
                                 vrayScene.addSpace(space);
-                                // TODO 同时修改下拉列表
                                 $spaceBar.append('<li class="space-ele" id="space_id_' + key + '" data-index="' + key + '">' +
                                     '<div class="ele-pic"><img src="' + space.thumb_url + '"/></div>' +
                                     '<div class="ele-name"><input type="text" value=""/><span>' + space.name + '</span></div>' +
-                                    '<div class="ele-ope"><div class="ele-ope-edit"></div><div class="ele-ope-del"></div></div></li>');
+                                    '<div class="ele-ope"><div class="ele-ope-edit"></div><div class="ele-ope-del"></div></div>' +
+                                    '</li>');
                                 if (i == operateLength) {
                                     if ($spaceBar.find('li').length > 1) {
                                         $spaceBar.removeClass('no-del');
@@ -628,6 +628,13 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
             vrayScene.lockScene = false;
             vrayScene.addingHot = true;
             $pickHot.addClass('active');
+        });
+
+
+        // 热点编辑面板
+        $hotToInput.change(function () {
+            transform = vrayScene.applyTransform({to: this.value,opacity: 0.5});
+            $opacityInput.val(transform.opacity);
         });
         $editPanel.find('.range input').on('input', function () {
             switch (true) {

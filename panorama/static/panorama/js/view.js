@@ -6,11 +6,11 @@
 var sceneId = getParam('scene_id');
 $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, function (ret) {
     if (!ret.success) {
-        alert(ret.err_msg);
+        alert(ret['err_msg']);
         return false;
     }
-    var sceneInfo = ret.scene;
-    var seller = ret.seller;
+    var sceneInfo = ret['scene'];
+    var seller = ret['seller'];
     var spaceList = ret.spaceList;
 
     var fromMobile = !fromPC();
@@ -85,7 +85,7 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
         }
     };
 
-    var vrayScene = new VRAY.Scene(options);
+    var panorama = new Panorama(options);
 
     // 首屏载入成功
     function onLoad() {
@@ -170,11 +170,11 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
         } else {
             $hotTitle.hide();
         }
-        if (vrayScene.walkMode && !switchSpaceDelayer) {
+        if (panorama.walkMode && !switchSpaceDelayer) {
             switchSpaceDelayer = window.setTimeout(function () {
                 window.clearTimeout(switchSpaceDelayer);
                 switchSpaceDelayer = null;
-                vrayScene.showSpace(hotInfo.to, hotInfo.id);
+                panorama.showSpace(hotInfo.to, hotInfo.id);
             }, 2000)
         }
     }
@@ -191,7 +191,7 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
 
     window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
     function animate() {
-        vrayScene.update();  // 更新场景数据
+        panorama.update();  // 更新场景数据
         requestAnimationFrame(animate);
     }
 
@@ -226,14 +226,14 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
         $playBtn.click(function () {
             $mask.fadeOut(500);
             $playBtn.stop().fadeOut(500);
-            vrayScene.play();
+            panorama.play();
             $nav.addClass(fromMobile ? 'mobile-show' : 'show');
             return false;
         });
 
         // 切换场景
         $gallery.on('click', 'li', function () {
-            vrayScene.showSpace($(this).data('index'));
+            panorama.showSpace($(this).data('index'));
             return false;
         });
 
@@ -259,7 +259,7 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
                 $.alert({message: '您的设备不支持该模式'});
                 return false;
             }
-            vrayScene.walkMode = !vrayScene.walkMode;
+            panorama.walkMode = !panorama.walkMode;
             switchCrossMode();
             return false;
         });
@@ -273,11 +273,11 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
                 $.alert({message: '请使用横屏进入VR模式'});
                 return false;
             }
-            if (vrayScene.stereoMode) {
-                vrayScene.walkMode = vrayScene.stereoMode = false;
+            if (panorama.stereoMode) {
+                panorama.walkMode = panorama.stereoMode = false;
                 $nav.addClass(fromMobile ? 'mobile-show' : 'show');
             } else {
-                vrayScene.walkMode = vrayScene.stereoMode = true;
+                panorama.walkMode = panorama.stereoMode = true;
                 $vrClose.fadeIn();
                 $vrOpen.addClass('active');
                 $nav.removeClass('mobile-show show');
@@ -287,7 +287,7 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
         });
         // 退出VR模式
         $vrClose.click(function () {
-            vrayScene.walkMode = vrayScene.stereoMode = false;
+            panorama.walkMode = panorama.stereoMode = false;
             $nav.addClass(fromMobile ? 'mobile-show' : 'show');
             $vrClose.fadeOut();
             switchCrossMode();
@@ -297,9 +297,9 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
         function switchCrossMode() {
             $doubleCross.hide();
             $cross.hide();
-            if (vrayScene.stereoMode) {
+            if (panorama.stereoMode) {
                 $doubleCross.show();
-            } else if (vrayScene.walkMode) {
+            } else if (panorama.walkMode) {
                 $cross.show();
                 console.log($cross);
             }
@@ -346,12 +346,12 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
     window.addEventListener('orientationchange', function () {
         if (window.orientation == 90 || window.orientation == -90) {
             // alert('现在是横屏！');
-            if (vrayScene.stereoMode) {
+            if (panorama.stereoMode) {
                 $.alert.close();
             }
         } else {
             // alert('现在是竖屏！');
-            if (vrayScene.stereoMode) {
+            if (panorama.stereoMode) {
                 $.alert({message: '请使用横屏进入VR模式'});
             }
         }
@@ -369,18 +369,18 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
         galleryScrollWidth = spaceCount * (liWidth + 5) - 5; // li有margin-right=5
         maxScrollLeft = galleryScrollWidth - $gallery.width();
         (maxScrollLeft < 0) && (maxScrollLeft = 0);
-        vrayScene.resize($container.width(), $container.height());
+        panorama.resize($container.width(), $container.height());
     }, false);
 
-    function launchFullScreen(element) {
-        if (element.requestFullscreen) {
-            element.requestFullscreen();
-        } else if (element.mozRequestFullScreen) {
-            element.mozRequestFullScreen();
-        } else if (element.webkitRequestFullscreen) {
-            element.webkitRequestFullscreen();
-        } else if (element.msRequestFullscreen) {
-            element.msRequestFullscreen();
+    function launchFullScreen(ele) {
+        if (ele.requestFullscreen) {
+            ele.requestFullscreen();
+        } else if (ele.mozRequestFullScreen) {
+            ele.mozRequestFullScreen();
+        } else if (ele.webkitRequestFullscreen) {
+            ele.webkitRequestFullscreen();
+        } else if (ele.msRequestFullscreen) {
+            ele.msRequestFullscreen();
         }
     }
 

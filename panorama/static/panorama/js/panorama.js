@@ -7,7 +7,7 @@
 /** @namespace space.cache_url */
 // TODO 移除所有jquery依赖
 // TODO 焦点在input上时阻止键盘旋转
-var VRAY = {};
+var Panorama = null;
 (function (window, document, $, undefined) {
     "use strict";
 
@@ -98,7 +98,7 @@ var VRAY = {};
         }
     };
 
-    VRAY.Scene = function (opt) {
+    Panorama = function (opt) {
         // 默认设置
         var defaults = {
             container: document.body,
@@ -291,7 +291,7 @@ var VRAY = {};
     /**
      * 开始播放场景
      */
-    VRAY.Scene.prototype.play = function () {
+    Panorama.prototype.play = function () {
 
         var scope = this;
         if (options.smoothStart) {
@@ -369,7 +369,7 @@ var VRAY = {};
      * @param hotId 触发的热点编号（用于转场效果）
      * @returns {boolean}
      */
-    VRAY.Scene.prototype.showSpace = function (SpaceId, hotId) {
+    Panorama.prototype.showSpace = function (SpaceId, hotId) {
         if (_lockScene || transiting || _editingHot) return false;
         var toSpaceId = SpaceId;
         var hotInfo;
@@ -485,7 +485,7 @@ var VRAY = {};
      * 添加新空间
      * @param space
      */
-    VRAY.Scene.prototype.addSpace = function (space) {
+    Panorama.prototype.addSpace = function (space) {
         if (!_spacesDict[space.id]) {
             _spacesDict[space.id] = space;
             textureLoader.load(space.url, function (texture) {
@@ -505,7 +505,7 @@ var VRAY = {};
      * 移除空间
      * @param spaceId
      */
-    VRAY.Scene.prototype.removeSpace = function (spaceId) {
+    Panorama.prototype.removeSpace = function (spaceId) {
         if (_spacesDict[spaceId]) {
             delete _spacesDict[spaceId];
             materialDict[spaceId].disabled = true;
@@ -515,7 +515,7 @@ var VRAY = {};
     /**
      * 根据鼠标位置获取热点位置
      */
-    VRAY.Scene.prototype.get3DPos = function (pos) {
+    Panorama.prototype.get3DPos = function (pos) {
         // 根据鼠标位置创建射线
         pos.x = (pos.x / STAGE_WIDTH) * 2 - 1;
         pos.y = -(pos.y / STAGE_HEIGHT) * 2 + 1;
@@ -538,7 +538,7 @@ var VRAY = {};
      * @param hotPos 热点位置
      * @param title
      */
-    VRAY.Scene.prototype.addHot = function (hotId, to, hotPos, title) {
+    Panorama.prototype.addHot = function (hotId, to, hotPos, title) {
         if (!(hotId && to && hotPos)) {
             console.error('无法创建热点');
             return false;
@@ -579,7 +579,7 @@ var VRAY = {};
      * @param title
      * @param transform
      */
-    VRAY.Scene.prototype.saveHot = function (to, title, transform) {
+    Panorama.prototype.saveHot = function (to, title, transform) {
         if (to == currentSpace.id) {
             console.error('不可与当前场景相同');
             return false;
@@ -603,7 +603,7 @@ var VRAY = {};
      * 重置转场动画
      * @returns {{rx, ry, rz, px, py, pz}}
      */
-    VRAY.Scene.prototype.resetHot = function () {
+    Panorama.prototype.resetHot = function () {
         spheres[0].material = materialDict[currentSpace.id];
         spheres[1].material = materialDict[currentSpace.hotInfoDict[hot2beEdit.hotId].to];
         spheres[1].material.opacity = 0.5;
@@ -617,14 +617,14 @@ var VRAY = {};
      * 删除热点
      * @param hotId
      */
-    VRAY.Scene.prototype.deleteHot = function (hotId) {
+    Panorama.prototype.deleteHot = function (hotId) {
         spheres[1].remove(currentSpace.hotInfoDict[hotId].mesh);
         delete currentSpace.hotInfoDict[hotId];
         initHotSpots(true);  // 重新收集热点
         this.editingHot = false;
     };
 
-    VRAY.Scene.prototype.changeLogo = function (logoUrl) {
+    Panorama.prototype.changeLogo = function (logoUrl) {
         logoMesh.material = new THREE.MeshBasicMaterial({
             map: textureLoader.load(logoUrl),
             transparent: true,
@@ -637,7 +637,7 @@ var VRAY = {};
      * @param stageWidth
      * @param stageHeight
      */
-    VRAY.Scene.prototype.resize = function (stageWidth, stageHeight) {
+    Panorama.prototype.resize = function (stageWidth, stageHeight) {
         STAGE_WIDTH = stageWidth;
         STAGE_HEIGHT = stageHeight;
         renderer.setSize(STAGE_WIDTH, STAGE_HEIGHT);
@@ -651,7 +651,7 @@ var VRAY = {};
      * @param transform
      * @returns {*}
      */
-    VRAY.Scene.prototype.applyTransform = function (transform) {
+    Panorama.prototype.applyTransform = function (transform) {
         if (!_editingHot) return false;
         transform.to && (spheres[1].material = materialDict[transform.to]);
         !isNaN(transform.opacity) && (spheres[1].material.opacity = Math.min(0.8, Math.max(0.3, transform.opacity)));
@@ -911,27 +911,27 @@ var VRAY = {};
     };
 
     // 定义stage属性（只读）
-    Object.defineProperty(VRAY.Scene.prototype, "stage", {
+    Object.defineProperty(Panorama.prototype, "stage", {
         get: function () {
             return _stage;
         }
     });
     // 定义spaceId属性（只读）
-    Object.defineProperty(VRAY.Scene.prototype, "spaceId", {
+    Object.defineProperty(Panorama.prototype, "spaceId", {
         get: function () {
             return currentSpace.id;
         }
     });
 
     // 定义spacesDict属性（只读）
-    Object.defineProperty(VRAY.Scene.prototype, "spacesDict", {
+    Object.defineProperty(Panorama.prototype, "spacesDict", {
         get: function () {
             return _spacesDict;
         }
     });
 
     // 定义stereoMode属性
-    Object.defineProperty(VRAY.Scene.prototype, "stereoMode", {
+    Object.defineProperty(Panorama.prototype, "stereoMode", {
         set: function (val) {
             _stereoMode = !!val;
             if (_stereoMode) {
@@ -948,7 +948,7 @@ var VRAY = {};
     });
 
     // 定义walkMode属性
-    Object.defineProperty(VRAY.Scene.prototype, "walkMode", {
+    Object.defineProperty(Panorama.prototype, "walkMode", {
         set: function (val) {
             _walkMode = !!val;
 
@@ -968,7 +968,7 @@ var VRAY = {};
     });
 
     // 定义addingHot属性
-    Object.defineProperty(VRAY.Scene.prototype, "addingHot", {
+    Object.defineProperty(Panorama.prototype, "addingHot", {
         set: function (val) {
             _addingHot = hotSpot.visible = !!val;
         },
@@ -978,7 +978,7 @@ var VRAY = {};
     });
 
     // 定义editingHot属性
-    Object.defineProperty(VRAY.Scene.prototype, "editingHot", {
+    Object.defineProperty(Panorama.prototype, "editingHot", {
         set: function (val) {
             _editingHot = !!val;
             if (!_editingHot) {
@@ -994,7 +994,7 @@ var VRAY = {};
     });
 
     // 定义lockScene属性
-    Object.defineProperty(VRAY.Scene.prototype, "lockScene", {
+    Object.defineProperty(Panorama.prototype, "lockScene", {
         set: function (val) {
             _lockScene = !!val;
             orbitControls.enableRotate = !val;
@@ -1004,7 +1004,7 @@ var VRAY = {};
         }
     });
 
-    VRAY.Scene.prototype.update = function () {
+    Panorama.prototype.update = function () {
         TWEEN.update();
         if (orbitControls && orbitControls.enabled) orbitControls.update();
         if (deviceControls && deviceControls.enabled) deviceControls.update();

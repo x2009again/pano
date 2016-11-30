@@ -7,7 +7,6 @@
 /** @namespace space.cache_url */
 // TODO 移除所有jquery依赖
 // TODO 焦点在input上时阻止键盘旋转
-var Panorama = null;
 (function (window, document, $, undefined) {
     "use strict";
 
@@ -39,6 +38,8 @@ var Panorama = null;
         spaceHots = [],
         materialDict = {},  // 材质集合
         transiting = false;  // 正在进行过渡动画
+
+    var renderOver = null;
 
     // 可访问变量
     var _stage = null,  // canvas容器
@@ -98,7 +99,7 @@ var Panorama = null;
         }
     };
 
-    Panorama = function (opt) {
+    var Panorama = function (opt) {
         // 默认设置
         var defaults = {
             container: document.body,
@@ -272,19 +273,20 @@ var Panorama = null;
 
         // 进入场景（普通）
         var start = function () {
-            camera.position.set(0.001, 0, 0);
+            camera.position.set(0, 0, -0.001);
             camera.fov = cameraFov;
             camera.lookAt(sceneCenter);
         };
 
         // 进入场景（平滑过渡）
         var smoothStart = function () {
-            if (options.autoRotate) spheres[1].rotation.y = -Math.PI / 2;  // 用于向右旋转球体
             spheres[1].rotation.set(0, 0, 0);
-            camera.position.set(0, 20, 0);
+            if (options.autoRotate) spheres[1].rotation.y = -Math.PI / 2;  // 用于向右旋转球体
+            camera.position.set(0, 30, 0.1);
+            camera.rotation.set(0, 0, 0);
             camera.fov = 160;
-            camera.rotation.x = -Math.PI / 1.6;
-            camera.updateProjectionMatrix();
+            console.log(camera.rotation);
+            camera.rotation.x = -Math.PI / 2;
         };
     };
 
@@ -294,42 +296,47 @@ var Panorama = null;
     Panorama.prototype.play = function () {
 
         var scope = this;
-        if (options.smoothStart) {
-            new TWEEN.Tween({fov: camera.fov, positionY: 20})
-                .to({fov: cameraFov, positionY: 0.01}, 2500)
-                .easing(TWEEN.Easing.Quadratic.InOut)
-                .onUpdate(function () {
-                    camera.fov = this.fov;
-                    camera.position.y = this.positionY;
-                    camera.updateProjectionMatrix();
-                }).start();
-            new TWEEN.Tween({rotateX: -Math.PI / 1.6})
-                .to({rotateX: 0}, 3000)
-                .easing(TWEEN.Easing.Quadratic.InOut)
-                .onUpdate(function () {
-                    camera.rotation.x = this.rotateX;
-                }).onComplete(function () {
-                camera.position.set(0, 0, 0.001);
-                _lockScene = false;
-                initControls();
-            }).delay(300).start();
+        renderOver = function () {
+            if (options.smoothStart) {
 
-            if (options.autoRotate) {  // 如果需要在平滑进入时自动旋转
-                new TWEEN.Tween({rotateY: -Math.PI / 2})
-                    .to({rotateY: 0}, 3000)
+                // 相机沿Y轴负方向移动到0
+                new TWEEN.Tween({fov: 160, positionY: 30})
+                    .to({fov: cameraFov, positionY: 0}, 3000)
                     .easing(TWEEN.Easing.Quadratic.InOut)
                     .onUpdate(function () {
-                        spheres[1].rotation.y = this.rotateY;
-                    }).delay(300)
-                    .start();
+                        camera.position.y = this.positionY;
+                        camera.fov = this.fov;
+                        camera.updateProjectionMatrix();
+                    }).start();
+                // 相机镜头从下到朝Z轴负方向
+                new TWEEN.Tween({rotateX: -Math.PI / 2})
+                    .to({rotateX: 0}, 3000)
+                    .easing(TWEEN.Easing.Quadratic.InOut)
+                    .onUpdate(function () {
+                        camera.rotation.x = this.rotateX;
+                    }).onComplete(function () {
+                    camera.position.set(0, 0, 0.1);
+                    _lockScene = false;
+                    initControls();
+                }).delay(500).start();
+
+                if (options.autoRotate) {  // 如果需要在平滑进入时自动旋转
+                    new TWEEN.Tween({rotateY: -Math.PI / 2})
+                        .to({rotateY: 0}, 3000)
+                        .easing(TWEEN.Easing.Quadratic.InOut)
+                        .onUpdate(function () {
+                            spheres[1].rotation.y = this.rotateY;
+                        }).delay(1000).start();
+                }
+            } else {
+                _lockScene = false;
+                initControls();
             }
-        } else {
-            _lockScene = false;
-            initControls();
-        }
+        };
 
         function initControls() {
             orbitControls = new THREE.OrbitControls(camera, _stage);
+            orbitControls.target = sceneCenter;
             orbitControls.autoRotateSpeed = 0.07;
             orbitControls.enableRotate = true;
             orbitControls.enableDamping = true;
@@ -412,73 +419,75 @@ var Panorama = null;
         });
         console.log('from：' + currentSpace.id + ' → to：' + toSpaceId);
         spheres[0].material = spheres[1].material;
-        callbacks.onShown(toSpaceId);
         materialDict[toSpaceId].opacity = 0;
         spheres[1].material = materialDict[toSpaceId];  //修改小球材质
         currentSpace = _spacesDict[toSpaceId];
 
-        if (hotInfo && (hotInfo.px || hotInfo.py || hotInfo.pz || hotInfo.rx || hotInfo.ry || hotInfo.rz)) {
-            // 有转场效果
-            logoMesh.visible = false;
-            // 大球移近
-            var tween0 = new TWEEN.Tween({
-                px: 0,
-                py: 0,
-                pz: 0,
-                rx: 0,
-                ry: 0,
-                rz: 0
-            }).to(hotInfo, animateTime)
-                .easing(TWEEN.Easing.Quadratic.InOut)
-                .onUpdate(function () {
-                    spheres[0].position.set(this.px, this.py, this.pz);
-                    spheres[0].rotation.set(this.rx, this.ry, this.rz);
-                });
-            // 小球移近
-            var tween1_1 = new TWEEN.Tween({
-                px: -hotInfo.px,
-                py: -hotInfo.py,
-                pz: -hotInfo.pz,
-                rx: -hotInfo.rx,
-                ry: -hotInfo.ry,
-                rz: -hotInfo.rz
-            }).to({px: 0, py: 0, pz: 0, rx: 0, ry: 0, rz: 0}, animateTime)
-                .easing(TWEEN.Easing.Quadratic.InOut)
-                .onUpdate(function () {
-                    spheres[1].position.set(this.px, this.py, this.pz);
-                    spheres[1].rotation.set(this.rx, this.ry, this.rz);
-                });
-            // 小球opacity增加
-            var tween1_2 = new TWEEN.Tween({opacity: 0})
-                .to({opacity: 1}, animateTime)
-                .easing(TWEEN.Easing.Quadratic.InOut)
-                .onUpdate(function () {
-                    spheres[1].material.opacity = this.opacity;
-                }).onComplete(function () {
+        renderOver = function () {
+            callbacks.onShown(toSpaceId);
+            if (hotInfo && (hotInfo.px || hotInfo.py || hotInfo.pz || hotInfo.rx || hotInfo.ry || hotInfo.rz)) {
+                // 有转场效果
+                logoMesh.visible = false;
+                // 大球移近
+                var tween0 = new TWEEN.Tween({
+                    px: 0,
+                    py: 0,
+                    pz: 0,
+                    rx: 0,
+                    ry: 0,
+                    rz: 0
+                }).to(hotInfo, animateTime)
+                    .easing(TWEEN.Easing.Quadratic.InOut)
+                    .onUpdate(function () {
+                        spheres[0].position.set(this.px, this.py, this.pz);
+                        spheres[0].rotation.set(this.rx, this.ry, this.rz);
+                    });
+                // 小球移近
+                var tween1_1 = new TWEEN.Tween({
+                    px: -hotInfo.px,
+                    py: -hotInfo.py,
+                    pz: -hotInfo.pz,
+                    rx: -hotInfo.rx,
+                    ry: -hotInfo.ry,
+                    rz: -hotInfo.rz
+                }).to({px: 0, py: 0, pz: 0, rx: 0, ry: 0, rz: 0}, animateTime)
+                    .easing(TWEEN.Easing.Quadratic.InOut)
+                    .onUpdate(function () {
+                        spheres[1].position.set(this.px, this.py, this.pz);
+                        spheres[1].rotation.set(this.rx, this.ry, this.rz);
+                    });
+                // 小球opacity增加
+                var tween1_2 = new TWEEN.Tween({opacity: 0})
+                    .to({opacity: 1}, animateTime)
+                    .easing(TWEEN.Easing.Quadratic.InOut)
+                    .onUpdate(function () {
+                        spheres[1].material.opacity = this.opacity;
+                    }).onComplete(function () {
+                        spheres[0].position.set(0, 0, 0);
+                        spheres[0].rotation.set(0, 0, 0);
+                        logoMesh.visible = true;
+                        initHotSpots();
+                        transiting = false;
+                    });
+                tween0.start();
+                tween1_1.start();
+                tween1_2.delay(animateTime * 2 / 3).start();
+            } else {
+                // 直接切换
+                new TWEEN.Tween({opacity: 0})
+                    .to({opacity: 1}, 1000)
+                    .easing(TWEEN.Easing.Quadratic.InOut)
+                    .onUpdate(function () {
+                        spheres[1].material.opacity = this.opacity;
+                    }).onComplete(function () {
                     spheres[0].position.set(0, 0, 0);
-                    spheres[0].rotation.set(0, 0, 0);
+                    spheres[1].position.set(0, 0, 0);
                     logoMesh.visible = true;
                     initHotSpots();
                     transiting = false;
-                });
-            tween0.start();
-            tween1_1.start();
-            tween1_2.delay(animateTime * 2 / 3).start();
-        } else {
-            // 直接切换
-            new TWEEN.Tween({opacity: 0})
-                .to({opacity: 1}, animateTime)
-                .easing(TWEEN.Easing.Quadratic.InOut)
-                .onUpdate(function () {
-                    spheres[1].material.opacity = this.opacity;
-                }).onComplete(function () {
-                spheres[0].position.set(0, 0, 0);
-                spheres[1].position.set(0, 0, 0);
-                logoMesh.visible = true;
-                initHotSpots();
-                transiting = false;
-            }).start();
-        }
+                }).start();
+            }
+        };
     };
 
     /**
@@ -722,7 +731,7 @@ var Panorama = null;
     var mouseMove = function ($e) {
         if (!(_lockScene || transiting || $e.which == 3)) {
             // 2px内认为没有拖动
-            if ((Math.abs(parseInt(startPoint1.x) - parseInt($e.pageX)) > 2) || (Math.abs(parseInt(startPoint1.y) - parseInt($e.pageY)) > 2)) {
+            if (clicking && ((Math.abs(parseInt(startPoint1.x) - parseInt($e.pageX)) > 2) || (Math.abs(parseInt(startPoint1.y) - parseInt($e.pageY)) > 2))) {
                 orbitControls.autoRotate = clicking = false;
             }
             if (_addingHot) {  // 开始添加热点
@@ -850,8 +859,7 @@ var Panorama = null;
                 // 2px内认为没有拖动
                 if (clicking && ((Math.abs(parseInt(startPoint1.x) - parseInt(touch0X)) > 2) || (Math.abs(parseInt(startPoint1.y) - parseInt(touch0Y)) > 2))) {
                     // 标为移动操作
-                    clicking = false;
-                    orbitControls.autoRotate = false;
+                    orbitControls.autoRotate = clicking = false;
                 }
                 if (e.touches.length > 1) {  // 如果是双指操作
                     // TODO 回弹效果
@@ -877,7 +885,7 @@ var Panorama = null;
                     if (intersects.length > 0) {// 触击热点
                         this.showSpace(null, intersects[0].object.hotId);
                     } else if (spaceHots.length > 0) {  // 触击空白处
-                        alert('触击空白处');
+                        // alert('触击空白处');
                     }
                 }
 
@@ -1014,6 +1022,12 @@ var Panorama = null;
         } else {
             renderer.render(scene, camera);
         }
+        if (renderOver) {  // 执行渲染完后的方法（只执行一次）
+            renderOver();
+            renderOver = null;
+        }
     };
+
+    window.Panorama = Panorama;  // 暴露Panorama对象
 
 })(window, document, jQuery);

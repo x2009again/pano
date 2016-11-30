@@ -57,9 +57,9 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
     // 商户信息
     var logoUrl = seller.logo || '/panorama/img/logo/logo.png';
     document.getElementById('seller-logo').src = logoUrl;
-    document.getElementById('seller-name').innerHTML = seller.name || '';
-    document.getElementById('seller-phone').innerHTML = seller.phone || '';
-    document.getElementById('seller-address').innerHTML = '杭州市萧山区杭州市萧山区杭州市萧山区杭州市萧山区杭州市萧山区杭州市萧山区杭州市萧山区';
+    document.getElementById('seller-name').innerHTML = seller['name'] || '';
+    document.getElementById('seller-phone').innerHTML = seller['phone'] || '';
+    document.getElementById('seller-address').innerHTML = seller['address'] || '';
     var hotImg = '/static/panorama/img/foot_step.png';
     var entry = sceneInfo.entry;
 
@@ -134,7 +134,9 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
             $playBtn.fadeIn(1000);
         }
         bindUIListener();
-        animate();
+        window.setInterval(function () {
+            panorama.update();  // 更新场景数据
+        }, 1);
     }
 
     var $torch = $('#mini-map').find('i');
@@ -190,10 +192,7 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
 
 
     window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
-    function animate() {
-        panorama.update();  // 更新场景数据
-        requestAnimationFrame(animate);
-    }
+
 
     function bindUIListener() {
         // 导航栏滚动操作

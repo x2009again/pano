@@ -523,6 +523,7 @@ button {
     height: 150px;
     z-index: 2;
     background-color: #fff;
+    display: none;
 }
 
 #mini-map i {

@@ -214,7 +214,6 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
 
     function bindUIListener() {
 
-
         /** ======================================  event  ====================================== **/
 
         var $pickHot_click = function () {

@@ -15,6 +15,10 @@ def index(request):
     )
 
 
+def canvas_merge(request):
+    return render_to_response('panorama/canvas_merge.html')
+
+
 def view(request):
     return render_to_response('panorama/view.html')
 

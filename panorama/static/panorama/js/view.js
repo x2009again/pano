@@ -71,10 +71,10 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
         hotImg: hotImg,
         spaceList: spaceList,
         entry: entry,
-        smoothStart: false,
-        autoPlay: true,
-        autoRotate: false,
-        fps: false,
+        smoothStart: true,
+        autoPlay: false,
+        autoRotate: true,
+        fps: true,
         callbacks: {
             onLoad: onLoad,
             onCameraChanged: onCameraChanged,
@@ -127,16 +127,21 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
         }
 
         // 隐藏loading动画
-        $loading.fadeOut(1000);
+        $loading.removeClass('show');
+        if (options.autoPlay) {
+            $mask.hide();
+        } else {
+            $playBtn.show();
+        }
+
+        /*$loading.fadeOut(1000);
         if (options.autoPlay) {
             $mask.fadeOut(1000);
         } else {
             $playBtn.fadeIn(1000);
-        }
+        }*/
+        animate();
         bindUIListener();
-        window.setInterval(function () {
-            panorama.update();  // 更新场景数据
-        }, 1);
     }
 
     var $torch = $('#mini-map').find('i');
@@ -150,13 +155,15 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
     // 下一个场景加载中
     function onShowing() {
         $mask.show();
-        $loading.stop().fadeIn(1000);
+        $loading.addClass('show');
+        // $loading.stop().fadeIn(1000);
     }
 
     // 场景切换完毕
     function onShown(spaceId) {
         $mask.hide();
-        $loading.stop().fadeOut(700);
+        $loading.removeClass('show');
+        // $loading.stop().fadeOut(700);
         $gallery.find('.active').removeClass('active');
         $('#space_id_' + spaceId).addClass('active');
     }
@@ -192,7 +199,10 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
 
 
     window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
-
+    function animate() {
+        panorama.update();  // 更新场景数据
+        requestAnimationFrame(animate);
+    }
 
     function bindUIListener() {
         // 导航栏滚动操作

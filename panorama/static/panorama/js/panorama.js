@@ -132,12 +132,7 @@
         stereoRenderer = new THREE.StereoEffect(renderer);
         stereoRenderer.setSize(STAGE_WIDTH, STAGE_HEIGHT);
         _stage = renderer.domElement;
-        // 设置样式
-        _stage.style.cursor = 'move';
-        _stage.style.zIndex = '1';
-        _stage.style.display = 'none';
-        _stage.style.position = 'absolute';
-        _stage.style.backgroundColor = '#000';
+        _stage.id = 'scene-canvas';
         options.container.appendChild(_stage);
 
         textureLoader = new THREE.TextureLoader();
@@ -264,9 +259,10 @@
             initHotSpots();
             spheres[0].material = spheres[1].material;
             renderer.render(scene, camera);
-            $(_stage).fadeIn(3000);
+            _stage.className = 'show';
 
             options.smoothStart ? smoothStart() : start();
+            camera.updateProjectionMatrix();
             options.autoPlay && scope.play();
 
         }
@@ -442,22 +438,8 @@
                         spheres[0].position.set(this.px, this.py, this.pz);
                         spheres[0].rotation.set(this.rx, this.ry, this.rz);
                     });
-                // 小球移近
-                var tween1_1 = new TWEEN.Tween({
-                    px: -hotInfo.px,
-                    py: -hotInfo.py,
-                    pz: -hotInfo.pz,
-                    rx: -hotInfo.rx,
-                    ry: -hotInfo.ry,
-                    rz: -hotInfo.rz
-                }).to({px: 0, py: 0, pz: 0, rx: 0, ry: 0, rz: 0}, animateTime)
-                    .easing(TWEEN.Easing.Quadratic.InOut)
-                    .onUpdate(function () {
-                        spheres[1].position.set(this.px, this.py, this.pz);
-                        spheres[1].rotation.set(this.rx, this.ry, this.rz);
-                    });
                 // 小球opacity增加
-                var tween1_2 = new TWEEN.Tween({opacity: 0})
+                var tween1 = new TWEEN.Tween({opacity: 0})
                     .to({opacity: 1}, animateTime)
                     .easing(TWEEN.Easing.Quadratic.InOut)
                     .onUpdate(function () {
@@ -470,8 +452,8 @@
                         transiting = false;
                     });
                 tween0.start();
-                tween1_1.start();
-                tween1_2.delay(animateTime * 2 / 3).start();
+                tween1.delay(animateTime - 250).start();
+                spheres[0].getWorldPosition()
             } else {
                 // 直接切换
                 new TWEEN.Tween({opacity: 0})
@@ -593,18 +575,18 @@
             console.error('不可与当前场景相同');
             return false;
         }
-        var hotInfo = Object.assign({},
-            currentSpace.hotInfoDict[hot2beEdit.hotId], {
-                to: to,
-                title: title,
-                rx: transform.rx,
-                ry: transform.ry,
-                rz: transform.rz,
-                px: transform.px,
-                py: transform.py,
-                pz: transform.pz
-            });
-        Object.assign(currentSpace.hotInfoDict[hot2beEdit.hotId], hotInfo);
+        Object.assign(currentSpace.hotInfoDict[hot2beEdit.hotId], {
+            to: to,
+            title: title,
+            rx: transform.rx,
+            ry: transform.ry,
+            rz: transform.rz,
+            px: transform.px,
+            py: transform.py,
+            pz: transform.pz
+        });
+        console.log(transform);
+        console.log(currentSpace.hotInfoDict[hot2beEdit.hotId]);
         this.editingHot = false;
     };
 
@@ -614,6 +596,8 @@
      */
     Panorama.prototype.resetHot = function () {
         spheres[0].material = materialDict[currentSpace.id];
+        console.log(materialDict);
+        console.log(currentSpace.hotInfoDict[hot2beEdit.hotId]);
         spheres[1].material = materialDict[currentSpace.hotInfoDict[hot2beEdit.hotId].to];
         spheres[1].material.opacity = 0.5;
         var hotInfo = currentSpace.hotInfoDict[selectedHot.hotId];
@@ -663,21 +647,49 @@
     Panorama.prototype.applyTransform = function (transform) {
         if (!_editingHot) return false;
         transform.to && (spheres[1].material = materialDict[transform.to]);
-        !isNaN(transform.opacity) && (spheres[1].material.opacity = Math.min(0.8, Math.max(0.3, transform.opacity)));
-        !isNaN(transform.px) && (spheres[0].position.x = Math.min(70, Math.max(-70, transform.px)));
-        !isNaN(transform.py) && (spheres[0].position.y = Math.min(70, Math.max(-70, transform.py)));
-        !isNaN(transform.pz) && (spheres[0].position.z = Math.min(70, Math.max(-70, transform.pz)));
-        !isNaN(transform.rx) && (spheres[0].rotation.x = Math.min(1.5, Math.max(-1.5, transform.rx)));
-        !isNaN(transform.ry) && (spheres[0].rotation.y = Math.min(1.5, Math.max(-1.5, transform.ry)));
-        !isNaN(transform.rz) && (spheres[0].rotation.z = Math.min(1.5, Math.max(-1.5, transform.rz)));
+        var opacity = parseFloat(transform.opacity),
+            px = parseFloat(transform.px),
+            py = parseFloat(transform.py),
+            pz = parseFloat(transform.pz),
+            rx = parseFloat(transform.rx),
+            ry = parseFloat(transform.ry),
+            rz = parseFloat(transform.rz);
+        if (!isNaN(opacity)) {
+            spheres[1].material.opacity = transform.opacity = opacity = parseFloat(Math.min(0.8, Math.max(0.3, opacity)).toFixed(4));
+            spheres[1].material.opacity = opacity;
+        }
+        if (!isNaN(px)) {
+            spheres[0].position.x = transform.px = px = parseFloat(Math.min(70, Math.max(-70, px)).toFixed(4));
+            spheres[0].material.px = px;
+        }
+        if (!isNaN(py)) {
+            spheres[0].position.y = transform.py = py = parseFloat(Math.min(70, Math.max(-70, py)).toFixed(4));
+            spheres[0].material.py = py;
+        }
+        if (!isNaN(pz)) {
+            spheres[0].position.z = transform.pz = pz = parseFloat(Math.min(70, Math.max(-70, pz)).toFixed(4));
+            spheres[0].material.pz = pz;
+        }
+        if (!isNaN(rx)) {
+            spheres[0].rotation.x = transform.rx = rx = parseFloat(Math.min(1.5, Math.max(-1.5, rx)).toFixed(4));
+            spheres[0].material.rx = rx;
+        }
+        if (!isNaN(ry)) {
+            spheres[0].rotation.y = transform.ry = ry = parseFloat(Math.min(1.5, Math.max(-1.5, ry)).toFixed(4));
+            spheres[0].material.ry = ry;
+        }
+        if (!isNaN(rz)) {
+            spheres[0].rotation.z = transform.rz = rz = parseFloat(Math.min(1.5, Math.max(-1.5, rz)).toFixed(4));
+            spheres[0].material.rz = rz;
+        }
         return {
             opacity: spheres[1].material.opacity,
-            px: spheres[0].position.x.toFixed(4),
-            py: spheres[0].position.y.toFixed(4),
-            pz: spheres[0].position.z.toFixed(4),
-            rx: spheres[0].rotation.x.toFixed(4),
-            ry: spheres[0].rotation.y.toFixed(4),
-            rz: spheres[0].rotation.z.toFixed(4)
+            px: spheres[0].position.x,
+            py: spheres[0].position.y,
+            pz: spheres[0].position.z,
+            rx: spheres[0].rotation.x,
+            ry: spheres[0].rotation.y,
+            rz: spheres[0].rotation.z
         }
     };
 

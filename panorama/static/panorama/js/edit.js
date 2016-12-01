@@ -609,25 +609,25 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
             switch (true) {
                 case this.id == 'input-opacity':
                     console.log(this.value);
-                    transform = panorama.applyTransform({opacity: parseFloat(this.value)});
+                    transform = panorama.applyTransform({opacity: this.value});
                     break;
                 case this.id == 'input-rotation-x':
-                    transform = panorama.applyTransform({rx: parseFloat(this.value)});
+                    transform = panorama.applyTransform({rx: this.value});
                     break;
                 case this.id == 'input-rotation-y':
-                    transform = panorama.applyTransform({ry: parseFloat(this.value)});
+                    transform = panorama.applyTransform({ry: this.value});
                     break;
                 case this.id == 'input-rotation-z':
-                    transform = panorama.applyTransform({rz: parseFloat(this.value)});
+                    transform = panorama.applyTransform({rz: this.value});
                     break;
                 case this.id == 'input-position-x':
-                    transform = panorama.applyTransform({px: parseFloat(this.value)});
+                    transform = panorama.applyTransform({px: this.value});
                     break;
                 case this.id == 'input-position-y':
-                    transform = panorama.applyTransform({py: parseFloat(this.value)});
+                    transform = panorama.applyTransform({py: this.value});
                     break;
                 case this.id == 'input-position-z':
-                    transform = panorama.applyTransform({pz: parseFloat(this.value)});
+                    transform = panorama.applyTransform({pz: this.value});
                     break;
             }
         }).dblclick(function () {

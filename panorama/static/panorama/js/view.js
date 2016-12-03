@@ -12,6 +12,7 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
     var sceneInfo = ret['scene'];
     var seller = ret['seller'];
     var spaceList = ret.spaceList;
+    var spacesDict = {};
 
     var fromMobile = !fromPC();
 
@@ -61,7 +62,11 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
     document.getElementById('seller-phone').innerHTML = seller['phone'] || '';
     document.getElementById('seller-address').innerHTML = seller['address'] || '';
     var hotImg = '/static/panorama/img/foot_step.png';
-    var entry = sceneInfo.entry;
+    var entryId = sceneInfo.entry;
+
+    for (i = 0; i < spaceList.length; i++) {
+        spacesDict[spaceList[i].id] = spaceList[i];  // 空间集合
+    }
 
     var container = document.getElementById('main');
     var $container = $(container);
@@ -69,12 +74,12 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
         container: container,
         logoUrl: logoUrl,
         hotImg: hotImg,
-        spaceList: spaceList,
-        entry: entry,
+        spacesDict: spacesDict,
+        entryId: entryId,
         smoothStart: true,
         autoPlay: false,
         autoRotate: true,
-        fps: true,
+        fps: false,
         callbacks: {
             onLoad: onLoad,
             onCameraChanged: onCameraChanged,
@@ -108,7 +113,7 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
             }
             $gallery.find('ul').html(galleryHtml);
             // 激活入口
-            $('#space_id_' + entry).addClass('active');
+            $('#space_id_' + entryId).addClass('active');
 
             if (spaceCount <= 5) {
                 $leftBtn.hide();
@@ -133,13 +138,6 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
         } else {
             $playBtn.show();
         }
-
-        /*$loading.fadeOut(1000);
-        if (options.autoPlay) {
-            $mask.fadeOut(1000);
-        } else {
-            $playBtn.fadeIn(1000);
-        }*/
         animate();
         bindUIListener();
     }
@@ -337,10 +335,6 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
             $mask.fadeOut();
             $('.dialog').fadeOut();
             return false;
-        });
-        $mask.click(function () {
-            $('.dialog').fadeOut();
-            $mask.fadeOut();
         });
     }
 

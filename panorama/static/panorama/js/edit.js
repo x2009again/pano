@@ -61,13 +61,19 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
     var saved = true;
     var sceneContainer = null;
     var logoUrl = '';
-    var entry = sceneInfo.entry;
+    var entryId = sceneInfo.entry;
+
+    var spacesDict = {};
+    for (var i = 0; i < spaceList.length; i++) {
+        spacesDict[spaceList[i].id] = spaceList[i];  // 空间集合
+    }
+
     var options = {
         // container: container,
         logoUrl: logoUrl,
         hotImg: hotImg,
-        spaceList: spaceList,
-        entry: entry,
+        spacesDict: spacesDict,
+        entryId: entryId,
         smoothStart: false,
         autoPlay: true,
         autoRotate: false,
@@ -106,7 +112,7 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
         }
         ui.$spaceBar[0].innerHTML = lisHtml;
         // entry = options.entry || panorama.entry;
-        $('#space_id_' + entry).addClass('active');
+        $('#space_id_' + entryId).addClass('active');
         ui.$spaceBar.height(ui.$editSidebar.height() - 140);
 
         ui.$loading.fadeOut(1000);
@@ -477,7 +483,7 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
                 }, function (ret) {
                     if (ret.success) {
                         saved = true;
-                        entry = ret.entry;
+                        entryId = ret.entry;
                         alert('保存成功');
                     } else {
                         alert('保存失败！');
@@ -522,7 +528,7 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
                 spaces: JSON.stringify(spacesOfScene)
             }, function (ret) {
                 if (ret.success) {
-                    entry = ret.entry;
+                    entryId = ret.entry;
                     saved = true;
                     alert('保存成功');
                     if (ret.scene_id) {

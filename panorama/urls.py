@@ -4,7 +4,7 @@ from . import views
 
 urlpatterns = [
     url(r'^$', views.index, name='index'),
-    url(r'^canvas_merge$', views.canvas_merge, name='canvas_merge'),
+    url(r'^test$', views.test, name='test'),
     url(r'^view$', views.view, name='view'),
     url(r'^edit$', views.edit, name='edit'),
     url(r'^init_scene$', views.init_scene, name='init_scene'),

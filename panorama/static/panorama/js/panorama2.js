@@ -11,10 +11,10 @@
     "use strict";
 
     var stats = null;
-    var renderer, stereoRenderer, scene, transformScene, camera, transformCamera, raycaster, orbitControls, deviceControls;
+    var renderer, stereoRenderer, scene, camera, raycaster, orbitControls, deviceControls;
     var logoMesh, logoMaterial;
     var textureLoader, imageLoader;
-    var sphere, transformSphere;
+    var spheres = [];
     var mousePos = new THREE.Vector2(0, 0);
     var sceneCenter = new THREE.Vector3(0, 0, 0);  // 场景原点
     var hotSpot;  // 热点（用于复制）
@@ -40,7 +40,6 @@
         transiting = false;  // 正在进行过渡动画
 
     var renderOver = null;
-    var front = 0, back = 0, left = 0, right = 0;
 
     // 可访问变量
     var _stage = null,  // canvas容器
@@ -123,7 +122,6 @@
         renderer.setSize(STAGE_WIDTH, STAGE_HEIGHT);
         renderer.sortObjects = false;
         renderer.setClearColor(0x000000);
-        renderer.autoClear = false;
 
         // 立体效果渲染器
         stereoRenderer = new THREE.StereoEffect(renderer);
@@ -137,10 +135,7 @@
 
 
         scene = new THREE.Scene();
-        transformScene = new THREE.Scene();  // TODO 用于转换
         camera = new THREE.PerspectiveCamera(cameraFov, STAGE_WIDTH / STAGE_HEIGHT, 0.1, 1000);
-        transformCamera = new THREE.PerspectiveCamera(cameraFov, STAGE_WIDTH / STAGE_HEIGHT, 0.1, 1000);
-
         raycaster = new THREE.Raycaster();
 
         _lockScene = true;  // 锁定场景（无法切换、拖动空间，添加、修改热点）
@@ -217,7 +212,7 @@
                             transparent: true,
                             side: THREE.DoubleSide
                         });
-                        currentSpace.id == space.id && !transiting && (sphere.material = materialDict[currentSpace.id]);
+                        currentSpace.id == space.id && !transiting && (spheres[1].material = materialDict[currentSpace.id]);
                     });
                 });
             } else {
@@ -236,25 +231,28 @@
         // 创建场景
         function createScene() {
 
-            transformSphere = new THREE.Mesh(new THREE.SphereGeometry(200, 80, 80), new THREE.MeshBasicMaterial({color: 0x000000}));
-            transformSphere.scale.x = -1;
-            transformSphere.position.set(0, 0, 0);
-            transformSphere.rotation.set(0, 0, 0);
-            transformSphere.needsUpdate = true;
-            transformScene.add(transformSphere);  // TODO 用于场景转换
-
-            sphere = new THREE.Mesh(new THREE.SphereGeometry(200, 80, 80), materialDict[currentSpace.id]);
-            sphere.scale.x = -1;
-            sphere.position.set(0, 0, 0);
-            sphere.needsUpdate = true;
-            scene.add(sphere);
+            var tempMesh = new THREE.Mesh(new THREE.SphereGeometry(150, 80, 80), new THREE.MeshBasicMaterial({color: 0x000000}));
+            tempMesh.scale.x = -1;
+            tempMesh.position.set(0, 0, 0);
+            tempMesh.rotation.set(0, 0, 0);
+            tempMesh.needsUpdate = true;
+            spheres.push(tempMesh);
+            scene.add(tempMesh);
+            tempMesh = new THREE.Mesh(new THREE.SphereGeometry(50, 80, 80), materialDict[currentSpace.id]);
+            tempMesh.scale.x = -1;
+            tempMesh.position.set(0, 0, 0);
+            tempMesh.needsUpdate = true;
+            spheres.push(tempMesh);
+            scene.add(tempMesh);
 
             // 热点添加指示
-            hotSpot = new THREE.Mesh(new THREE.PlaneGeometry(10, 10), hotSpotMat);
-            hotSpot.position.set(0, 0, 0);
+            hotSpot = new THREE.Mesh(new THREE.PlaneGeometry(3, 3), hotSpotMat);
+            hotSpot.position.set(-30, 0, 0);
             hotSpot.lookAt(camera.position);
             hotSpot.visible = false;
             scene.add(hotSpot);
+
+            spheres[0].material = spheres[1].material;
 
             logoMaterial = new THREE.MeshBasicMaterial({
                 map: textureLoader.load(options.logoUrl),
@@ -265,13 +263,11 @@
             logoMesh.position.set(0, -40, 0);
             logoMesh.scale.y = -1;
             logoMesh.lookAt(sceneCenter);
-            sphere.add(logoMesh);
+            spheres[1].add(logoMesh);
 
             initHotSpots();
-
-            renderer.clear();
+            spheres[0].material = spheres[1].material;
             renderer.render(scene, camera);
-
             _stage.className = 'show';
 
             options.smoothStart ? smoothStart() : start();
@@ -282,16 +278,16 @@
 
         // 进入场景（普通）
         function start() {
-            camera.position.set(0, 0, 0.001);
+            camera.position.set(0, 0, -0.001);
             camera.fov = cameraFov;
             camera.lookAt(sceneCenter);
         }
 
         // 进入场景（平滑过渡）
         function smoothStart() {
-            sphere.rotation.set(0, 0, 0);
-            if (options.autoRotate) sphere.rotation.y = Math.PI / 2;  // 用于向左旋转球体
-            camera.position.set(0, 30, 0.001);
+            spheres[1].rotation.set(0, 0, 0);
+            if (options.autoRotate) spheres[1].rotation.y = Math.PI / 2;  // 用于向左旋转球体
+            camera.position.set(0, 30, 0.1);
             camera.rotation.set(0, 0, 0);
             camera.fov = 160;
             camera.rotation.x = -Math.PI / 2;
@@ -333,7 +329,7 @@
                         .to({rotateY: 0}, 3000)
                         .easing(TWEEN.Easing.Quadratic.InOut)
                         .onUpdate(function () {
-                            sphere.rotation.y = this.rotateY;
+                            spheres[1].rotation.y = this.rotateY;
                         }).delay(1000).start();
                 }
             } else {
@@ -356,10 +352,6 @@
             orbitControls.autoRotate = options.autoRotate;
             orbitControls.addEventListener('change', function () {
                 callbacks.onCameraChanged(camera.getWorldDirection());
-                /*if (_editingHot) {
-                    transformCamera.position.set(camera.position.x, camera.position.y, camera.position.z);
-                    transformCamera.lookAt(sceneCenter);
-                }*/
             });
             // 初始化设备控制器
             deviceControls = new THREE.DeviceOrientationControls(camera, true);
@@ -376,40 +368,6 @@
             $stage.on('touchstart', touchStart.bind(scope));
             $stage.on('touchmove', touchMove.bind(scope));
             $stage.on('touchend', touchEnd.bind(scope));
-            // 键盘事件
-
-            document.body.onkeydown = function (e) {
-                switch (e.keyCode) {
-                    case 87:  // W
-                        front = 1;
-                        break;
-                    case 83:  // S
-                        back = 1;
-                        break;
-                    case 65:  // A
-                        left = 1;
-                        break;
-                    case 68:  // D
-                        right = 1;
-                        break;
-                }
-            };
-            document.body.onkeyup = function (e) {
-                switch (e.keyCode) {
-                    case 87:  // W
-                        front = 0;
-                        break;
-                    case 83:  // S
-                        back = 0;
-                        break;
-                    case 65:  // A
-                        left = 0;
-                        break;
-                    case 68:  // D
-                        right = 0;
-                        break;
-                }
-            };
 
             // 方向变化事件
             window.addEventListener('deviceorientation', onDeviceOrientation);
@@ -452,79 +410,73 @@
             console.log('no space ' + toSpaceId);
             return false;
         }
-        // 重置天空球位置
-        sphere.rotation.set(0, 0, 0);
-        sphere.position.set(0, 0, 0);
+        // 重置小球位置
+        spheres[1].rotation.set(0, 0, 0);
+        spheres[1].position.set(0, 0, 0);
+        transiting = true;
         // 手动调用热点移出事件
         callbacks.onLeaveHot();
-        // 删除天空球上的热点
+        // 先删除小球上的热点
         Object.keys(currentSpace.hotInfoDict).forEach(function (k) {
-            sphere.remove(currentSpace.hotInfoDict[k].mesh);
+            spheres[1].remove(currentSpace.hotInfoDict[k].mesh);
             delete currentSpace.hotInfoDict[k].mesh;// mesh会每次重新生成
         });
         console.log('from：' + currentSpace.id + ' → to：' + toSpaceId);
+        spheres[0].material = spheres[1].material;
+        materialDict[toSpaceId].opacity = 0;
+        spheres[1].material = materialDict[toSpaceId];  //修改小球材质
         currentSpace = _spacesDict[toSpaceId];
 
         renderOver = function () {
-
-            transiting = true;  // 准备渲染转换场景
-            transformSphere.material = sphere.material;
-            materialDict[toSpaceId].opacity = 1;
-            sphere.material = materialDict[toSpaceId];  //修改天空球材质
-
-
             callbacks.onShown(toSpaceId);
-            transformCamera.position.set(camera.position.x, camera.position.y, camera.position.z);
-            transformCamera.lookAt(sceneCenter);
-            console.log(transformCamera.getWorldDirection());
-            console.log(camera.getWorldDirection());
             if (hotInfo && (hotInfo.px || hotInfo.py || hotInfo.pz || hotInfo.rx || hotInfo.ry || hotInfo.rz)) {
                 // 有转场效果
                 logoMesh.visible = false;
-                // 转场球移近
+                // 大球移近
                 var tween0 = new TWEEN.Tween({
                     px: 0,
                     py: 0,
-                    pz: 0
-                }).to({
-                    px: -hotInfo.px,
-                    py: -hotInfo.py,
-                    pz: -hotInfo.pz
-                }, animateTime)
+                    pz: 0,
+                    rx: 0,
+                    ry: 0,
+                    rz: 0
+                }).to(hotInfo, animateTime)
                     .easing(TWEEN.Easing.Quadratic.InOut)
                     .onUpdate(function () {
-                        transformCamera.position.set(this.px, this.py, this.pz);
-                        // transformCamera.rotation.set(this.rx, this.ry, this.rz);
+                        spheres[0].position.set(this.px, this.py, this.pz);
+                        spheres[0].rotation.set(this.rx, this.ry, this.rz);
                     });
-                // 转场球opacity减小
-                var tween1 = new TWEEN.Tween({opacity: 1})
-                    .to({opacity: 0}, animateTime)
+                // 小球opacity增加
+                var tween1 = new TWEEN.Tween({opacity: 0})
+                    .to({opacity: 1}, animateTime)
                     .easing(TWEEN.Easing.Quadratic.InOut)
                     .onUpdate(function () {
-                        transformSphere.material.opacity = this.opacity;
+                        spheres[1].material.opacity = this.opacity;
                     }).onComplete(function () {
+                        spheres[0].position.set(0, 0, 0);
+                        spheres[0].rotation.set(0, 0, 0);
                         logoMesh.visible = true;
                         initHotSpots();
                         transiting = false;
                     });
                 tween0.start();
                 tween1.delay(animateTime - 250).start();
+                spheres[0].getWorldPosition()
             } else {
                 // 直接切换
                 new TWEEN.Tween({opacity: 0})
                     .to({opacity: 1}, 1000)
                     .easing(TWEEN.Easing.Quadratic.InOut)
                     .onUpdate(function () {
-                        sphere.material.opacity = this.opacity;
+                        spheres[1].material.opacity = this.opacity;
                     }).onComplete(function () {
-                    transformSphere.position.set(0, 0, 0);
-                    sphere.position.set(0, 0, 0);
+                    spheres[0].position.set(0, 0, 0);
+                    spheres[1].position.set(0, 0, 0);
                     logoMesh.visible = true;
                     initHotSpots();
                     transiting = false;
                 }).start();
             }
-
         };
     };
 
@@ -569,7 +521,7 @@
         var newRay = new THREE.Raycaster();
         newRay.setFromCamera(pos, camera);
         // 通过射线与小球的交点获取新热点的位置
-        var newHotPos = newRay.intersectObject(sphere)[0].point;
+        var newHotPos = newRay.intersectObject(spheres[1])[0].point;
         newHotPos.setLength(HOT_DISTANCE);
         return {
             vx: newHotPos.x.toFixed(4),
@@ -614,7 +566,7 @@
             mesh: newHotSpot
         };
 
-        sphere.add(newHotSpot);
+        spheres[1].add(newHotSpot);
         // 重新收集当前空间的热点
         initHotSpots(true);
 
@@ -649,13 +601,14 @@
      * @returns {{rx, ry, rz, px, py, pz}}
      */
     Panorama.prototype.resetHot = function () {
-        sphere.material = materialDict[currentSpace.id];
-        transformSphere.material = materialDict[currentSpace.hotInfoDict[hot2beEdit.hotId].to];
-        sphere.material.opacity = 0.5;
-        transformSphere.material.opacity = 0.5;
+        spheres[0].material = materialDict[currentSpace.id];
+        console.log(materialDict);
+        console.log(currentSpace.hotInfoDict[hot2beEdit.hotId]);
+        spheres[1].material = materialDict[currentSpace.hotInfoDict[hot2beEdit.hotId].to];
+        spheres[1].material.opacity = 0.5;
         var hotInfo = currentSpace.hotInfoDict[selectedHot.hotId];
-        transformCamera.position.set(camera.position.x, camera.position.y, camera.position.z);
-        transformCamera.lookAt(sceneCenter);
+        spheres[0].position.set(hotInfo.px || 0, hotInfo.py || 0, hotInfo.pz || 0);
+        spheres[0].rotation.set(hotInfo.rx || 0, hotInfo.ry || 0, hotInfo.rz || 0);
         return hotInfo;
     };
 
@@ -664,7 +617,7 @@
      * @param hotId
      */
     Panorama.prototype.deleteHot = function (hotId) {
-        sphere.remove(currentSpace.hotInfoDict[hotId].mesh);
+        spheres[1].remove(currentSpace.hotInfoDict[hotId].mesh);
         delete currentSpace.hotInfoDict[hotId];
         initHotSpots(true);  // 重新收集热点
         this.editingHot = false;
@@ -689,10 +642,7 @@
         renderer.setSize(STAGE_WIDTH, STAGE_HEIGHT);
         camera.aspect = STAGE_WIDTH / STAGE_HEIGHT;
         camera.updateProjectionMatrix();
-        renderer.clear();
         renderer.render(scene, camera);
-        /*renderer.clearDepth();
-         renderer.render(transformScene, camera);*/
     };
 
     /**
@@ -702,7 +652,7 @@
      */
     Panorama.prototype.applyTransform = function (transform) {
         if (!_editingHot) return false;
-        transform.to && (sphere.material = materialDict[transform.to]);
+        transform.to && (spheres[1].material = materialDict[transform.to]);
         var opacity = parseFloat(transform.opacity),
             px = parseFloat(transform.px),
             py = parseFloat(transform.py),
@@ -711,41 +661,41 @@
             ry = parseFloat(transform.ry),
             rz = parseFloat(transform.rz);
         if (!isNaN(opacity)) {
-            sphere.material.opacity = transform.opacity = opacity = parseFloat(Math.min(0.8, Math.max(0.3, opacity)).toFixed(4));
-            sphere.material.opacity = opacity;
+            spheres[1].material.opacity = transform.opacity = opacity = parseFloat(Math.min(0.8, Math.max(0.3, opacity)).toFixed(4));
+            spheres[1].material.opacity = opacity;
         }
         if (!isNaN(px)) {
-            transformSphere.position.x = transform.px = px = parseFloat(Math.min(70, Math.max(-70, px)).toFixed(4));
-            transformSphere.material.px = px;
+            spheres[0].position.x = transform.px = px = parseFloat(Math.min(70, Math.max(-70, px)).toFixed(4));
+            spheres[0].material.px = px;
         }
         if (!isNaN(py)) {
-            transformSphere.position.y = transform.py = py = parseFloat(Math.min(70, Math.max(-70, py)).toFixed(4));
-            transformSphere.material.py = py;
+            spheres[0].position.y = transform.py = py = parseFloat(Math.min(70, Math.max(-70, py)).toFixed(4));
+            spheres[0].material.py = py;
         }
         if (!isNaN(pz)) {
-            transformSphere.position.z = transform.pz = pz = parseFloat(Math.min(70, Math.max(-70, pz)).toFixed(4));
-            transformSphere.material.pz = pz;
+            spheres[0].position.z = transform.pz = pz = parseFloat(Math.min(70, Math.max(-70, pz)).toFixed(4));
+            spheres[0].material.pz = pz;
         }
         if (!isNaN(rx)) {
-            transformSphere.rotation.x = transform.rx = rx = parseFloat(Math.min(1.5, Math.max(-1.5, rx)).toFixed(4));
-            transformSphere.material.rx = rx;
+            spheres[0].rotation.x = transform.rx = rx = parseFloat(Math.min(1.5, Math.max(-1.5, rx)).toFixed(4));
+            spheres[0].material.rx = rx;
         }
         if (!isNaN(ry)) {
-            transformSphere.rotation.y = transform.ry = ry = parseFloat(Math.min(1.5, Math.max(-1.5, ry)).toFixed(4));
-            transformSphere.material.ry = ry;
+            spheres[0].rotation.y = transform.ry = ry = parseFloat(Math.min(1.5, Math.max(-1.5, ry)).toFixed(4));
+            spheres[0].material.ry = ry;
         }
         if (!isNaN(rz)) {
-            transformSphere.rotation.z = transform.rz = rz = parseFloat(Math.min(1.5, Math.max(-1.5, rz)).toFixed(4));
-            transformSphere.material.rz = rz;
+            spheres[0].rotation.z = transform.rz = rz = parseFloat(Math.min(1.5, Math.max(-1.5, rz)).toFixed(4));
+            spheres[0].material.rz = rz;
         }
         return {
-            opacity: sphere.material.opacity,
-            px: transformSphere.position.x,
-            py: transformSphere.position.y,
-            pz: transformSphere.position.z,
-            rx: transformSphere.rotation.x,
-            ry: transformSphere.rotation.y,
-            rz: transformSphere.rotation.z
+            opacity: spheres[1].material.opacity,
+            px: spheres[0].position.x,
+            py: spheres[0].position.y,
+            pz: spheres[0].position.z,
+            rx: spheres[0].rotation.x,
+            ry: spheres[0].rotation.y,
+            rz: spheres[0].rotation.z
         }
     };
 
@@ -767,14 +717,13 @@
                     hotRay.set(sceneCenter, new THREE.Vector3(hotInfo.vx, hotInfo.vy, hotInfo.vz));
                     hotInfo.ray = hotRay;
                 }
-                var tempIntersects = hotRay.intersectObjects([sphere]);
+                var tempIntersects = hotRay.intersectObjects([spheres[1]]);
                 if (tempIntersects.length > 0) {
                     var tempHotSpot = hotSpot.clone();
                     tempHotSpot.visible = true;
                     tempHotSpot.material = hotSpot.material.clone();
                     hotPos = tempIntersects[0].point.clone();
-                    console.log(hotPos.length());
-                    hotPos.setLength(hotPos.length() - 10);
+                    hotPos.setLength(HOT_DISTANCE);
                     tempHotSpot.position.set(
                         -hotPos.x,
                         hotPos.y,
@@ -783,7 +732,7 @@
                     tempHotSpot.hotId = k;
                     tempHotSpot.title = hotInfo.title;
                     tempHotSpot.lookAt(camera.position);
-                    sphere.add(tempHotSpot);
+                    spheres[1].add(tempHotSpot);
                     // 用于拾取热点
                     hotInfo.mesh = tempHotSpot;
                     spaceHots.push(hotInfo.mesh);
@@ -805,7 +754,7 @@
             }
             if (_addingHot) {  // 开始添加热点
                 raycaster.setFromCamera(mousePos, camera);
-                intersects = raycaster.intersectObject(sphere);
+                intersects = raycaster.intersectObject(spheres[1]);
                 if (intersects.length > 0) {
                     hotPos = intersects[0].point.clone();
                     hotPos.setLength(40);
@@ -832,10 +781,7 @@
                         selectedHot.material.color.set(0xffffff);
                     }
                     hotLeaved = false;
-                    !clicking && callbacks.onOverHot(currentSpace.hotInfoDict[selectedHot.hotId], {
-                        x: $e.pageX,
-                        y: $e.pageY
-                    });  // TODO 应该使用相对于容器的位置
+                    callbacks.onOverHot(currentSpace.hotInfoDict[selectedHot.hotId], {x: $e.pageX, y: $e.pageY});  // TODO 应该使用相对于容器的位置
                 } else if (!hotLeaved) {
                     hotLeaved = true;  // onLeaveHot只执行一次
                     callbacks.onLeaveHot();
@@ -857,7 +803,7 @@
                 if (intersects.length > 0) {  // 单击热点
                     if (options.debug) {
                         if ($e.which == 3 || (_editingHot && $e.which == 1)) {  // 编辑状态下左击或右击热点
-                            this.editingHot = true;
+                            _editingHot = true;
                             hot2beEdit = selectedHot;
                             callbacks.onEditingHot(this.resetHot());
                         } else {
@@ -1062,13 +1008,10 @@
         set: function (val) {
             _editingHot = !!val;
             if (!_editingHot) {
-                sphere.material = materialDict[currentSpace.id];
-                sphere.material.opacity = 1;
-                orbitControls.enabled = true;
-                // transformSphere.position.set(0, 0, 0);
-                // transformSphere.rotation.set(0, 0, 0);
-            } else {
-                orbitControls.enabled = false;
+                spheres[1].material = materialDict[currentSpace.id];
+                spheres[1].material.opacity = 1;
+                spheres[0].position.set(0, 0, 0);
+                spheres[0].rotation.set(0, 0, 0);
             }
         },
         get: function () {
@@ -1093,24 +1036,9 @@
         if (deviceControls && deviceControls.enabled) deviceControls.update();
         stats && stats.update();
         if (_stereoMode) {
-            stereoRenderer.clear();
             stereoRenderer.render(scene, camera);
-            if (transiting) {
-                stereoRenderer.clearDepth();
-                stereoRenderer.render(transformScene, transformCamera);
-            }
         } else {
-            renderer.clear();
             renderer.render(scene, camera);
-            if (transiting || _editingHot) {
-
-                front && (camera.position.z -= 1);
-                back && (camera.position.z += 1);
-                left && (camera.position.x -= 1);
-                right && (camera.position.x += 1);
-                renderer.clearDepth();
-                renderer.render(transformScene, transformCamera);
-            }
         }
         if (renderOver) {  // 执行渲染完后的方法（只执行一次）
             renderOver();

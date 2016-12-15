@@ -218,9 +218,9 @@ def update_hot(request):
     px = request.POST.get('px')
     py = request.POST.get('py')
     pz = request.POST.get('pz')
-    rx = request.POST.get('rx')
-    ry = request.POST.get('ry')
-    rz = request.POST.get('rz')
+    # rx = request.POST.get('rx')
+    # ry = request.POST.get('ry')
+    # rz = request.POST.get('rz')
     if not to or not hot_id:
         return JsonResponse({
             'success': False,
@@ -238,10 +238,10 @@ def update_hot(request):
         'to': to,
         'px': float(px) or 0,
         'py': float(py) or 0,
-        'pz': float(pz) or 0,
-        'rx': float(rx) or 0,
-        'ry': float(ry) or 0,
-        'rz': float(rz) or 0
+        'pz': float(pz) or 0
+        # 'rx': float(rx) or 0,
+        # 'ry': float(ry) or 0,
+        # 'rz': float(rz) or 0
     })
     hot.save()
     return JsonResponse({'success': True})

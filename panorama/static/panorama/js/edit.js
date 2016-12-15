@@ -91,7 +91,7 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
     };
     var panorama = new Panorama(options);
     var rClickedPos = null;  // 右键点击的位置
-    var transform;
+    // var transform;
     var editingHotInfo;
 
     /** ====================================== function ====================================== **/
@@ -182,13 +182,13 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
         }
         ui.$editPanel.find('select').html(optionsHtml);
         ui.$opacityInput.val(0.5);  // 透明度
-        ui.$rotationXInput.val(editingHotInfo.rx);
-        ui.$rotationYInput.val(editingHotInfo.ry);
-        ui.$rotationZInput.val(editingHotInfo.rz);
+        // ui.$rotationXInput.val(editingHotInfo.rx);
+        // ui.$rotationYInput.val(editingHotInfo.ry);
+        // ui.$rotationZInput.val(editingHotInfo.rz);
         ui.$positionXInput.val(editingHotInfo.px);
         ui.$positionYInput.val(editingHotInfo.py);
         ui.$positionZInput.val(editingHotInfo.pz);
-        transform = editingHotInfo;
+        // transform = editingHotInfo;
         ui.$editPanel.addClass('show');  // 显示编辑面板
     }
 
@@ -608,34 +608,34 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
 
         // 热点编辑面板
         ui.$hotToInput.change(function () {
-            transform = panorama.applyTransform({to: this.value, opacity: 0.5});
-            ui.$opacityInput.val(transform.opacity);
+            // transform = panorama.applyTransform({to: this.value, opacity: 0.5});
+            // ui.$opacityInput.val(transform.opacity);
         });
         ui.$editPanel.find('.range input').on('input', function () {
-            switch (true) {
-                case this.id == 'input-opacity':
-                    console.log(this.value);
-                    transform = panorama.applyTransform({opacity: this.value});
-                    break;
-                case this.id == 'input-rotation-x':
-                    transform = panorama.applyTransform({rx: this.value});
-                    break;
-                case this.id == 'input-rotation-y':
-                    transform = panorama.applyTransform({ry: this.value});
-                    break;
-                case this.id == 'input-rotation-z':
-                    transform = panorama.applyTransform({rz: this.value});
-                    break;
-                case this.id == 'input-position-x':
-                    transform = panorama.applyTransform({px: this.value});
-                    break;
-                case this.id == 'input-position-y':
-                    transform = panorama.applyTransform({py: this.value});
-                    break;
-                case this.id == 'input-position-z':
-                    transform = panorama.applyTransform({pz: this.value});
-                    break;
-            }
+            // switch (true) {
+            //     case this.id == 'input-opacity':
+            //         console.log(this.value);
+            //         transform = panorama.applyTransform({opacity: this.value});
+            //         break;
+            //     case this.id == 'input-rotation-x':
+            //         transform = panorama.applyTransform({rx: this.value});
+            //         break;
+            //     case this.id == 'input-rotation-y':
+            //         transform = panorama.applyTransform({ry: this.value});
+            //         break;
+            //     case this.id == 'input-rotation-z':
+            //         transform = panorama.applyTransform({rz: this.value});
+            //         break;
+            //     case this.id == 'input-position-x':
+            //         transform = panorama.applyTransform({px: this.value});
+            //         break;
+            //     case this.id == 'input-position-y':
+            //         transform = panorama.applyTransform({py: this.value});
+            //         break;
+            //     case this.id == 'input-position-z':
+            //         transform = panorama.applyTransform({pz: this.value});
+            //         break;
+            // }
         }).dblclick(function () {
             var _this = this;
             $(this).attr('step', window.prompt('请输入步长', _this.step) || _this.step);
@@ -644,36 +644,36 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
         $('.range>i').click(function () {
             var inputEle = $(this).parent().find('input')[0];
             var val = $(this).text() == '-' ? parseFloat(inputEle.value) - parseFloat(inputEle.step) : parseFloat(inputEle.value) + parseFloat(inputEle.step);
-            switch (true) {
-                case inputEle.id == 'input-opacity':
-                    transform = panorama.applyTransform({opacity: parseFloat(val)});
-                    inputEle.value = transform.opacity;
-                    break;
-                case inputEle.id == 'input-rotation-x':
-                    transform = panorama.applyTransform({rx: parseFloat(val)});
-                    inputEle.value = transform.rx;
-                    break;
-                case inputEle.id == 'input-rotation-y':
-                    transform = panorama.applyTransform({ry: parseFloat(val)});
-                    inputEle.value = transform.ry;
-                    break;
-                case inputEle.id == 'input-rotation-z':
-                    transform = panorama.applyTransform({rz: parseFloat(val)});
-                    inputEle.value = transform.rz;
-                    break;
-                case inputEle.id == 'input-position-x':
-                    transform = panorama.applyTransform({px: parseFloat(val)});
-                    inputEle.value = transform.px;
-                    break;
-                case inputEle.id == 'input-position-y':
-                    transform = panorama.applyTransform({py: parseFloat(val)});
-                    inputEle.value = transform.py;
-                    break;
-                case inputEle.id == 'input-position-z':
-                    transform = panorama.applyTransform({pz: parseFloat(val)});
-                    inputEle.value = transform.pz;
-                    break;
-            }
+            // switch (true) {
+            //     case inputEle.id == 'input-opacity':
+            //         transform = panorama.applyTransform({opacity: parseFloat(val)});
+            //         inputEle.value = transform.opacity;
+            //         break;
+            //     case inputEle.id == 'input-rotation-x':
+            //         transform = panorama.applyTransform({rx: parseFloat(val)});
+            //         inputEle.value = transform.rx;
+            //         break;
+            //     case inputEle.id == 'input-rotation-y':
+            //         transform = panorama.applyTransform({ry: parseFloat(val)});
+            //         inputEle.value = transform.ry;
+            //         break;
+            //     case inputEle.id == 'input-rotation-z':
+            //         transform = panorama.applyTransform({rz: parseFloat(val)});
+            //         inputEle.value = transform.rz;
+            //         break;
+            //     case inputEle.id == 'input-position-x':
+            //         transform = panorama.applyTransform({px: parseFloat(val)});
+            //         inputEle.value = transform.px;
+            //         break;
+            //     case inputEle.id == 'input-position-y':
+            //         transform = panorama.applyTransform({py: parseFloat(val)});
+            //         inputEle.value = transform.py;
+            //         break;
+            //     case inputEle.id == 'input-position-z':
+            //         transform = panorama.applyTransform({pz: parseFloat(val)});
+            //         inputEle.value = transform.pz;
+            //         break;
+            // }
         });
 
         // 重置修改
@@ -684,19 +684,17 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
         $('#save-hot-info').click(function () {
             var hotTitle = ui.$hotTitleInput.val();
             var hotTo = ui.$hotToInput.val();
+            var transform = panorama.transform;
             $.post('update_hot', {
                 id: editingHotInfo.id,
                 title: hotTitle,
                 to: hotTo,
                 px: transform.px,
                 py: transform.py,
-                pz: transform.pz,
-                rx: transform.rx,
-                ry: transform.ry,
-                rz: transform.rz
+                pz: transform.pz
             }, function (data) {
                 if (data.success) {
-                    panorama.saveHot(hotTo, hotTitle, transform);
+                    panorama.saveHot(hotTo, hotTitle);
                     ui.$editPanel.removeClass('show');
                     ui.$transformHotBtn.removeClass('active');
                 }

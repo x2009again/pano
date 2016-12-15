@@ -40,7 +40,10 @@
         transiting = false;  // 正在进行过渡动画
 
     var renderOver = null;
-    var front = 0, back = 0, left = 0, right = 0;
+    var front = 0, back = 0, left = 0, right = 0, up = 0, down = 0;
+    var radius = 200;
+    var _transform = null;
+    var cameraPos = null;
 
     // 可访问变量
     var _stage = null,  // canvas容器
@@ -162,9 +165,9 @@
         !hotInfoDict && (hotInfoDict = {});
         Object.keys(hotInfoDict).forEach(function (h_key) {
             var hotInfo = hotInfoDict[h_key];
-            hotInfo.rx || (hotInfo.rx = 0);
-            hotInfo.ry || (hotInfo.ry = 0);
-            hotInfo.rz || (hotInfo.rz = 0);
+            // hotInfo.rx || (hotInfo.rx = 0);
+            // hotInfo.ry || (hotInfo.ry = 0);
+            // hotInfo.rz || (hotInfo.rz = 0);
             hotInfo.px || (hotInfo.px = 0);
             hotInfo.py || (hotInfo.py = 0);
             hotInfo.pz || (hotInfo.pz = 0);
@@ -181,9 +184,9 @@
                 !hotInfoDict && (hotInfoDict = {});
                 Object.keys(hotInfoDict).forEach(function (h_key) {
                     var hotInfo = hotInfoDict[h_key];
-                    hotInfo.rx || (hotInfo.rx = 0);
-                    hotInfo.ry || (hotInfo.ry = 0);
-                    hotInfo.rz || (hotInfo.rz = 0);
+                    // hotInfo.rx || (hotInfo.rx = 0);
+                    // hotInfo.ry || (hotInfo.ry = 0);
+                    // hotInfo.rz || (hotInfo.rz = 0);
                     hotInfo.px || (hotInfo.px = 0);
                     hotInfo.py || (hotInfo.py = 0);
                     hotInfo.pz || (hotInfo.pz = 0);
@@ -236,14 +239,14 @@
         // 创建场景
         function createScene() {
 
-            transformSphere = new THREE.Mesh(new THREE.SphereGeometry(200, 80, 80), new THREE.MeshBasicMaterial({color: 0x000000}));
+            transformSphere = new THREE.Mesh(new THREE.SphereGeometry(radius, 80, 80), new THREE.MeshBasicMaterial({color: 0x000000}));
             transformSphere.scale.x = -1;
             transformSphere.position.set(0, 0, 0);
             transformSphere.rotation.set(0, 0, 0);
             transformSphere.needsUpdate = true;
             transformScene.add(transformSphere);  // TODO 用于场景转换
 
-            sphere = new THREE.Mesh(new THREE.SphereGeometry(200, 80, 80), materialDict[currentSpace.id]);
+            sphere = new THREE.Mesh(new THREE.SphereGeometry(radius, 80, 80), materialDict[currentSpace.id]);
             sphere.scale.x = -1;
             sphere.position.set(0, 0, 0);
             sphere.needsUpdate = true;
@@ -356,10 +359,11 @@
             orbitControls.autoRotate = options.autoRotate;
             orbitControls.addEventListener('change', function () {
                 callbacks.onCameraChanged(camera.getWorldDirection());
+                // console.log(camera.position.x);
                 /*if (_editingHot) {
-                    transformCamera.position.set(camera.position.x, camera.position.y, camera.position.z);
-                    transformCamera.lookAt(sceneCenter);
-                }*/
+                 transformCamera.position.set(camera.position.x, camera.position.y, camera.position.z);
+                 transformCamera.lookAt(sceneCenter);
+                 }*/
             });
             // 初始化设备控制器
             deviceControls = new THREE.DeviceOrientationControls(camera, true);
@@ -376,8 +380,8 @@
             $stage.on('touchstart', touchStart.bind(scope));
             $stage.on('touchmove', touchMove.bind(scope));
             $stage.on('touchend', touchEnd.bind(scope));
-            // 键盘事件
 
+            // 键盘事件
             document.body.onkeydown = function (e) {
                 switch (e.keyCode) {
                     case 87:  // W
@@ -391,6 +395,12 @@
                         break;
                     case 68:  // D
                         right = 1;
+                        break;
+                    case 32:  // Space
+                        up = 1;
+                        break;
+                    case 17:  // Ctrl
+                        down = 1;
                         break;
                 }
             };
@@ -408,7 +418,18 @@
                     case 68:  // D
                         right = 0;
                         break;
+                    case 32:  // Space
+                        up = 0;
+                        break;
+                    case 17:  // Ctrl
+                        down = 0;
+                        break;
                 }
+                _transform = {
+                    px: camera.position.x.toFixed(4),
+                    py: camera.position.y.toFixed(4),
+                    pz: camera.position.z.toFixed(4)
+                };
             };
 
             // 方向变化事件
@@ -474,23 +495,18 @@
 
 
             callbacks.onShown(toSpaceId);
-            transformCamera.position.set(camera.position.x, camera.position.y, camera.position.z);
+            transformCamera.position.copy(camera.position);
             transformCamera.lookAt(sceneCenter);
-            console.log(transformCamera.getWorldDirection());
-            console.log(camera.getWorldDirection());
-            if (hotInfo && (hotInfo.px || hotInfo.py || hotInfo.pz || hotInfo.rx || hotInfo.ry || hotInfo.rz)) {
+            if (hotInfo && (hotInfo.px || hotInfo.py || hotInfo.pz)) {
                 // 有转场效果
                 logoMesh.visible = false;
                 // 转场球移近
+                console.log(hotInfo);
                 var tween0 = new TWEEN.Tween({
                     px: 0,
                     py: 0,
                     pz: 0
-                }).to({
-                    px: -hotInfo.px,
-                    py: -hotInfo.py,
-                    pz: -hotInfo.pz
-                }, animateTime)
+                }).to(hotInfo, animateTime)
                     .easing(TWEEN.Easing.Quadratic.InOut)
                     .onUpdate(function () {
                         transformCamera.position.set(this.px, this.py, this.pz);
@@ -505,6 +521,7 @@
                     }).onComplete(function () {
                         logoMesh.visible = true;
                         initHotSpots();
+                        transformCamera.position.set(0, 0, 0);
                         transiting = false;
                     });
                 tween0.start();
@@ -624,9 +641,8 @@
      * 保存对热点的修改
      * @param to
      * @param title
-     * @param transform
      */
-    Panorama.prototype.saveHot = function (to, title, transform) {
+    Panorama.prototype.saveHot = function (to, title) {
         if (to == currentSpace.id) {
             console.error('不可与当前场景相同');
             return false;
@@ -634,27 +650,30 @@
         Object.assign(currentSpace.hotInfoDict[hot2beEdit.hotId], {
             to: to,
             title: title,
-            rx: transform.rx,
-            ry: transform.ry,
-            rz: transform.rz,
-            px: transform.px,
-            py: transform.py,
-            pz: transform.pz
+            // rx: transform.rx,
+            // ry: transform.ry,
+            // rz: transform.rz,
+            px: cameraPos.x,
+            py: cameraPos.y,
+            pz: cameraPos.z
         });
         this.editingHot = false;
+        _transform = null;
     };
 
     /**
      * 重置转场动画
-     * @returns {{rx, ry, rz, px, py, pz}}
+     * @returns {{px, py, pz}}
      */
     Panorama.prototype.resetHot = function () {
         sphere.material = materialDict[currentSpace.id];
         transformSphere.material = materialDict[currentSpace.hotInfoDict[hot2beEdit.hotId].to];
-        sphere.material.opacity = 0.5;
+        sphere.material.opacity = 0.7;
         transformSphere.material.opacity = 0.5;
         var hotInfo = currentSpace.hotInfoDict[selectedHot.hotId];
-        transformCamera.position.set(camera.position.x, camera.position.y, camera.position.z);
+        camera.position.copy(cameraPos);
+        camera.lookAt(sceneCenter);
+        transformCamera.position.copy(cameraPos);
         transformCamera.lookAt(sceneCenter);
         return hotInfo;
     };
@@ -696,60 +715,6 @@
     };
 
     /**
-     * 应用热点数据
-     * @param transform
-     * @returns {*}
-     */
-    Panorama.prototype.applyTransform = function (transform) {
-        if (!_editingHot) return false;
-        transform.to && (sphere.material = materialDict[transform.to]);
-        var opacity = parseFloat(transform.opacity),
-            px = parseFloat(transform.px),
-            py = parseFloat(transform.py),
-            pz = parseFloat(transform.pz),
-            rx = parseFloat(transform.rx),
-            ry = parseFloat(transform.ry),
-            rz = parseFloat(transform.rz);
-        if (!isNaN(opacity)) {
-            sphere.material.opacity = transform.opacity = opacity = parseFloat(Math.min(0.8, Math.max(0.3, opacity)).toFixed(4));
-            sphere.material.opacity = opacity;
-        }
-        if (!isNaN(px)) {
-            transformSphere.position.x = transform.px = px = parseFloat(Math.min(70, Math.max(-70, px)).toFixed(4));
-            transformSphere.material.px = px;
-        }
-        if (!isNaN(py)) {
-            transformSphere.position.y = transform.py = py = parseFloat(Math.min(70, Math.max(-70, py)).toFixed(4));
-            transformSphere.material.py = py;
-        }
-        if (!isNaN(pz)) {
-            transformSphere.position.z = transform.pz = pz = parseFloat(Math.min(70, Math.max(-70, pz)).toFixed(4));
-            transformSphere.material.pz = pz;
-        }
-        if (!isNaN(rx)) {
-            transformSphere.rotation.x = transform.rx = rx = parseFloat(Math.min(1.5, Math.max(-1.5, rx)).toFixed(4));
-            transformSphere.material.rx = rx;
-        }
-        if (!isNaN(ry)) {
-            transformSphere.rotation.y = transform.ry = ry = parseFloat(Math.min(1.5, Math.max(-1.5, ry)).toFixed(4));
-            transformSphere.material.ry = ry;
-        }
-        if (!isNaN(rz)) {
-            transformSphere.rotation.z = transform.rz = rz = parseFloat(Math.min(1.5, Math.max(-1.5, rz)).toFixed(4));
-            transformSphere.material.rz = rz;
-        }
-        return {
-            opacity: sphere.material.opacity,
-            px: transformSphere.position.x,
-            py: transformSphere.position.y,
-            pz: transformSphere.position.z,
-            rx: transformSphere.rotation.x,
-            ry: transformSphere.rotation.y,
-            rz: transformSphere.rotation.z
-        }
-    };
-
-    /**
      * 初始化/收集热点
      * @param onlyGather 是否仅收集热点
      */
@@ -773,8 +738,7 @@
                     tempHotSpot.visible = true;
                     tempHotSpot.material = hotSpot.material.clone();
                     hotPos = tempIntersects[0].point.clone();
-                    console.log(hotPos.length());
-                    hotPos.setLength(hotPos.length() - 10);
+                    hotPos.setLength(radius - 10);  // TODO 抽取出
                     tempHotSpot.position.set(
                         -hotPos.x,
                         hotPos.y,
@@ -1064,10 +1028,15 @@
             if (!_editingHot) {
                 sphere.material = materialDict[currentSpace.id];
                 sphere.material.opacity = 1;
+                camera.position.copy(cameraPos);
+                camera.lookAt(sceneCenter);
+                console.log(cameraPos.x);
                 orbitControls.enabled = true;
                 // transformSphere.position.set(0, 0, 0);
                 // transformSphere.rotation.set(0, 0, 0);
             } else {
+                cameraPos = camera.position.clone();
+                console.log(cameraPos.x);
                 orbitControls.enabled = false;
             }
         },
@@ -1084,6 +1053,13 @@
         },
         get: function () {
             return _lockScene;
+        }
+    });
+
+    // 定义transform属性
+    Object.defineProperty(Panorama.prototype, "transform", {
+        get: function () {
+            return _editingHot ? _transform : null;
         }
     });
 
@@ -1104,10 +1080,20 @@
             renderer.render(scene, camera);
             if (transiting || _editingHot) {
 
-                front && (camera.position.z -= 1);
-                back && (camera.position.z += 1);
-                left && (camera.position.x -= 1);
-                right && (camera.position.x += 1);
+                // front && (camera.position.z += 1);
+                // back && (camera.position.z -= 1);
+                // left && (camera.position.x -= 1);
+                // right && (camera.position.x += 1);
+                // up && (camera.position.y += 1);
+                // down && (camera.position.y -= 1);
+
+                front && camera.translateZ(1);
+                back && camera.translateZ(-1);
+                left && camera.translateX(1);
+                right && camera.translateX(-1);
+                up && camera.translateY(-1);
+                down && camera.translateY(1);
+
                 renderer.clearDepth();
                 renderer.render(transformScene, transformCamera);
             }

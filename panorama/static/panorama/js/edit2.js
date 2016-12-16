@@ -60,7 +60,7 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
     var hotImg = '/static/panorama/img/foot_step.png';
     var saved = true;
     var sceneContainer = null;
-    var logoUrl = '';
+    var logoUrl = seller.logo || '/panorama/img/logo/logo.png';
     var entryId = sceneInfo.entry;
 
     var spacesDict = {};
@@ -74,10 +74,10 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
         hotImg: hotImg,
         spacesDict: spacesDict,
         entryId: entryId,
-        smoothStart: false,
-        autoPlay: true,
+        smoothStart: true,
+        autoPlay: false,
         autoRotate: false,
-        debug: true,
+        debug: false,
         fps: false,
         callbacks: {
             onLoad: onLoad,

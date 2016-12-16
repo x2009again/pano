@@ -60,7 +60,7 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
     var hotImg = '/static/panorama/img/foot_step.png';
     var saved = true;
     var sceneContainer = null;
-    var logoUrl = '';
+    var logoUrl = seller.logo || '/panorama/img/logo/logo.png';
     var entryId = sceneInfo.entry;
 
     var spacesDict = {};
@@ -608,6 +608,7 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
 
         // 热点编辑面板
         ui.$hotToInput.change(function () {
+            console.log(this.value);
             // transform = panorama.applyTransform({to: this.value, opacity: 0.5});
             // ui.$opacityInput.val(transform.opacity);
         });

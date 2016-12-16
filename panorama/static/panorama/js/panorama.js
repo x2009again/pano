@@ -26,7 +26,7 @@
 
     var intersects = [];  // 鼠标与热点的交点
     var selectedHot = null;  // 鼠标按下的热点
-    var hot2beEdit = null;
+    var targetHotId = null;  // 目标热点的ID
 
     var hotLeaved = true;
     var currentSpace = null;
@@ -264,9 +264,8 @@
                 transparent: true,
                 side: THREE.DoubleSide
             });
-            logoMesh = new THREE.Mesh(new THREE.PlaneGeometry(20, 20), logoMaterial);
-            logoMesh.position.set(0, -40, 0);
-            logoMesh.scale.y = -1;
+            logoMesh = new THREE.Mesh(new THREE.PlaneGeometry(50, 50), logoMaterial);
+            logoMesh.position.set(0, -150, 0);
             logoMesh.lookAt(sceneCenter);
             sphere.add(logoMesh);
 
@@ -501,7 +500,6 @@
                 // 有转场效果
                 logoMesh.visible = false;
                 // 转场球移近
-                console.log(hotInfo);
                 var tween0 = new TWEEN.Tween({
                     px: 0,
                     py: 0,
@@ -521,21 +519,18 @@
                     }).onComplete(function () {
                         logoMesh.visible = true;
                         initHotSpots();
-                        transformCamera.position.set(0, 0, 0);
                         transiting = false;
                     });
                 tween0.start();
                 tween1.delay(animateTime - 250).start();
             } else {
                 // 直接切换
-                new TWEEN.Tween({opacity: 0})
-                    .to({opacity: 1}, 1000)
+                new TWEEN.Tween({opacity: 1})
+                    .to({opacity: 0}, 1000)
                     .easing(TWEEN.Easing.Quadratic.InOut)
                     .onUpdate(function () {
-                        sphere.material.opacity = this.opacity;
+                        transformSphere.material.opacity = this.opacity;
                     }).onComplete(function () {
-                    transformSphere.position.set(0, 0, 0);
-                    sphere.position.set(0, 0, 0);
                     logoMesh.visible = true;
                     initHotSpots();
                     transiting = false;
@@ -647,15 +642,15 @@
             console.error('不可与当前场景相同');
             return false;
         }
-        Object.assign(currentSpace.hotInfoDict[hot2beEdit.hotId], {
+        Object.assign(currentSpace.hotInfoDict[targetHotId], {
             to: to,
             title: title,
             // rx: transform.rx,
             // ry: transform.ry,
             // rz: transform.rz,
-            px: cameraPos.x,
-            py: cameraPos.y,
-            pz: cameraPos.z
+            px: camera.position.x,
+            py: camera.position.y,
+            pz: camera.position.z
         });
         this.editingHot = false;
         _transform = null;
@@ -667,14 +662,14 @@
      */
     Panorama.prototype.resetHot = function () {
         sphere.material = materialDict[currentSpace.id];
-        transformSphere.material = materialDict[currentSpace.hotInfoDict[hot2beEdit.hotId].to];
+        transformSphere.material = materialDict[currentSpace.hotInfoDict[targetHotId].to];
         sphere.material.opacity = 0.7;
         transformSphere.material.opacity = 0.5;
         var hotInfo = currentSpace.hotInfoDict[selectedHot.hotId];
+        // 设置相机朝向与位置
         camera.position.copy(cameraPos);
         camera.lookAt(sceneCenter);
-        transformCamera.position.copy(cameraPos);
-        transformCamera.lookAt(sceneCenter);
+        camera.position.set(hotInfo.px, hotInfo.py, hotInfo.pz);
         return hotInfo;
     };
 
@@ -712,6 +707,55 @@
         renderer.render(scene, camera);
         /*renderer.clearDepth();
          renderer.render(transformScene, camera);*/
+    };
+
+    var transform = null;
+    /**
+     * 应用热点数据
+     * @param trans
+     * @returns {*}
+     */
+    Panorama.prototype.applyTransform = function (trans) {
+        if (!_editingHot) return false;
+        trans.to && (sphere.material = materialDict[trans.to]);
+        var opacity = parseFloat(trans.opacity),
+            px = parseFloat(trans.px),
+            py = parseFloat(trans.py),
+            pz = parseFloat(trans.pz),
+            rx = parseFloat(trans.rx),
+            ry = parseFloat(trans.ry),
+            rz = parseFloat(trans.rz);
+        if (!isNaN(opacity)) {
+            sphere.material.opacity = opacity = parseFloat(Math.min(0.8, Math.max(0.3, opacity)).toFixed(4));
+            sphere.material.opacity = opacity;
+        }
+        if (!isNaN(px)) {
+            camera.position.x = parseFloat(Math.min(70, Math.max(-70, px)).toFixed(4));
+        }
+        if (!isNaN(py)) {
+            camera.position.y = parseFloat(Math.min(70, Math.max(-70, py)).toFixed(4));
+        }
+        if (!isNaN(pz)) {
+            camera.position.z = parseFloat(Math.min(70, Math.max(-70, pz)).toFixed(4));
+        }
+        if (!isNaN(rx)) {
+            camera.rotation.x = parseFloat(Math.min(1.5, Math.max(-1.5, rx)).toFixed(4));
+        }
+        if (!isNaN(ry)) {
+            camera.rotation.y = parseFloat(Math.min(1.5, Math.max(-1.5, ry)).toFixed(4));
+        }
+        if (!isNaN(rz)) {
+            camera.rotation.z = parseFloat(Math.min(1.5, Math.max(-1.5, rz)).toFixed(4));
+        }
+        return {
+            opacity: sphere.material.opacity,
+            px: camera.position.x,
+            py: camera.position.y,
+            pz: camera.position.z,
+            rx: camera.rotation.x,
+            ry: camera.rotation.y,
+            rz: camera.rotation.z
+        }
     };
 
     /**
@@ -819,16 +863,20 @@
                 callbacks.onAddingHot({x: $e.pageX, y: $e.pageY});
             } else {
                 if (intersects.length > 0) {  // 单击热点
+                    targetHotId = selectedHot.hotId;
                     if (options.debug) {
-                        if ($e.which == 3 || (_editingHot && $e.which == 1)) {  // 编辑状态下左击或右击热点
+                        if ($e.which == 3 || (_editingHot && $e.which == 1)) {  // 右击或在编辑状态下左击热点
+                            cameraPos = camera.position.clone();  // 记录编辑前相机位置
+                            // 设置转场相机位置与朝向
+                            transformCamera.position.copy(cameraPos);
+                            transformCamera.lookAt(sceneCenter);
                             this.editingHot = true;
-                            hot2beEdit = selectedHot;
                             callbacks.onEditingHot(this.resetHot());
                         } else {
-                            this.showSpace(null, selectedHot.hotId);
+                            this.showSpace(null, targetHotId);
                         }
                     } else {
-                        this.showSpace(null, selectedHot.hotId);
+                        this.showSpace(null, targetHotId);
                     }
                 } else if (spaceHots.length > 0) {  // 单击空白处
                     // hoverPoint = raycaster.intersectObjects([spheres[1]]);
@@ -1030,13 +1078,12 @@
                 sphere.material.opacity = 1;
                 camera.position.copy(cameraPos);
                 camera.lookAt(sceneCenter);
-                console.log(cameraPos.x);
                 orbitControls.enabled = true;
                 // transformSphere.position.set(0, 0, 0);
                 // transformSphere.rotation.set(0, 0, 0);
             } else {
-                cameraPos = camera.position.clone();
-                console.log(cameraPos.x);
+                transformCamera.position.copy(cameraPos);
+                transformCamera.lookAt(sceneCenter);
                 orbitControls.enabled = false;
             }
         },

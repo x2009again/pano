@@ -20,13 +20,13 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
         $loading: $('#loading'),
         $mask: $('#mask'),
         $contextMenu: $('#context-menu'),
-        $addHotBtn: $('#add-hot'),
+        $showAddHotDialogBtn: $('#add-hot'),
         $addHotDialog: $('#add-hot-dialog'),
         $editHotDialog: $('#edit-hot-dialog'),
         $spaceBar: $('#space-bar'),
         $editSidebar: $('#edit-sidebar'),
         $preview: $('#preview'),
-        $addSpace: $('#add-space'),
+        $showAddDialogBtn: $('#show-add-dialog'),
         $saveAs: $('#save-as'),
         $editInfo: $('#edit-info'),
         $qrCode: $('#qr-code'),
@@ -265,7 +265,7 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
 
         var tempSpaceDict = {};
         // 添加空间按钮
-        ui.$addSpace.click(function () {
+        ui.$showAddDialogBtn.click(function () {
             var listHtml = '';
             $.get('list_spaces', function (result) {
                 if (!result.success) return false;
@@ -564,8 +564,8 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
             }
         });
         // 右键菜单中选择 添加热点
-        ui.$addHotBtn.click(function () {
-            showAddingHotDialog({x: ui.$addHotBtn.offset().left, y: ui.$addHotBtn.offset().top});
+        ui.$showAddHotDialogBtn.click(function () {
+            showAddingHotDialog({x: ui.$showAddHotDialogBtn.offset().left, y: ui.$showAddHotDialogBtn.offset().top});
         });
         // 确认添加热点
         ui.$addHotDialog.find('.add-btn').click(function () {

@@ -20,25 +20,25 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
         $loading: $('#loading'),
         $mask: $('#mask'),
         $contextMenu: $('#context-menu'),
-        $addHotBtn: $('#add-hot'),
+        $showAddHotDialogBtn: $('#show-add-hot-dialog-btn'),
         $addHotDialog: $('#add-hot-dialog'),
         $editHotDialog: $('#edit-hot-dialog'),
         $spaceBar: $('#space-bar'),
         $editSidebar: $('#edit-sidebar'),
         $preview: $('#preview'),
-        $addSpace: $('#add-space'),
+        $showAddDialogBtn: $('#show-add-dialog'),
         $saveAs: $('#save-as'),
         $editInfo: $('#edit-info'),
         $qrCode: $('#qr-code'),
         $addSpaceDialog: $('#add-space-dialog'),
+        $addSpaceBtn: $('#add-space-btn'),
         $saveAsDialog: $('#save-as-dialog'),
         $editInfoDialog: $('#edit-seller-dialog'),
         $spacesContainer: $('#spaces-container'),
         $sellerLogo: $("#seller-logo"),
         $playBtn: $('#play-btn'),
         $editPanel: $('#edit-panel'),
-        $pickHot: $('#pick-hot'),
-        $transformHotBtn: $('#transform-hot'),
+        $cancelEditBtn: $('#cancel-edit'),  // 退出编辑按钮
         $hotTitle: $('#hot-title'),
         $hotIdInput: $('#input-hot-id'),
         $hotTitleInput: $('#input-hot-title'),
@@ -49,7 +49,10 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
         $rotationZInput: $('#input-rotation-z'),
         $positionXInput: $('#input-position-x'),
         $positionYInput: $('#input-position-y'),
-        $positionZInput: $('#input-position-z')
+        $positionZInput: $('#input-position-z'),
+        $deleteHotBtn: $('#delete-hot-btn'),  // 删除热点按钮
+        $saveHotBtn: $('#save-hot-info'),  // 保存热点按钮
+        $resetHotBtn: $('#reset-hot-info')  // 重置修改按钮
     };
 
     /** ====================================== variable ====================================== **/
@@ -142,7 +145,7 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
 
     // 鼠标在热点上时
     function onOverHot(hotInfo, mousePos) {
-        var hotTitle = panorama.editingHot ? '点击编辑热点' : (hotInfo.title || '');
+        var hotTitle = hotInfo.title || '';
         if (hotTitle && mousePos) {
             ui.$hotTitle.html(hotTitle).css({
                 left: mousePos.x - ui.$hotTitle.width() - 20,
@@ -161,7 +164,6 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
     // 使用插件回调来添加热点
     function onAddingHot(clickedPos) {
         rClickedPos = clickedPos;
-        ui.$pickHot.removeClass('active');
         showAddingHotDialog(rClickedPos);
     }
 
@@ -219,31 +221,10 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
     }
 
     function bindUIListener() {
+        /** ====================================== execute ====================================== **/
+        ui.$spaceBar.sortable().disableSelection();  // 文本不可被选中
 
         /** ======================================  event  ====================================== **/
-
-        var $pickHot_click = function () {
-            $(this).toggleClass('active');
-            if (!sceneId) {
-                alert('请先保存场景后再添加热点！');
-            } else {
-                panorama.addingHot = !panorama.addingHot;
-            }
-        };
-
-        var $transformHotBtn_click = function () {
-            $(this).toggleClass('active');
-            if (!sceneId) {
-                alert('请先添加热点后再创建转场！');
-            } else {
-                if (panorama.editingHot) {
-                    ui.$editPanel.removeClass('show');
-                    panorama.editingHot = false;
-                } else {
-                    panorama.editingHot = true;
-                }
-            }
-        };
 
         var $playBtn_click = function () {
             ui.$mask.fadeOut(500);
@@ -252,20 +233,33 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
             return false;
         };
 
+        var rightClickFlag = 0;
+        var $body_mousedown = function () {
+            rightClickFlag ? rightClickFlag = 0 : ui.$contextMenu.hide();
+        };
 
-        ui.$playBtn.click($playBtn_click);
-
-        // 侧边栏排序
-        ui.$spaceBar.sortable({
-            change: function () {
-                saved = false;
+        var $container_mousedown = function (e) {
+            if (e.which == 3) {
+                if (panorama.addingHot) {  // 结束选择热点
+                    panorama.addingHot = false;
+                } else if (ui.$hotTitle.is(':hidden')) {  // 若热点标题未显示状态（即鼠标不在热点上），则显示右键菜单
+                    rClickedPos = {x: e.pageX, y: e.pageY};
+                    ui.$contextMenu.css({left: e.pageX, top: e.pageY}).show();
+                    rightClickFlag = 1;  // 标记需要弹出菜单
+                }
             }
-        });
-        ui.$spaceBar.disableSelection();
+        };
 
-        var tempSpaceDict = {};
-        // 添加空间按钮
-        ui.$addSpace.click(function () {
+        var $showAddHotDialogBtn_mousedown = function () {
+            showAddingHotDialog({x: ui.$showAddHotDialogBtn.offset().left, y: ui.$showAddHotDialogBtn.offset().top});
+        };
+
+        var $spaceBar_sortchange = function () {
+            saved = false;
+        };
+
+        var tempSpaceDict = {};  // TODO
+        var $showAddDialogBtn_click = function () {
             var listHtml = '';
             $.get('list_spaces', function (result) {
                 if (!result.success) return false;
@@ -287,11 +281,10 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
                 ui.$mask.show();
                 ui.$addSpaceDialog.show();
             });
-        });
-        // 选择/取消空间
+        };
+
         var operate = {};
-        ui.$spacesContainer.on('click', '.space-img', function (e) {
-            e.stopPropagation();
+        var spaceImg_click = function () {
             var $checkBox = $(this).find('input');
             var spaceId = $checkBox.data('spaceid');
             if (spaceId == panorama.spaceId) {
@@ -300,59 +293,57 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
             }
             operate[spaceId] = !$checkBox.prop('checked');
             $checkBox.prop('checked', operate[spaceId]);
-        });
-        // 确定添加空间按钮
-        ui.$addSpaceDialog.find('.dialog-confirm').click(function () {
-                var operateLength = propLength(operate);
-                var i = 0;
-                for (var key in operate) {
-                    if (operate.hasOwnProperty(key)) {
-                        if (operate[key]) {
-                            i++;
-                            if (!panorama.spacesDict[key]) {  // 如果操作是true且列表中不存在则添加
-                                var space = tempSpaceDict[key];
-                                saved = false;
-                                panorama.addSpace(space);
-                                ui.$spaceBar.append('<li class="space-ele" id="space_id_' + key + '" data-index="' + key + '">' +
-                                    '<div class="ele-pic"><img src="' + space['thumb_url'] + '"/></div>' +
-                                    '<div class="ele-name"><input type="text" value=""/><span>' + space.name + '</span></div>' +
-                                    '<div class="ele-ope"><div class="ele-ope-edit"></div><div class="ele-ope-del"></div></div>' +
-                                    '</li>');
-                                if (i == operateLength) {
-                                    if (ui.$spaceBar.find('li').length > 1) {
-                                        ui.$spaceBar.removeClass('no-del');
-                                    }
-                                    ui.$mask.hide();
-                                    ui.$addSpaceDialog.hide();
-                                }
-                            } else {  // 已存在则跳过
-                                if (i == operateLength) {
-                                    if (ui.$spaceBar.find('li').length > 1) {
-                                        ui.$spaceBar.removeClass('no-del');
-                                    }
-                                    ui.$mask.hide();
-                                    ui.$addSpaceDialog.hide();
-                                }
+        };
+
+        var $addSpaceBtn_click = function () {
+            var operateLength = propLength(operate);
+            var i = 0;
+            Object.keys(operate).forEach(function (key) {
+                if (operate[key]) {
+                    i++;
+                    if (!panorama.spacesDict[key]) {  // 如果操作是true且列表中不存在则添加
+                        var space = tempSpaceDict[key];
+                        saved = false;
+                        panorama.addSpace(space);
+                        ui.$spaceBar.append('<li class="space-ele" id="space_id_' + key + '" data-index="' + key + '">' +
+                            '<div class="ele-pic"><img src="' + space['thumb_url'] + '"/></div>' +
+                            '<div class="ele-name"><input type="text" value=""/><span>' + space.name + '</span></div>' +
+                            '<div class="ele-ope"><div class="ele-ope-edit"></div><div class="ele-ope-del"></div></div>' +
+                            '</li>');
+                        if (i == operateLength) {
+                            if (ui.$spaceBar.find('li').length > 1) {
+                                ui.$spaceBar.removeClass('no-del');
                             }
-                        } else {  // false表示删除
-                            i++;
-                            if (panorama.spacesDict[key]) {  // 如果存在于列表中则删除
-                                panorama.removeSpace(key);
-                                $('#space_id_' + key).remove();
-                                saved = false;
+                            ui.$mask.hide();
+                            ui.$addSpaceDialog.hide();
+                        }
+                    } else {  // 已存在则跳过
+                        if (i == operateLength) {
+                            if (ui.$spaceBar.find('li').length > 1) {
+                                ui.$spaceBar.removeClass('no-del');
                             }
-                            if (i == operateLength) {
-                                if (ui.$spaceBar.find('li').length > 1) {
-                                    ui.$spaceBar.removeClass('no-del');
-                                }
-                                ui.$mask.hide();
-                                ui.$addSpaceDialog.hide();
-                            }
+                            ui.$mask.hide();
+                            ui.$addSpaceDialog.hide();
                         }
                     }
+                } else {  // false表示删除
+                    i++;
+                    if (panorama.spacesDict[key]) {  // 如果存在于列表中则删除
+                        panorama.removeSpace(key);
+                        $('#space_id_' + key).remove();
+                        saved = false;
+                    }
+                    if (i == operateLength) {
+                        if (ui.$spaceBar.find('li').length > 1) {
+                            ui.$spaceBar.removeClass('no-del');
+                        }
+                        ui.$mask.hide();
+                        ui.$addSpaceDialog.hide();
+                    }
                 }
-            }
-        );
+            });
+        };
+
         // 关闭对话框
         $('.dialog-close, .dialog-cancel').click(function () {
             var $dialog = $(this).parent().parent();
@@ -396,6 +387,7 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
                 $(this).val(panorama.spacesDict[$(this).parent().parent().data('index')].name);
                 $(this).hide();
             }
+            e.stopPropagation();
         });
 
         // 侧边栏切换场景
@@ -544,29 +536,6 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
             });
         });
 
-        // 隐藏右键菜单
-        ui.$body.on('mousedown', function (e) {
-            // add-hot按钮需要手动隐藏右键菜单
-            if (e.target.id != 'add-hot') ui.$contextMenu.hide();
-        });
-        // 容器右键菜单
-        $(sceneContainer).on('mousedown', function (e) {
-            if (e.which == 3) {
-                if (panorama.addingHot) {  // 结束选择热点
-                    ui.$pickHot.removeClass('active');
-                    panorama.addingHot = false;
-                } else {
-                    rClickedPos = {x: e.pageX, y: e.pageY};
-                    ui.$contextMenu.css({left: e.pageX, top: e.pageY}).show();
-                }
-                // 如果标题是显示状态（即鼠标在热点上），不显示右键菜单
-                if (ui.$hotTitle.is(':hidden')) e.stopPropagation();
-            }
-        });
-        // 右键菜单中选择 添加热点
-        ui.$addHotBtn.click(function () {
-            showAddingHotDialog({x: ui.$addHotBtn.offset().left, y: ui.$addHotBtn.offset().top});
-        });
         // 确认添加热点
         ui.$addHotDialog.find('.add-btn').click(function () {
             var toSpaceId = ui.$addHotDialog.find('select').val();
@@ -602,7 +571,6 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
             ui.$addHotDialog.hide();
             panorama.lockScene = false;
             panorama.addingHot = true;
-            ui.$pickHot.addClass('active');
         });
 
 
@@ -677,12 +645,13 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
             // }
         });
 
-        // 重置修改
-        $('#reset-hot-info').click(function () {
+        ui.$resetHotBtn.click(function () {
             resetEditPanel(panorama.resetHot());
+        }).keydown(function (e) {
+            e.preventDefault();
         });
-        // 保存热点数据
-        $('#save-hot-info').click(function () {
+
+        ui.$saveHotBtn.click(function () {
             var hotTitle = ui.$hotTitleInput.val();
             var hotTo = ui.$hotToInput.val();
             var transform = panorama.transform;
@@ -697,41 +666,53 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
                 if (data.success) {
                     panorama.saveHot(hotTo, hotTitle);
                     ui.$editPanel.removeClass('show');
-                    ui.$transformHotBtn.removeClass('active');
                 }
             });
+        }).keydown(function (e) {
+            e.preventDefault();
 
         });
-        // 退出编辑
-        $('#cancel-edit').click(function () {
+
+        ui.$cancelEditBtn.click(function () {
             ui.$editPanel.removeClass('show');
-            ui.$transformHotBtn.removeClass('active');
             panorama.editingHot = false;
         });
-        // 删除热点
-        $('#delete-hot-btn').click(function () {
+
+        ui.$deleteHotBtn.click(function () {
             $.get('delete_hot', {
                 id: editingHotInfo.id
             }, function (data) {
                 if (data.success) {
                     panorama.deleteHot(editingHotInfo.id);
                     ui.$editPanel.removeClass('show');
-                    ui.$transformHotBtn.removeClass('active');
                 }
             });
+        }).keydown(function (e) {
+            e.preventDefault();
         });
 
 
         /** ====================================== attach ====================================== **/
 
-        // 禁止页面弹出右键菜单
-        document.oncontextmenu = function () {
+        document.oncontextmenu = function () {  // 禁止弹出系统右键菜单
             return false;
         };
 
-        ui.$pickHot.click($pickHot_click);
+        ui.$body.on('mousedown', $body_mousedown);  // 页面上按下鼠标隐藏自定义右键菜单
 
-        ui.$transformHotBtn.click($transformHotBtn_click);
+        $(sceneContainer).on('mousedown', $container_mousedown);  // 显示自定义右键菜单
+
+        ui.$spaceBar.on("sortchange", $spaceBar_sortchange);  // 侧边栏顺序被修改
+
+        ui.$playBtn.click($playBtn_click);  // 播放场景按钮
+
+        ui.$showAddDialogBtn.click($showAddDialogBtn_click);  // 弹出添加空间对话框按钮
+
+        ui.$spacesContainer.on('click', '.space-img', spaceImg_click);  // 选择/取消选择空间
+
+        ui.$addSpaceBtn.click($addSpaceBtn_click);  // 添加空间按钮
+
+        ui.$showAddHotDialogBtn.mousedown($showAddHotDialogBtn_mousedown);  // 显示添加热点对话框
 
     }
 

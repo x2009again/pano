@@ -70,9 +70,44 @@ ul, li {
 #option-bar {
     width: 100%;
     height: 60px;
+    line-height: 60px;
     background-color: #dddddd;
     color: #666666;
     font-size: 15px;
+}
+
+#show-add-dialog {
+    line-height: 32px;
+    border-top: 1px solid #ccc;
+    background: #fff url(../img/icon/add.png) no-repeat 12px center;
+    padding: 0 10px 0 30px;
+    margin-left: 14px;
+    display: inline-block;
+    vertical-align: middle;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+#show-add-dialog:hover {
+    background-color: #e6e6e6;
+}
+
+#option-bar > div {
+    float: right;
+    height: 60px;
+}
+
+#option-bar > div > a {
+    vertical-align: middle;
+    margin-right: 15px;
+    color: #666;
+    cursor: pointer;
+}
+
+#option-bar > div > a:hover {
+    color: #00aeef;
 }
 
 #qr-code {
@@ -83,7 +118,8 @@ ul, li {
     margin-left: -90px;
     margin-top: -40px;
     position: absolute;
-    z-index: 8;
+    right: -75px;
+    z-index: 1;
     text-align: center;
     font-size: 16px;
     opacity: 0;
@@ -116,41 +152,6 @@ ul, li {
 #qr-code a:hover {
     color: #00aeef;
     text-decoration: underline;
-}
-
-#add-space {
-    width: 100px;
-    height: 32px;
-    line-height: 32px;
-    border-top: 1px solid #ccc;
-    background: url('../img/icon/add.png') #fff 12px center no-repeat;
-    cursor: pointer;
-    position: absolute;
-    margin: 14px;
-    text-align: center;
-    z-index: 5;
-    -moz-border-radius: 4px;
-    -webkit-border-radius: 4px;
-    border-radius: 4px;
-}
-
-#add-space:hover {
-    background-color: #e6e6e6;
-}
-
-.option-ele {
-    height: 60px;
-    line-height: 60px;
-    float: left;
-    margin-right: 20px;
-}
-
-.option-ele > span {
-    cursor: pointer;
-}
-
-.option-ele > span:hover {
-    color: #00aeef;
 }
 
 #space-bar {
@@ -420,7 +421,7 @@ ul, li {
     font-size: 20px;
 }
 
-.dialog-confirm {
+#add-space-btn {
     float: right;
     background-color: #03a9f4;
     font-size: 20px;
@@ -430,7 +431,7 @@ ul, li {
     background-color: #039be1;
 }
 
-.dialog-confirm:hover {
+#add-space-btn:hover {
     background-color: #039be1;
 }
 
@@ -739,10 +740,13 @@ ul, li {
 }
 
 #edit-panel .range {
-    /*margin-bottom: 5px;*/
+    text-align: center;
+    padding: 10px 0;
+    font-size: 12px;
 }
 
 #edit-panel .range input {
+    width: 145px;
     vertical-align: middle;
 }
 
@@ -765,13 +769,18 @@ ul, li {
 }
 
 #edit-panel .panel-footer button {
-    border: 1px solid #000;
-    padding: 3px;
+    border-style: solid;
+    border-color: #333;
+    border-width: 0 2px 2px 0;
+    line-height: 25px;
+    padding: 1px 3px;
     outline: none;
+    vertical-align: middle;
 }
 
 #edit-panel .panel-footer button:active {
-    border-width: 2px 0 0 2px;
+    border-width: 0 1px 1px 0;
+    margin: 1px 0 0 1px;
 }
 
 #delete-hot-btn {

@@ -705,8 +705,10 @@
         camera.updateProjectionMatrix();
         renderer.clear();
         renderer.render(scene, camera);
-        /*renderer.clearDepth();
-         renderer.render(transformScene, camera);*/
+        if (transiting || _editingHot) {
+            renderer.clearDepth();
+            renderer.render(transformScene, camera);
+        }
     };
 
     var transform = null;
@@ -865,7 +867,7 @@
                 if (intersects.length > 0) {  // 单击热点
                     targetHotId = selectedHot.hotId;
                     if (options.debug) {
-                        if ($e.which == 3 || (_editingHot && $e.which == 1)) {  // 右击或在编辑状态下左击热点
+                        if ($e.which == 3) {  // 右击热点
                             cameraPos = camera.position.clone();  // 记录编辑前相机位置
                             // 设置转场相机位置与朝向
                             transformCamera.position.copy(cameraPos);
@@ -1073,15 +1075,16 @@
     Object.defineProperty(Panorama.prototype, "editingHot", {
         set: function (val) {
             _editingHot = !!val;
-            if (!_editingHot) {
+            var i;
+            if (!_editingHot) {  // false
                 sphere.material = materialDict[currentSpace.id];
+                for (i = 0; i < spaceHots.length; i++)spaceHots[i].visible = true;
                 sphere.material.opacity = 1;
                 camera.position.copy(cameraPos);
                 camera.lookAt(sceneCenter);
                 orbitControls.enabled = true;
-                // transformSphere.position.set(0, 0, 0);
-                // transformSphere.rotation.set(0, 0, 0);
-            } else {
+            } else {  // true
+                for (i = 0; i < spaceHots.length; i++)spaceHots[i].visible = false;
                 transformCamera.position.copy(cameraPos);
                 transformCamera.lookAt(sceneCenter);
                 orbitControls.enabled = false;
@@ -1134,12 +1137,12 @@
                 // up && (camera.position.y += 1);
                 // down && (camera.position.y -= 1);
 
-                front && camera.translateZ(1);
-                back && camera.translateZ(-1);
-                left && camera.translateX(1);
-                right && camera.translateX(-1);
-                up && camera.translateY(-1);
-                down && camera.translateY(1);
+                front && camera.translateZ(0.3);
+                back && camera.translateZ(-0.3);
+                left && camera.translateX(0.3);
+                right && camera.translateX(-0.3);
+                up && camera.translateY(-0.1);
+                down && camera.translateY(0.1);
 
                 renderer.clearDepth();
                 renderer.render(transformScene, transformCamera);

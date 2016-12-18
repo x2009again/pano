@@ -494,6 +494,8 @@
 
 
             callbacks.onShown(toSpaceId);
+            transformCamera.fov = camera.fov;
+            transformCamera.updateProjectionMatrix();
             transformCamera.position.copy(camera.position);
             transformCamera.lookAt(sceneCenter);
             if (hotInfo && (hotInfo.px || hotInfo.py || hotInfo.pz)) {

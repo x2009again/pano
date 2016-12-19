@@ -20,7 +20,6 @@
     var hotSpot;  // 热点（用于复制）
     var hotSpotMat;  // 热点材质
     var hotPos = null;  // 热点方向矢量
-    var HOT_DISTANCE = 45;  // 热点距离球心的位置
 
     var startPoint1 = {x: 0, y: 0}, startPoint2 = {x: 0, y: 0};
 
@@ -71,6 +70,11 @@
          * 下一个场景载入中
          */
         onShowing: function () {
+        },
+        /**
+         * 场景跳转失败回调
+         */
+        onShowSpaceFail: function (code, data) {
         },
         /**
          * 场景切换完毕
@@ -203,6 +207,7 @@
         }
 
         function loadSpace(space, onLoaded) {
+            materialDict[space.id] = null;
             // 先加载小图
             if (space.cache_url) {
                 textureLoader.load(space.cache_url, function (texture) {
@@ -438,13 +443,13 @@
 
     /**
      * 切换场景
-     * @param SpaceId
+     * @param spaceId
      * @param hotId 触发的热点编号（用于转场效果）
      * @returns {boolean}
      */
-    Panorama.prototype.showSpace = function (SpaceId, hotId) {
+    Panorama.prototype.showSpace = function (spaceId, hotId) {
         if (_lockScene || transiting || _editingHot) return false;
-        var toSpaceId = SpaceId;
+        var toSpaceId = spaceId;
         var hotInfo;
         if (hotId) {
             hotInfo = currentSpace.hotInfoDict[hotId];
@@ -454,17 +459,11 @@
             return false;
         }
         var animateTime = 800;
-        var timer = null;
-        var scope = this;
-        if (!materialDict[toSpaceId]) {
-            callbacks.onShowing();
-            timer = window.setInterval(function () {
-                if (materialDict[toSpaceId]) {
-                    window.clearInterval(timer);
-                    timer = null;
-                    scope.showSpace(SpaceId, hotId);
-                }
-            }, 100);
+        if (materialDict[toSpaceId] === null) {
+            callbacks.onShowSpaceFail(1, {spaceId: spaceId, hotId: hotId, msg: '空间加载中...'});
+            return false;
+        } else if (materialDict[toSpaceId] === undefined) {
+            callbacks.onShowSpaceFail(2, {spaceId: spaceId, hotId: hotId, msg: '空间不存在'});
             return false;
         }
         // 若空间已经被移除
@@ -492,8 +491,8 @@
             materialDict[toSpaceId].opacity = 1;
             sphere.material = materialDict[toSpaceId];  //修改天空球材质
 
-
             callbacks.onShown(toSpaceId);
+
             transformCamera.fov = camera.fov;
             transformCamera.updateProjectionMatrix();
             transformCamera.position.copy(camera.position);
@@ -584,7 +583,7 @@
         newRay.setFromCamera(pos, camera);
         // 通过射线与小球的交点获取新热点的位置
         var newHotPos = newRay.intersectObject(sphere)[0].point;
-        newHotPos.setLength(HOT_DISTANCE);
+        newHotPos.setLength(radius - 10);
         return {
             vx: newHotPos.x.toFixed(4),
             vy: newHotPos.y.toFixed(4),
@@ -1076,6 +1075,7 @@
     // 定义editingHot属性
     Object.defineProperty(Panorama.prototype, "editingHot", {
         set: function (val) {
+            if (_editingHot == !!val) return false;
             _editingHot = !!val;
             var i;
             if (!_editingHot) {  // false

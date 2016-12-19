@@ -84,7 +84,7 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
         fps: false,
         callbacks: {
             onLoad: onLoad,
-            onShowing: onShowing,
+            onShowSpaceFail: onShowSpaceFail,
             onShown: onShown,
             onAddingHot: onAddingHot,
             onOverHot: onOverHot,
@@ -129,10 +129,32 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
         animate();
     }
 
-    // 下一个场景加载中
-    function onShowing() {
-        ui.$mask.show();
-        ui.$loading.stop().fadeIn(1000);
+    // 场景跳转失败
+    var loading = false;
+
+    function onShowSpaceFail(code, data) {
+        if (code == 1) {
+            if (!loading) {
+                loading = true;
+                ui.$mask.show();
+                ui.$loading.stop().fadeIn(1000);
+            }
+            window.setTimeout(function () {
+                panorama.showSpace(data.spaceId, data.hotId);
+            }, 500);
+        } else if (code == 2) {
+            var hotId = data.hotId;
+            if (confirm('目标空间不存在，删除该无效热点？')) {
+                $.get('delete_hot', {
+                    id: hotId
+                }, function (data) {
+                    if (data.success) {
+                        panorama.deleteHot(hotId);
+                        ui.$hotTitle.hide();
+                    }
+                });
+            }
+        }
     }
 
     // 场景切换完毕
@@ -141,6 +163,7 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
         $('#space_id_' + spaceId).addClass('active');
         ui.$mask.hide();
         ui.$loading.stop().fadeOut(700);
+        loading = false;
     }
 
     // 鼠标在热点上时

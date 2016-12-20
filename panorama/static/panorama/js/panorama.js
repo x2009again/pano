@@ -702,8 +702,9 @@
         STAGE_WIDTH = stageWidth;
         STAGE_HEIGHT = stageHeight;
         renderer.setSize(STAGE_WIDTH, STAGE_HEIGHT);
-        camera.aspect = STAGE_WIDTH / STAGE_HEIGHT;
+        camera.aspect = transformCamera.aspect = STAGE_WIDTH / STAGE_HEIGHT;
         camera.updateProjectionMatrix();
+        transformCamera.updateProjectionMatrix();
         renderer.clear();
         renderer.render(scene, camera);
         if (transiting || _editingHot) {

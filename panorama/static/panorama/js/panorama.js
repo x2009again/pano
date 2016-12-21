@@ -1131,14 +1131,10 @@
         } else {
             renderer.clear();
             renderer.render(scene, camera);
-            if (transiting || _editingHot) {
-
-                // front && (camera.position.z += 1);
-                // back && (camera.position.z -= 1);
-                // left && (camera.position.x -= 1);
-                // right && (camera.position.x += 1);
-                // up && (camera.position.y += 1);
-                // down && (camera.position.y -= 1);
+            if (transiting) {
+                renderer.clearDepth();
+                renderer.render(transformScene, transformCamera);
+            } else if (_editingHot) {
 
                 front && camera.translateZ(0.3);
                 back && camera.translateZ(-0.3);

@@ -105,6 +105,27 @@
     $.alert.close = function () {
         $mask.hide();
         $alertDialog.fadeOut();
+    };
+
+    window.MaskLayer = function (ele) {
+        var container = ele ? $(ele) : $(document.body);
+        var $mask = container.children('#mask-layer');
+        if ($mask.length == 0) {
+            $mask = $('<div id="mask-layer" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:9;background-color:rgba(0,0,0,0.2);display:none;"></div>');
+            container.append($mask);
+        }
+        this.show = function (time) {
+            if (time) $mask.fadeIn();
+            else $mask.css('display', 'block');
+            return this;
+        };
+        this.hide = function (time) {
+            if (time) $mask.fadeOut();
+            else $mask.css('display', 'none');
+            return this;
+        };
+        return this;
     }
+
 
 })(window, document, $);

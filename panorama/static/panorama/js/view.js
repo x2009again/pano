@@ -17,7 +17,6 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
     var fromMobile = !fromPC();
 
     var $loading = $('#loading');
-    var $mask = $('#mask');
     var $body = $(document.body);
     var $playBtn = $('#play-btn');
     var $nav = $('#nav');
@@ -69,6 +68,7 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
     }
 
     var container = document.getElementById('main');
+    var maskLayer = new MaskLayer(container).show();
     var $container = $(container);
     var options = {
         container: container,
@@ -83,7 +83,7 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
         callbacks: {
             onLoad: onLoad,
             onCameraChanged: onCameraChanged,
-            onShowing: onShowing,
+            onShowSpaceFail: onShowSpaceFail,
             onShown: onShown,
             onOverHot: onOverHot,
             onLeaveHot: onLeaveHot
@@ -134,7 +134,7 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
         // 隐藏loading动画
         $loading.removeClass('show');
         if (options.autoPlay) {
-            $mask.hide();
+            maskLayer.hide();
         } else {
             $playBtn.show();
         }
@@ -150,16 +150,36 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
         $torch.css({'transform': cssText});
     }
 
-    // 下一个场景加载中
-    function onShowing() {
-        $mask.show();
-        $loading.addClass('show');
-        // $loading.stop().fadeIn(1000);
+    // 场景跳转失败
+    var loading = false;
+    function onShowSpaceFail(code, data) {
+        if (code == 1) {
+            if (!loading) {
+                loading = true;
+                maskLayer.show();
+                ui.$loading.stop().fadeIn(1000);
+            }
+            window.setTimeout(function () {
+                panorama.showSpace(data.spaceId, data.hotId);
+            }, 500);
+        } else if (code == 2) {
+            var hotId = data.hotId;
+            if (confirm('目标空间不存在，删除该无效热点？')) {
+                $.get('delete_hot', {
+                    id: hotId
+                }, function (data) {
+                    if (data.success) {
+                        panorama.deleteHot(hotId);
+                        ui.$hotTitle.hide();
+                    }
+                });
+            }
+        }
     }
 
     // 场景切换完毕
     function onShown(spaceId) {
-        $mask.hide();
+        maskLayer.hide();
         $loading.removeClass('show');
         // $loading.stop().fadeOut(700);
         $gallery.find('.active').removeClass('active');
@@ -231,7 +251,7 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
 
         // 播放操作
         $playBtn.click(function () {
-            $mask.fadeOut(500);
+            maskLayer.hide(500);
             $playBtn.stop().fadeOut(500);
             panorama.play();
             $nav.addClass(fromMobile ? 'mobile-show' : 'show');
@@ -327,12 +347,12 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
             }
         });
         $infoBtn.click(function () {
-            $mask.fadeIn();
+            maskLayer.show();
             $sellerDialog.fadeIn();
             return false;
         });
         $closeBtn.click(function () {
-            $mask.fadeOut();
+            maskLayer.hide();
             $('.dialog').fadeOut();
             return false;
         });

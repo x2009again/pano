@@ -57,6 +57,7 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
 
     /** ====================================== variable ====================================== **/
 
+    var maskLayer = new MaskLayer().show();
     var sceneInfo = ret['scene'];
     var seller = ret['seller'];
     var spaceList = ret['spaceList'];
@@ -120,7 +121,7 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
 
         ui.$loading.fadeOut(1000);
         if (options.autoPlay) {
-            ui.$mask.fadeOut(1000);
+            maskLayer.hide(1000);
         } else {
             ui.$playBtn.fadeIn(1000);
         }
@@ -136,7 +137,7 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
         if (code == 1) {
             if (!loading) {
                 loading = true;
-                ui.$mask.show();
+                maskLayer.show();
                 ui.$loading.stop().fadeIn(1000);
             }
             window.setTimeout(function () {
@@ -161,7 +162,7 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
     function onShown(spaceId) {
         ui.$spaceBar.find('li').removeClass('active');
         $('#space_id_' + spaceId).addClass('active');
-        ui.$mask.hide();
+        maskLayer.hide();
         ui.$loading.stop().fadeOut(700);
         loading = false;
     }
@@ -250,7 +251,7 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
         /** ======================================  event  ====================================== **/
 
         var $playBtn_click = function () {
-            ui.$mask.fadeOut(500);
+            maskLayer.hide(500);
             ui.$playBtn.stop().fadeOut(500);
             panorama.play();
             return false;
@@ -301,7 +302,7 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
                     }
                 }
                 ui.$spacesContainer[0].innerHTML = listHtml;
-                ui.$mask.show();
+                maskLayer.show();
                 ui.$addSpaceDialog.show();
             });
         };
@@ -337,7 +338,7 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
                             if (ui.$spaceBar.find('li').length > 1) {
                                 ui.$spaceBar.removeClass('no-del');
                             }
-                            ui.$mask.hide();
+                            maskLayer.hide();
                             ui.$addSpaceDialog.hide();
                         }
                     } else {  // 已存在则跳过
@@ -345,7 +346,7 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
                             if (ui.$spaceBar.find('li').length > 1) {
                                 ui.$spaceBar.removeClass('no-del');
                             }
-                            ui.$mask.hide();
+                            maskLayer.hide();
                             ui.$addSpaceDialog.hide();
                         }
                     }
@@ -360,7 +361,7 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
                         if (ui.$spaceBar.find('li').length > 1) {
                             ui.$spaceBar.removeClass('no-del');
                         }
-                        ui.$mask.hide();
+                        maskLayer.hide();
                         ui.$addSpaceDialog.hide();
                     }
                 }
@@ -370,7 +371,7 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
         // 关闭对话框
         $('.dialog-close, .dialog-cancel').click(function () {
             var $dialog = $(this).parent().parent();
-            ui.$mask.hide();
+            maskLayer.hide();
             $dialog.hide();
         });
         // 删除空间
@@ -450,7 +451,7 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
             }
             document.getElementById('seller-name').value = seller.name || '';
             document.getElementById('seller-desc').value = seller.desc || '';
-            ui.$mask.show();
+            maskLayer.show();
             ui.$editInfoDialog.show();
         });
         $('#logo-input').change(function () {
@@ -506,7 +507,7 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
                 });
             } else {
                 $('#scene-title').val('');
-                ui.$mask.show();
+                maskLayer.show();
                 ui.$saveAsDialog.show();
             }
         });
@@ -523,7 +524,7 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
         ui.$saveAsDialog.find('.dialog-confirm').click(function () {
             if (saved) {
                 alert('未修改任何数据');
-                ui.$mask.hide();
+                maskLayer.hide();
                 ui.$saveAsDialog.hide();
                 return false;
             }
@@ -550,7 +551,7 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
                         window.location.assign('edit?scene_id=' + ret.scene_id);
                     } else {
                         document.title = ret.title;
-                        ui.$mask.hide();
+                        maskLayer.hide();
                         ui.$saveAsDialog.hide();
                     }
                 } else {
@@ -749,7 +750,7 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
                 logoUrl = seller.logo;
                 panorama.changeLogo(logoUrl);
             }
-            ui.$mask.hide();
+            maskLayer.hide();
             ui.$editInfoDialog.hide();
             alert('操作成功！');
         } else {

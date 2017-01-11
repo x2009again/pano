@@ -123,13 +123,13 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
                 maxScrollLeft = galleryScrollWidth - $gallery.width();
                 (maxScrollLeft < 0) && (maxScrollLeft = 0);
             }
-
-            if (fromMobile) {
-                $('#opera-panel-mobile').show();
-                $('#opera-panel-PC').hide();
-            }
-            $nav.addClass('show');
         }
+
+        if (fromMobile) {
+            $('#opera-panel-mobile').show();
+            $('#opera-panel-PC').hide();
+        }
+        $nav.addClass('show');
 
         // 隐藏loading动画
         $loading.removeClass('show');
@@ -361,7 +361,7 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
     // 监听设备方向变化（用于判断是否有方向传感器）
     window.addEventListener('deviceorientation', setOrientationControls);
     function setOrientationControls(e) {
-        (e.alpha || e.beta || e.gamma) && (hasOSensor = true);
+        e.alpha !== null && e.beta !== null && e.gamma !== null && (hasOSensor = true);
         window.removeEventListener('deviceorientation', setOrientationControls);  // 移除监听器
     }
 

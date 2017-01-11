@@ -10,6 +10,7 @@
 (function (window, document, $, undefined) {
     "use strict";
 
+    var isFromPc = fromPC();
     var stats = null;
     var renderer, stereoRenderer, scene, transformScene, camera, transformCamera, raycaster, orbitControls, deviceControls;
     var logoMesh, logoMaterial;
@@ -356,7 +357,7 @@
             orbitControls.enableRotate = true;
             orbitControls.enableDamping = true;
             orbitControls.dampingFactor = 0.1;
-            orbitControls.rotateSpeed = fromPC() ? 0.07 : 0.04;
+            orbitControls.rotateSpeed = isFromPc ? 0.07 : 0.04;
             orbitControls.enableZoom = false;
             orbitControls.enableKeys = false;
             orbitControls.enablePan = false;
@@ -375,15 +376,18 @@
             deviceControls.enabled = false;
 
             var $stage = $(_stage);
-            // 鼠标事件
-            $stage.on('mousedown', mouseDown.bind(scope));
-            $stage.on('mousemove', mouseMove.bind(scope));
-            $stage.on('mouseup', mouseUp.bind(scope));
-            $stage.on('DOMMouseScroll mousewheel', mouseWheel.bind(scope));
-            // 触摸事件
-            $stage.on('touchstart', touchStart.bind(scope));
-            $stage.on('touchmove', touchMove.bind(scope));
-            $stage.on('touchend', touchEnd.bind(scope));
+            if (isFromPc) {
+                // 鼠标事件
+                $stage.on('mousedown', mouseDown.bind(scope));
+                $stage.on('mousemove', mouseMove.bind(scope));
+                $stage.on('mouseup', mouseUp.bind(scope));
+                $stage.on('DOMMouseScroll mousewheel', mouseWheel.bind(scope));
+            } else {
+                // 触摸事件
+                $stage.on('touchstart', touchStart.bind(scope));
+                $stage.on('touchmove', touchMove.bind(scope));
+                $stage.on('touchend', touchEnd.bind(scope));
+            }
 
             // 键盘事件
             document.body.onkeydown = function (e) {

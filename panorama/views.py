@@ -23,6 +23,10 @@ def view(request):
     return render_to_response('panorama/view.html')
 
 
+def vr_index(request):
+    return render_to_response('panorama/vr_index.html')
+
+
 def edit(request):
     return render_to_response('panorama/edit.html')
 

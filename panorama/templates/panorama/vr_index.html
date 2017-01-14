@@ -1,0 +1,1939 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset=utf-8>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>全景漫屏</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'panorama/css/common.css' %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'panorama/css/vr_index.css' %}"/>
+    <script src="{% static 'panorama/lib/three.js/Detector.js' %}"></script>
+</head>
+<body>
+<div class="public-header">
+    <div class="header" id="header">
+        <div class="m">
+            <div class="header-left fl">
+                <div class="logo fl">
+                    <a href="http://vr.justeasy.cn/">
+                        全景图
+                    </a>
+                </div>
+                <div class="nav fl">
+                    <ul id="actives">
+                        <li>
+                            <a href="http://vr.justeasy.cn/">
+                                首页
+                            </a>
+                        </li>
+                        <li>
+                            <a href="http://vr.justeasy.cn/panos/606/0/0/0.html">
+                                全景效果图
+                            </a>
+                        </li>
+                        <li>
+                            <a href="http://vr.justeasy.cn/panos/607/0/0/0.html">
+                                全景设计案例
+                            </a>
+                        </li>
+                        <li>
+                            <a href="http://vr.justeasy.cn/panos/608/0/0/0.html">
+                                摄影作品
+                            </a>
+                        </li>
+                        <li>
+                            <a href="http://vr.justeasy.cn/learn.html">
+                                学习交流
+                            </a>
+                        </li>
+                        <li>
+                            <a href="http://vr.justeasy.cn/authors/0/0/0.php">
+                                全景作者
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="header-right fr">
+                <div class="search-icon fl" id="search-icon">
+                    <i class="icon icon-search">
+
+                    </i>
+                </div>
+                <div class="loginbox fl">
+                    <div class="nologin none" id="nologin">
+                        <a class="nologins"
+                           href="http://reg.justeasy.cn/login.html?backurl=http://vr.justeasy.cn/">登录</a>
+                        <a href="http://reg.justeasy.cn/User/Register/index.html">注册</a>
+                    </div>
+                    <div class="logined none" id="haslogin">
+                        <a href="http://reg.justeasy.cn/user/user/userinfo.php" id="loginss">
+                        </a>
+                        <div class="user-list">
+                            <ul>
+                                <li>
+                                    <a href="http://reg.justeasy.cn/user/user/account.php" target="_blank">
+                                        <i class="fa fa-gear"></i>
+                                        账号设置
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="http://vr.justeasy.cn/user/pano/index.php" target="_blank">
+                                        <i class="fa fa-envelope"></i>
+                                        个人中心
+                                    </a>
+                                </li>
+                                <li id="gogo">
+                                    <a href="javascript:void(0);" target="_blank">
+                                        <i class="fa fa-user"></i>
+                                        个人主页
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="http://reg.justeasy.cn/user/login/LoginOut.php?backurl=http://vr.justeasy.cn/">
+                                        <i class="fa fa-power-off"></i>
+                                        退出登录
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <span class="line fl">
+						|
+					</span>
+                <div class="header-links fl" style="height:50px;line-height:50px;">
+                    <ul>
+                        <li class="submenu">
+                            网站导航
+                            <span class="angle">
+								<i class="fa fa-angle-down"></i>
+							</span>
+                            <div class="show-list">
+                                <ul>
+                                    <li>
+                                        <a href="http://www.justeasy.cn/" target="_blank">
+                                            建E网首页
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="http://mall.justeasy.cn/" target="_blank">
+                                            图书商城
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="http://www.justeasy.cn/3d/model_new_bigclass.asp?bid=21"
+                                           target="_blank">
+                                            全景模型下载
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="top-btn fl">
+                    <a href="http://reg.justeasy.cn/user/login/index.php?backurl=http://vr.justeasy.cn/user/pano/createvr_way1.php"
+                       class="btn btn-org"> 全景发布
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-searchbox none" id="header-searchbox">
+        <div class="m">
+            <div class="header-left fl">
+                <div class="logo fl">
+                    <a href="http://vr.justeasy.cn/">
+                        全景图
+                    </a>
+                </div>
+                <div class="searchbox fl">
+                    <!-- <input type="" name="" class="search-txt" placeholder="搜索"> -->
+                    <form action="/pano/vr/search_pano.cgi" method="get" class="form-horizontal">
+                        <input type="text" name="data" placeholder="搜索内容" class="search-txt" value="">
+                        <input type="submit" value="" class="btn-search">
+                    </form>
+                </div>
+            </div>
+            <div class="close fr" id="close">
+                <i class="icon icon-close"></i>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="plane none">
+    <ul>
+        <li>
+            <div class="show-box">
+                <i class="icon icon-qq">
+
+                </i>
+                <span>在线客服</span>
+            </div>
+            <div class="hide-box qq">
+                <script type="text/javascript"
+                        src="http://static.b.qq.com/account/bizqq/js/wpa.js?type=1&kfuin=4006002507&ws=www.justeasy.cn&btn1=%E4%BC%81%E4%B8%9AQQ%E4%BA%A4%E8%B0%88&aty=0&a="></script>
+            </div>
+        </li>
+        <li>
+            <div class="show-box">
+                <i class="icon icon-weixin">
+                </i>
+                <span>官方微信</span>
+            </div>
+            <div class="hide-box wx">
+                <img src="http://www.justeasy.cn/image/weixin.jpg" class="pic">
+            </div>
+        </li>
+        <li>
+            <div class="show-box">
+                <i class="icon icon-tel">
+                </i>
+                <span>联系电话</span>
+            </div>
+            <div class="hide-box tel">
+                <span>4006002507</span>
+            </div>
+        </li>
+        <li>
+            <div class="show-box">
+                <a href="javascript:void(0)" onclick="gototop();">
+                    <i class="icon icon-up">
+                    </i>
+                    <span>回到顶部</span>
+                </a>
+            </div>
+        </li>
+    </ul>
+</div>
+<script type="text/javascript" src="http://res1.justeasy.cn/js/header-user.js"></script>
+<script type="text/javascript">
+    $("#loginss").on("mouseover", function () {
+        $("#loginss_detail").show();
+    });
+    $("#loginss_detail,.public-header").on("mouseleave", function () {
+        $("#loginss_detail").hide();
+    });
+
+    $(document).on("click", "#gogo", function () {
+        $.ajax({
+            url: '/pano/vr/gotopersonal.cgi',
+            type: 'post',
+            dataType: 'json',
+        })
+            .done(function (data) {
+                if (data.status == 200) {
+                    window.location.href = "http://vr.justeasy.cn/" + 'author/' + data.uid + '.html';
+                } else {
+                    if (confirm(data.msg)) {
+                        window.location.href = "http://vr.justeasy.cn/" + 'user/pano/mypage.php';
+                    }
+                }
+
+            })
+            .fail(function () {
+                console.log("error");
+            })
+            .always(function () {
+                console.log("complete");
+            });
+    });
+
+    $(document).scroll(function (event) {
+        if ($(document).scrollTop() > 300) {
+            $(".plane").show();
+        } else {
+            $(".plane").hide();
+        }
+    });
+    function gototop() {
+        $("html,body").animate({scrollTop: $("body").offset().top}, 500);
+    }
+    $(".plane ul li").hover(function () {
+        $(this).find(".hide-box").show();
+    }, function () {
+        $(this).find(".hide-box").hide();
+    });
+
+    $(".header-links").hover(function () {
+        $(this).find(".show-list").stop().fadeTo(250, 1);
+        $(this).find("i").removeClass('fa-angle-down').addClass('fa-angle-up');
+    }, function () {
+        $(this).find(".show-list").stop().fadeOut();
+        $(this).find("i").removeClass('fa-angle-up').addClass('fa-angle-down');
+    });
+    $("#search-icon").click(function (event) {
+        $("#header").hide();
+        $("#header-searchbox").show();
+    });
+    $(".close").click(function (event) {
+        $("#header-searchbox").hide();
+        $("#header").show(0);
+    });
+    /*$(".public-header").on("mouseleave",function(){
+     $("#header-searchbox").hide();
+     $("#header").show(0);
+     });*/
+
+    $("#actives li").on("click", function () {
+        $(this).addClass('active').siblings('li').removeClass('active');
+    })
+</script>
+
+<div id="banner_tabs" class="flexslider" style="background: url('http://big.justeasy.cn/mall/201701/20170113135809_58786c7117c09.jpg') center">
+</div>
+<div class="index-title red">
+    <span style="left:31%;">全景效果图</span>
+</div>
+<input type="hidden" id="tmp1" value="0">
+<input type="hidden" id="tmp2" value="0">
+<input type="hidden" id="tmp3" value="0">
+<input type="hidden" id="small1" value="0">
+<input type="hidden" id="small2" value="0">
+<input type="hidden" id="small3" value="0">
+<div class="menu m red-active" value="1">
+    <ul class="m-left m_left1">
+        <li class="active">精品推荐</li>
+        <li>最新作品</li>
+    </ul>
+    <ul class="submenu submenu1">
+        <li value="619">
+            <a href="javascript:void(0);">家装</a>
+        </li>
+        <li value="620">
+            <a href="javascript:void(0);">样板房</a>
+        </li>
+        <li value="621">
+            <a href="javascript:void(0);">别墅</a>
+        </li>
+        <li value="622">
+            <a href="javascript:void(0);">酒店</a>
+        </li>
+        <li value="623">
+            <a href="javascript:void(0);">餐饮</a>
+        </li>
+        <li value="624">
+            <a href="javascript:void(0);">商业空间</a>
+        </li>
+        <li value="625">
+            <a href="javascript:void(0);">公共空间</a>
+        </li>
+        <li value="626">
+            <a href="javascript:void(0);">其他</a>
+        </li>
+    </ul>
+    <div class="more">
+        <a href="javascript:void(0);" onclick="gotoUrl(1);">
+            更多 >
+        </a>
+    </div>
+</div>
+<div class="picture m">
+    <ul id="vr1">
+        <li>
+            <div class="pic">
+                <a href="http://vr.justeasy.cn/show/108246.html" target="_blank">
+                    <img src="http://small.justeasy.cn/pano/20170112/59a8b47fb4d5078429cd5cef932d0d54/20170112222006_5877909708954.tiles/thumb.jpg"
+                         width="385" alt="北城天骄3#12-4韩女士雅居效果图" title="北城天骄3#12-4韩女士雅居效果图"/>
+                </a>
+            </div>
+            <h3 class="ellipsis">
+                <a href="http://vr.justeasy.cn/show/108246.html" title="北城天骄3#12-4韩女士雅居效果图" target="_blank">
+                    北城天骄3#12-4韩女士雅居效果图 </a>
+            </h3>
+            <div class="details">
+                <ul>
+                    <li>
+                        <i class="fa fa-eye"></i>
+                        620
+                    </li>
+                    <li>
+                        <i class="fa fa-thumbs-o-up"></i>
+                        15
+                    </li>
+                </ul>
+            </div>
+            <div class="pic-bottom">
+                <div class="left">
+                    <div class="photo fl">
+                        <a href="javascript:void(0);" title="全景图个人头像">
+                            <img src="http://res1.justeasy.cn/images/defaulthead.jpg" alt="全景个人头像" title="全景个人头像">
+                        </a></div>
+                    <div class="name fl" style="color:#999;">fengxiaotian000</div>
+                    <div class="weixin fr">
+                        <i class="icon-wx"></i>
+                        <div class="show-wx">
+                            <img src="/pano/vr/wxcode.cgi?type=1&id=108246&logo=&time=1484231451" width="242"
+                                 height="242" alt="微信二维码" title="微信二维码">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </li>
+        <li>
+            <div class="pic">
+                <a href="http://vr.justeasy.cn/show/108152.html" target="_blank">
+                    <img src="http://small.justeasy.cn/pano/20170112/7e0988f9bcf6396f97b083e51dad8a28/20170112193322_5877698254d82.tiles/thumb.jpg"
+                         width="385" alt="新中式卧室" title="新中式卧室"/>
+                </a>
+            </div>
+            <h3 class="ellipsis">
+                <a href="http://vr.justeasy.cn/show/108152.html" title="新中式卧室" target="_blank">
+                    新中式卧室 </a>
+            </h3>
+            <div class="details">
+                <ul>
+                    <li>
+                        <i class="fa fa-eye"></i>
+                        389
+                    </li>
+                    <li>
+                        <i class="fa fa-thumbs-o-up"></i>
+                        8
+                    </li>
+                </ul>
+            </div>
+            <div class="pic-bottom">
+                <div class="left">
+                    <div class="photo fl">
+                        <a href="http://vr.justeasy.cn/author/886668.html" title="全景图个人头像" target="_blank">
+                            <img src="http://big.justeasy.cn/avatar/201701/886668_587853f31efb2_150.jpg" alt="全景个人头像"
+                                 title="全景个人头像">
+                        </a>
+                    </div>
+                    <a href="http://vr.justeasy.cn/author/886668.html" title="郭志勋" class="name fl" target="_blank">
+                        郭志勋 </a>
+                    <div class="weixin fr">
+                        <i class="icon-wx"></i>
+                        <div class="show-wx">
+                            <img src="/pano/vr/wxcode.cgi?type=1&id=108152&logo=&time=1484221025" width="242"
+                                 height="242" alt="微信二维码" title="微信二维码">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </li>
+        <li class="no-margin">
+            <div class="pic">
+                <a href="http://vr.justeasy.cn/show/108137.html" target="_blank">
+                    <img src="http://small.justeasy.cn/pano/20170112/c8ba611a068db0f53e1dd9654855ea5f/20170112191510_5877653e7c8a1.tiles/thumb.jpg"
+                         width="385" alt="后现代 全景表现A-042" title="后现代 全景表现A-042"/>
+                </a>
+            </div>
+            <h3 class="ellipsis">
+                <a href="http://vr.justeasy.cn/show/108137.html" title="后现代 全景表现A-042" target="_blank">
+                    后现代 全景表现A-042 </a>
+            </h3>
+            <div class="details">
+                <ul>
+                    <li>
+                        <i class="fa fa-eye"></i>
+                        345
+                    </li>
+                    <li>
+                        <i class="fa fa-thumbs-o-up"></i>
+                        8
+                    </li>
+                </ul>
+            </div>
+            <div class="pic-bottom">
+                <div class="left">
+                    <div class="photo fl">
+                        <a href="http://vr.justeasy.cn/author/755589.html" title="全景图个人头像" target="_blank">
+                            <img src="http://big.justeasy.cn/avatar/201701/755589_586b658ea2a5f_150.jpg" alt="全景个人头像"
+                                 title="全景个人头像">
+                        </a>
+                    </div>
+                    <a href="http://vr.justeasy.cn/author/755589.html" title="VR 威亚■ 效果图 施工图" class="name fl"
+                       target="_blank">
+                        VR 威亚■ 效果图 施工图 </a>
+                    <div class="weixin fr">
+                        <i class="icon-wx"></i>
+                        <div class="show-wx">
+                            <img src="/pano/vr/wxcode.cgi?type=1&id=108137&logo=http://small.justeasy.cn//uploads/pano/20170104/c8ba611a068db0f53e1dd9654855ea5f/logo/755589_586bdd4b56758_150.gif&time=1484219770"
+                                 width="242" height="242" alt="微信二维码" title="微信二维码">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </li>
+        <li>
+            <div class="pic">
+                <a href="http://vr.justeasy.cn/show/107943.html" target="_blank">
+                    <img src="http://small.justeasy.cn/pano/20170112/fc88dfaa3c9f7ec97d0f614965e9d442/20170112160010_5877378b29751.tiles/thumb.jpg"
+                         width="385" alt="七月咖啡馆" title="七月咖啡馆"/>
+                </a>
+            </div>
+            <h3 class="ellipsis">
+                <a href="http://vr.justeasy.cn/show/107943.html" title="七月咖啡馆" target="_blank">
+                    七月咖啡馆 </a>
+            </h3>
+            <div class="details">
+                <ul>
+                    <li>
+                        <i class="fa fa-eye"></i>
+                        1157
+                    </li>
+                    <li>
+                        <i class="fa fa-thumbs-o-up"></i>
+                        135
+                    </li>
+                </ul>
+            </div>
+            <div class="pic-bottom">
+                <div class="left">
+                    <div class="photo fl">
+                        <a href="http://vr.justeasy.cn/author/875023.html" title="全景图个人头像" target="_blank">
+                            <img src="http://big.justeasy.cn/avatar/201612/875023_5848fecaaf6b0_150.jpg" alt="全景个人头像"
+                                 title="全景个人头像">
+                        </a>
+                    </div>
+                    <a href="http://vr.justeasy.cn/author/875023.html" title="DY三维效果图设计机构" class="name fl"
+                       target="_blank">
+                        DY三维效果图设计机构 </a>
+                    <div class="weixin fr">
+                        <i class="icon-wx"></i>
+                        <div class="show-wx">
+                            <img src="/pano/vr/wxcode.cgi?type=1&id=107943&logo=&time=1484208360" width="242"
+                                 height="242" alt="微信二维码" title="微信二维码">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </li>
+        <li>
+            <div class="pic">
+                <a href="http://vr.justeasy.cn/show/107692.html" target="_blank">
+                    <img src="http://small.justeasy.cn/pano/20170112/c99d242e3af64db8e39f5c38fabf36a5/20170112124555_58770a0391a95.tiles/thumb.jpg"
+                         width="385" alt="《现代中式：雅韵》（主创设计师：潘志波）" title="《现代中式：雅韵》（主创设计师：潘志波）"/>
+                </a>
+            </div>
+            <h3 class="ellipsis">
+                <a href="http://vr.justeasy.cn/show/107692.html" title="《现代中式：雅韵》（主创设计师：潘志波）" target="_blank">
+                    《现代中式：雅韵》（主创设计师：潘志波） </a>
+            </h3>
+            <div class="details">
+                <ul>
+                    <li>
+                        <i class="fa fa-eye"></i>
+                        578
+                    </li>
+                    <li>
+                        <i class="fa fa-thumbs-o-up"></i>
+                        24
+                    </li>
+                </ul>
+            </div>
+            <div class="pic-bottom">
+                <div class="left">
+                    <div class="photo fl">
+                        <a href="javascript:void(0);" title="全景图个人头像">
+                            <img src="http://q.qlogo.cn/qqapp/100281053/A0D5FA90E6A464A8811B841DDD1A6C18/100"
+                                 alt="全景个人头像" title="全景个人头像">
+                        </a></div>
+                    <div class="name fl" style="color:#999;">轩诚图文</div>
+                    <div class="weixin fr">
+                        <i class="icon-wx"></i>
+                        <div class="show-wx">
+                            <img src="/pano/vr/wxcode.cgi?type=1&id=107692&logo=http://small.justeasy.cn//uploads/pano/20161224/c99d242e3af64db8e39f5c38fabf36a5/logo/844924_585de47aa171d_150.jpg&time=1484203244"
+                                 width="242" height="242" alt="微信二维码" title="微信二维码">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </li>
+        <li class="no-margin">
+            <div class="pic">
+                <a href="http://vr.justeasy.cn/show/107682.html" target="_blank">
+                    <img src="http://small.justeasy.cn/pano/20170112/475d5b51fe8fef6a3688ac607c989cc2/20170112141026_58771dd2d612f.tiles/thumb.jpg"
+                         width="385" alt="协信星都汇杨先生（冉赟作品）" title="协信星都汇杨先生（冉赟作品）"/>
+                </a>
+            </div>
+            <h3 class="ellipsis">
+                <a href="http://vr.justeasy.cn/show/107682.html" title="协信星都汇杨先生（冉赟作品）" target="_blank">
+                    协信星都汇杨先生（冉赟作品） </a>
+            </h3>
+            <div class="details">
+                <ul>
+                    <li>
+                        <i class="fa fa-eye"></i>
+                        332
+                    </li>
+                    <li>
+                        <i class="fa fa-thumbs-o-up"></i>
+                        35
+                    </li>
+                </ul>
+            </div>
+            <div class="pic-bottom">
+                <div class="left">
+                    <div class="photo fl">
+                        <a href="javascript:void(0);" title="全景图个人头像">
+                            <img src="http://res1.justeasy.cn/images/defaulthead.jpg" alt="全景个人头像" title="全景个人头像">
+                        </a></div>
+                    <div class="name fl" style="color:#999;">jgq88168</div>
+                    <div class="weixin fr">
+                        <i class="icon-wx"></i>
+                        <div class="show-wx">
+                            <img src="/pano/vr/wxcode.cgi?type=1&id=107682&logo=http://small.justeasy.cn//uploads/pano/20170112/475d5b51fe8fef6a3688ac607c989cc2/logo/783496_58771d5c0a434_150.jpg&time=1484201514"
+                                 width="242" height="242" alt="微信二维码" title="微信二维码">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </li>
+    </ul>
+</div>
+
+
+<div class="index-title org">
+    <span>全景设计案例</span>
+</div>
+<div class="menu m org-active">
+    <ul class="m-left m_left2">
+        <li class="active">精品推荐</li>
+        <li>最新作品</li>
+    </ul>
+    <ul class="submenu submenu2">
+        <li value="627">
+            <a href="javascript:void(0);" title="家装">家装</a>
+        </li>
+        <li value="628">
+            <a href="javascript:void(0);" title="样板房">样板房</a>
+        </li>
+        <li value="629">
+            <a href="javascript:void(0);" title="室外建筑">室外建筑</a>
+        </li>
+        <li value="630">
+            <a href="javascript:void(0);" title="别墅">别墅</a>
+        </li>
+        <li value="631">
+            <a href="javascript:void(0);" title="酒店">酒店</a>
+        </li>
+        <li value="632">
+            <a href="javascript:void(0);" title="餐饮">餐饮</a>
+        </li>
+        <li value="633">
+            <a href="javascript:void(0);" title="商业空间">商业空间</a>
+        </li>
+        <li value="634">
+            <a href="javascript:void(0);" title="公共空间">公共空间</a>
+        </li>
+        <li value="635">
+            <a href="javascript:void(0);" title="其他">其他</a>
+        </li>
+    </ul>
+    <div class="more">
+        <a href="javascript:void(0);" onclick="gotoUrl(2);">
+            更多 >
+        </a>
+    </div>
+</div>
+<div class="picture m">
+    <ul id="vr2">
+        <li>
+            <div class="pic">
+                <a href="http://vr.justeasy.cn/show/104296.html" target="_blank">
+                    <img src="http://small.justeasy.cn/pano/20170108/090c18486c4e7589d9dd90195d432e28/20170108182403_587213434e169.tiles/thumb.jpg"
+                         width="385" alt="东方闲适大宅－刘先生百丈暨别墅项目" title="东方闲适大宅－刘先生百丈暨别墅项目"/>
+                </a>
+            </div>
+            <h3 class="ellipsis">
+                <a href="http://vr.justeasy.cn/show/104296.html" title="东方闲适大宅－刘先生百丈暨别墅项目" target="_blank">
+                    东方闲适大宅－刘先生百丈暨别墅项目 </a>
+            </h3>
+            <div class="details">
+                <ul>
+                    <li>
+                        <i class="fa fa-eye"></i>
+                        1134
+                    </li>
+                    <li>
+                        <i class="fa fa-thumbs-o-up"></i>
+                        18
+                    </li>
+                </ul>
+            </div>
+            <div class="pic-bottom">
+                <div class="left">
+                    <div class="photo fl">
+                        <a href="http://vr.justeasy.cn/author/628534.html" title="全景图个人头像" target="_blank">
+                            <img src="http://res1.justeasy.cn/images/defaulthead.jpg" alt="全景个人头像" title="全景个人头像">
+                        </a>
+                    </div>
+                    <a href="http://vr.justeasy.cn/author/628534.html" title="Aiske" class="name fl" target="_blank">
+                        Aiske </a>
+                    <div class="weixin fr">
+                        <i class="icon-wx"></i>
+                        <div class="show-wx">
+                            <img src="/pano/vr/wxcode.cgi?type=1&id=104296&logo=&time=1483872512" width="242"
+                                 height="242" alt="微信二维码" title="微信二维码">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </li>
+        <li>
+            <div class="pic">
+                <a href="http://vr.justeasy.cn/show/97373.html" target="_blank">
+                    <img src="http://small.justeasy.cn/pano/20161231/597d8e5db4628b9f066d32b0d7512f56/20161231183530_586789f2b2f72.tiles/thumb.jpg"
+                         width="385" alt="贵州易林物流有限公司（金阳）" title="贵州易林物流有限公司（金阳）"/>
+                </a>
+            </div>
+            <h3 class="ellipsis">
+                <a href="http://vr.justeasy.cn/show/97373.html" title="贵州易林物流有限公司（金阳）" target="_blank">
+                    贵州易林物流有限公司（金阳） </a>
+            </h3>
+            <div class="details">
+                <ul>
+                    <li>
+                        <i class="fa fa-eye"></i>
+                        1125
+                    </li>
+                    <li>
+                        <i class="fa fa-thumbs-o-up"></i>
+                        28
+                    </li>
+                </ul>
+            </div>
+            <div class="pic-bottom">
+                <div class="left">
+                    <div class="photo fl">
+                        <a href="javascript:void(0);" title="全景图个人头像">
+                            <img src="http://q.qlogo.cn/qqapp/100281053/14FFF493DFA8C8836E4F3198CAA0DBE7/100"
+                                 alt="全景个人头像" title="全景个人头像">
+                        </a></div>
+                    <div class="name fl" style="color:#999;">X-Box℡ 小白视觉空间设计机构</div>
+                    <div class="weixin fr">
+                        <i class="icon-wx"></i>
+                        <div class="show-wx">
+                            <img src="/pano/vr/wxcode.cgi?type=1&id=97373&logo=http://small.justeasy.cn//uploads/pano/20161114/597d8e5db4628b9f066d32b0d7512f56/logo/832204_5829178655d18_150.png&time=1483189035"
+                                 width="242" height="242" alt="微信二维码" title="微信二维码">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </li>
+        <li class="no-margin">
+            <div class="pic">
+                <a href="http://vr.justeasy.cn/show/93154.html" target="_blank">
+                    <img src="http://small.justeasy.cn/pano/20161227/b4c82d25032f63f25c4dd0e3082e1f9f/20161227154311_58621b8f62eb7.tiles/thumb.jpg"
+                         width="385" alt="【柏赫設計】罗溪别墅起居室" title="【柏赫設計】罗溪别墅起居室"/>
+                </a>
+            </div>
+            <h3 class="ellipsis">
+                <a href="http://vr.justeasy.cn/show/93154.html" title="【柏赫設計】罗溪别墅起居室" target="_blank">
+                    【柏赫設計】罗溪别墅起居室 </a>
+            </h3>
+            <div class="details">
+                <ul>
+                    <li>
+                        <i class="fa fa-eye"></i>
+                        2494
+                    </li>
+                    <li>
+                        <i class="fa fa-thumbs-o-up"></i>
+                        32
+                    </li>
+                </ul>
+            </div>
+            <div class="pic-bottom">
+                <div class="left">
+                    <div class="photo fl">
+                        <a href="http://vr.justeasy.cn/author/705278.html" title="全景图个人头像" target="_blank">
+                            <img src="http://big.justeasy.cn/avatar/201612/705278_585b767987646_150.jpg" alt="全景个人头像"
+                                 title="全景个人头像">
+                        </a>
+                    </div>
+                    <a href="http://vr.justeasy.cn/author/705278.html" title="柏赫(泉州)装饰设计工程有限公司" class="name fl"
+                       target="_blank">
+                        柏赫(泉州)装饰设计工程有限公司 </a>
+                    <div class="weixin fr">
+                        <i class="icon-wx"></i>
+                        <div class="show-wx">
+                            <img src="/pano/vr/wxcode.cgi?type=1&id=93154&logo=http://small.justeasy.cn//uploads/pano/20161222/b4c82d25032f63f25c4dd0e3082e1f9f/logo/705278_585b6d911285c_150.jpg&time=1482824719"
+                                 width="242" height="242" alt="微信二维码" title="微信二维码">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </li>
+        <li>
+            <div class="pic">
+                <a href="http://vr.justeasy.cn/show/90814.html" target="_blank">
+                    <img src="http://small.justeasy.cn/pano/20161225/7d9a9a0f76638a5e476ead0bad50220e/20161225010619_585eab0b65772.tiles/thumb.jpg"
+                         width="385" alt="上东曼哈顿陈总雅居" title="上东曼哈顿陈总雅居"/>
+                </a>
+            </div>
+            <h3 class="ellipsis">
+                <a href="http://vr.justeasy.cn/show/90814.html" title="上东曼哈顿陈总雅居" target="_blank">
+                    上东曼哈顿陈总雅居 </a>
+            </h3>
+            <div class="details">
+                <ul>
+                    <li>
+                        <i class="fa fa-eye"></i>
+                        1825
+                    </li>
+                    <li>
+                        <i class="fa fa-thumbs-o-up"></i>
+                        9
+                    </li>
+                </ul>
+            </div>
+            <div class="pic-bottom">
+                <div class="left">
+                    <div class="photo fl">
+                        <a href="http://vr.justeasy.cn/author/868239.html" title="全景图个人头像" target="_blank">
+                            <img src="http://big.justeasy.cn/avatar/201610/868239_580c98a218222_150.jpg" alt="全景个人头像"
+                                 title="全景个人头像">
+                        </a>
+                    </div>
+                    <a href="http://vr.justeasy.cn/author/868239.html" title="广州英泰装饰宁德分公司" class="name fl"
+                       target="_blank">
+                        广州英泰装饰宁德分公司 </a>
+                    <div class="weixin fr">
+                        <i class="icon-wx"></i>
+                        <div class="show-wx">
+                            <img src="/pano/vr/wxcode.cgi?type=1&id=90814&logo=http://small.justeasy.cn//uploads/pano/20161225/7d9a9a0f76638a5e476ead0bad50220e/logo/868239_585eaac3e24a8_150.jpg&time=1482599669"
+                                 width="242" height="242" alt="微信二维码" title="微信二维码">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </li>
+        <li>
+            <div class="pic">
+                <a href="http://vr.justeasy.cn/show/87724.html" target="_blank">
+                    <img src="http://small.justeasy.cn/pano/20161221/8a39d175864654c55044065d7e91732a/20161221214603_585a879bc54c4.tiles/thumb.jpg"
+                         width="385" alt="皇家码头新形象开发" title="皇家码头新形象开发"/>
+                </a>
+            </div>
+            <h3 class="ellipsis">
+                <a href="http://vr.justeasy.cn/show/87724.html" title="皇家码头新形象开发" target="_blank">
+                    皇家码头新形象开发 </a>
+            </h3>
+            <div class="details">
+                <ul>
+                    <li>
+                        <i class="fa fa-eye"></i>
+                        1337
+                    </li>
+                    <li>
+                        <i class="fa fa-thumbs-o-up"></i>
+                        27
+                    </li>
+                </ul>
+            </div>
+            <div class="pic-bottom">
+                <div class="left">
+                    <div class="photo fl">
+                        <a href="http://vr.justeasy.cn/author/251874.html" title="全景图个人头像" target="_blank">
+                            <img src="http://big.justeasy.cn/avatar/201612/251874_585f21f347389_150.jpg" alt="全景个人头像"
+                                 title="全景个人头像">
+                        </a>
+                    </div>
+                    <a href="http://vr.justeasy.cn/author/251874.html"
+                       title="佰锐设计工作室 危清文                                                                                         "
+                       class="name fl" target="_blank">
+                        佰锐设计工作室 危清文 </a>
+                    <div class="weixin fr">
+                        <i class="icon-wx"></i>
+                        <div class="show-wx">
+                            <img src="/pano/vr/wxcode.cgi?type=1&id=87724&logo=http://small.justeasy.cn//uploads/pano/20161224/8a39d175864654c55044065d7e91732a/logo/251874_585de6ffb5e9f_150.jpg&time=1482549014"
+                                 width="242" height="242" alt="微信二维码" title="微信二维码">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </li>
+        <li class="no-margin">
+            <div class="pic">
+                <a href="http://vr.justeasy.cn/show/87239.html" target="_blank">
+                    <img src="http://small.justeasy.cn/pano/20161224/e20aaaae8375c221ad00556c82121838/20161224095236_585dd4e4c97cf.tiles/thumb.jpg"
+                         width="385" alt="大明瀚泽苑" title="大明瀚泽苑"/>
+                </a>
+            </div>
+            <h3 class="ellipsis">
+                <a href="http://vr.justeasy.cn/show/87239.html" title="大明瀚泽苑" target="_blank">
+                    大明瀚泽苑 </a>
+            </h3>
+            <div class="details">
+                <ul>
+                    <li>
+                        <i class="fa fa-eye"></i>
+                        2211
+                    </li>
+                    <li>
+                        <i class="fa fa-thumbs-o-up"></i>
+                        30
+                    </li>
+                </ul>
+            </div>
+            <div class="pic-bottom">
+                <div class="left">
+                    <div class="photo fl">
+                        <a href="javascript:void(0);" title="全景图个人头像">
+                            <img src="http://q.qlogo.cn/qqapp/100281053/5E6E8208F591DB359FCE11BC9D32BE4A/100"
+                                 alt="全景个人头像" title="全景个人头像">
+                        </a></div>
+                    <div class="name fl" style="color:#999;">LHQ</div>
+                    <div class="weixin fr">
+                        <i class="icon-wx"></i>
+                        <div class="show-wx">
+                            <img src="/pano/vr/wxcode.cgi?type=1&id=87239&logo=&time=1482812584" width="242"
+                                 height="242" alt="微信二维码" title="微信二维码">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </li>
+    </ul>
+</div>
+<div class="index-title green">
+    <span style="left:33%;">摄影作品</span>
+</div>
+<div class="menu m green-active">
+    <ul class="m-left m_left3">
+        <li class="active">精品推荐</li>
+        <li>最新作品</li>
+    </ul>
+    <ul class="submenu submenu3">
+        <li value="636">
+            <a href="javascript:void(0);">航拍</a>
+        </li>
+        <li value="637">
+            <a href="javascript:void(0);">校园</a>
+        </li>
+        <li value="638">
+            <a href="javascript:void(0);">旅游景点</a>
+        </li>
+        <li value="639">
+            <a href="javascript:void(0);">城市</a>
+        </li>
+        <li value="640">
+            <a href="javascript:void(0);">商业空间</a>
+        </li>
+        <li value="641">
+            <a href="javascript:void(0);">其他</a>
+        </li>
+    </ul>
+    <div class="more">
+        <a href="javascript:void(0);" onclick="gotoUrl(3);">
+            更多 >
+        </a>
+    </div>
+</div>
+<div class="picture m">
+    <ul id="vr3">
+        <li>
+            <div class="pic">
+                <a href="http://vr.justeasy.cn/show/106959.html" target="_blank">
+                    <img src="http://small.justeasy.cn/pano/20170111/60da1f8e1db067e772875908879380fb/20170111171048_5875f698ed1a4.tiles/thumb.jpg"
+                         width="385" alt="粶鼎记米线" title="粶鼎记米线"/>
+                </a>
+            </div>
+            <h3 class="ellipsis">
+                <a href="http://vr.justeasy.cn/show/106959.html" target="_blank">
+                    粶鼎记米线 </a>
+            </h3>
+            <div class="details">
+                <ul>
+                    <li>
+                        <i class="fa fa-eye"></i>
+                        144
+                    </li>
+                    <li>
+                        <i class="fa fa-thumbs-o-up"></i>
+                        1
+                    </li>
+                </ul>
+            </div>
+            <div class="pic-bottom">
+                <div class="left">
+                    <div class="photo fl">
+                        <a href="javascript:void(0);">
+                            <img src="http://res1.justeasy.cn/images/defaulthead.jpg" alt="全景个人头像" title="全景个人头像">
+                        </a></div>
+                    <div class="name fl" style="color:#999;">cancan0526</div>
+                    <div class="weixin fr">
+                        <i class="icon-wx"></i>
+                        <div class="show-wx">
+                            <img src="/pano/vr/wxcode.cgi?type=1&id=106959&logo=http://small.justeasy.cn//uploads/pano/20170111/60da1f8e1db067e772875908879380fb/logo/901620_5875f524b31a8_150.png&time=1484127709"
+                                 width="242" height="242" alt="微信二维码">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </li>
+        <li>
+            <div class="pic">
+                <a href="http://vr.justeasy.cn/show/106756.html" target="_blank">
+                    <img src="http://small.justeasy.cn/pano/20170111/ee128cf6ac2fbd651b1f55515736f03e/20170111140748_5875cbb4b1223.tiles/thumb.jpg"
+                         width="385" alt="成都森小花多肉植物DIY店" title="成都森小花多肉植物DIY店"/>
+                </a>
+            </div>
+            <h3 class="ellipsis">
+                <a href="http://vr.justeasy.cn/show/106756.html" target="_blank">
+                    成都森小花多肉植物DIY店 </a>
+            </h3>
+            <div class="details">
+                <ul>
+                    <li>
+                        <i class="fa fa-eye"></i>
+                        845
+                    </li>
+                    <li>
+                        <i class="fa fa-thumbs-o-up"></i>
+                        39
+                    </li>
+                </ul>
+            </div>
+            <div class="pic-bottom">
+                <div class="left">
+                    <div class="photo fl">
+                        <a href="http://vr.justeasy.cn/author/873247.html" target="_blank">
+                            <img src="http://q.qlogo.cn/qqapp/100281053/0A5BAA193C2400F2A7811C747705C9AF/100"
+                                 alt="全景个人头像" title="全景个人头像">
+                        </a>
+                    </div>
+                    <a href="http://vr.justeasy.cn/author/873247.html" class="name fl" target="_blank">
+                        成都视网 </a>
+                    <div class="weixin fr">
+                        <i class="icon-wx"></i>
+                        <div class="show-wx">
+                            <img src="/pano/vr/wxcode.cgi?type=1&id=106756&logo=&time=1484118995" width="242"
+                                 height="242" alt="微信二维码">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </li>
+        <li class="no-margin">
+            <div class="pic">
+                <a href="http://vr.justeasy.cn/show/106400.html" target="_blank">
+                    <img src="http://small.justeasy.cn/pano/20170111/685795bfa1d133388cb3fd5e6894407b/20170111093455_58758bbfd1ba5.tiles/thumb.jpg"
+                         width="385" alt="森林" title="森林"/>
+                </a>
+            </div>
+            <h3 class="ellipsis">
+                <a href="http://vr.justeasy.cn/show/106400.html" target="_blank">
+                    森林 </a>
+            </h3>
+            <div class="details">
+                <ul>
+                    <li>
+                        <i class="fa fa-eye"></i>
+                        63
+                    </li>
+                    <li>
+                        <i class="fa fa-thumbs-o-up"></i>
+                        0
+                    </li>
+                </ul>
+            </div>
+            <div class="pic-bottom">
+                <div class="left">
+                    <div class="photo fl">
+                        <a href="javascript:void(0);">
+                            <img src="http://res1.justeasy.cn/images/defaulthead.jpg" alt="全景个人头像" title="全景个人头像">
+                        </a></div>
+                    <div class="name fl" style="color:#999;">a3568233</div>
+                    <div class="weixin fr">
+                        <i class="icon-wx"></i>
+                        <div class="show-wx">
+                            <img src="/pano/vr/wxcode.cgi?type=1&id=106400&logo=&time=1484098564" width="242"
+                                 height="242" alt="微信二维码">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </li>
+        <li>
+            <div class="pic">
+                <a href="http://vr.justeasy.cn/show/93014.html" target="_blank">
+                    <img src="http://small.justeasy.cn/pano/20161227/ee128cf6ac2fbd651b1f55515736f03e/20161227140309_5862041d9ced7.tiles/thumb.jpg"
+                         width="385" alt="巴顿激战" title="巴顿激战"/>
+                </a>
+            </div>
+            <h3 class="ellipsis">
+                <a href="http://vr.justeasy.cn/show/93014.html" target="_blank">
+                    巴顿激战 </a>
+            </h3>
+            <div class="details">
+                <ul>
+                    <li>
+                        <i class="fa fa-eye"></i>
+                        676
+                    </li>
+                    <li>
+                        <i class="fa fa-thumbs-o-up"></i>
+                        6
+                    </li>
+                </ul>
+            </div>
+            <div class="pic-bottom">
+                <div class="left">
+                    <div class="photo fl">
+                        <a href="http://vr.justeasy.cn/author/873247.html" target="_blank">
+                            <img src="http://q.qlogo.cn/qqapp/100281053/0A5BAA193C2400F2A7811C747705C9AF/100"
+                                 alt="全景个人头像" title="全景个人头像">
+                        </a>
+                    </div>
+                    <a href="http://vr.justeasy.cn/author/873247.html" class="name fl" target="_blank">
+                        成都视网 </a>
+                    <div class="weixin fr">
+                        <i class="icon-wx"></i>
+                        <div class="show-wx">
+                            <img src="/pano/vr/wxcode.cgi?type=1&id=93014&logo=&time=1482819333" width="242"
+                                 height="242" alt="微信二维码">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </li>
+        <li>
+            <div class="pic">
+                <a href="http://vr.justeasy.cn/show/92717.html" target="_blank">
+                    <img src="http://small.justeasy.cn/pano/20161227/ee128cf6ac2fbd651b1f55515736f03e/20161227100807_5861cd077025c.tiles/thumb.jpg"
+                         width="385" alt="吾道国际跆拳道馆" title="吾道国际跆拳道馆"/>
+                </a>
+            </div>
+            <h3 class="ellipsis">
+                <a href="http://vr.justeasy.cn/show/92717.html" target="_blank">
+                    吾道国际跆拳道馆 </a>
+            </h3>
+            <div class="details">
+                <ul>
+                    <li>
+                        <i class="fa fa-eye"></i>
+                        542
+                    </li>
+                    <li>
+                        <i class="fa fa-thumbs-o-up"></i>
+                        13
+                    </li>
+                </ul>
+            </div>
+            <div class="pic-bottom">
+                <div class="left">
+                    <div class="photo fl">
+                        <a href="http://vr.justeasy.cn/author/873247.html" target="_blank">
+                            <img src="http://q.qlogo.cn/qqapp/100281053/0A5BAA193C2400F2A7811C747705C9AF/100"
+                                 alt="全景个人头像" title="全景个人头像">
+                        </a>
+                    </div>
+                    <a href="http://vr.justeasy.cn/author/873247.html" class="name fl" target="_blank">
+                        成都视网 </a>
+                    <div class="weixin fr">
+                        <i class="icon-wx"></i>
+                        <div class="show-wx">
+                            <img src="/pano/vr/wxcode.cgi?type=1&id=92717&logo=&time=1482917631" width="242"
+                                 height="242" alt="微信二维码">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </li>
+        <li class="no-margin">
+            <div class="pic">
+                <a href="http://vr.justeasy.cn/show/92129.html" target="_blank">
+                    <img src="http://small.justeasy.cn/pano/20161226/ee128cf6ac2fbd651b1f55515736f03e/20161226150324_5860c0bc5b776.tiles/thumb.jpg"
+                         width="385" alt="梦田都市农场" title="梦田都市农场"/>
+                </a>
+            </div>
+            <h3 class="ellipsis">
+                <a href="http://vr.justeasy.cn/show/92129.html" target="_blank">
+                    梦田都市农场 </a>
+            </h3>
+            <div class="details">
+                <ul>
+                    <li>
+                        <i class="fa fa-eye"></i>
+                        1221
+                    </li>
+                    <li>
+                        <i class="fa fa-thumbs-o-up"></i>
+                        22
+                    </li>
+                </ul>
+            </div>
+            <div class="pic-bottom">
+                <div class="left">
+                    <div class="photo fl">
+                        <a href="http://vr.justeasy.cn/author/873247.html" target="_blank">
+                            <img src="http://q.qlogo.cn/qqapp/100281053/0A5BAA193C2400F2A7811C747705C9AF/100"
+                                 alt="全景个人头像" title="全景个人头像">
+                        </a>
+                    </div>
+                    <a href="http://vr.justeasy.cn/author/873247.html" class="name fl" target="_blank">
+                        成都视网 </a>
+                    <div class="weixin fr">
+                        <i class="icon-wx"></i>
+                        <div class="show-wx">
+                            <img src="/pano/vr/wxcode.cgi?type=1&id=92129&logo=&time=1482745649" width="242"
+                                 height="242" alt="微信二维码">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </li>
+    </ul>
+</div>
+<div class="index-title blue1">
+    <span>全景作者</span>
+</div>
+<div class="menu m blue1-active">
+    <ul class="m-left m_jigou">
+        <li value="618" class="active">合作机构</li>
+        <li value="598">设计师</li>
+        <li value="599">摄影师</li>
+    </ul>
+    <div class="more">
+        <a href="http://vr.justeasy.cn/authors/0/0/0.html" target="_blank">
+            更多 >
+        </a>
+    </div>
+</div>
+<div class="designer m">
+    <ul id="jigou">
+        <li class="list ">
+            <img src="http://small.justeasy.cn/mall/201610/20161031101728_5816a9b826587.png" width="345" height="180"
+                 title="建E全景"/></li>
+        <li class="list ">
+            <a href="http://www.hfxcool.com" target="_blank"><img
+                    src="http://small.justeasy.cn/mall/201611/20161102114133_5819606d38733.jpg" width="345" height="180"
+                    title="极酷科技"/></a></li>
+        <li class="list no-margin">
+            <a href="http://www.jianzhusheying.com" target="_blank"><img
+                    src="http://small.justeasy.cn/mall/201610/20161031100312_5816a66092c27.jpg" width="345" height="180"
+                    title="猎影文化"/></a></li>
+        <li class="list ">
+            <a href="http://user.qzone.qq.com/2601449606/4" target="_blank"><img
+                    src="http://small.justeasy.cn/mall/201610/20161031100631_5816a7277f522.png" width="345" height="180"
+                    title="V8"/></a></li>
+        <li class="list ">
+            <a href="http://www.senlincg.com" target="_blank"><img
+                    src="http://small.justeasy.cn/mall/201611/20161108113503_582147e799fbf.jpg" width="345" height="180"
+                    title="株洲森林表现"/></a></li>
+        <li class="list no-margin">
+            <a href="http://vr.justeasy.cn/designer/513319.html" target="_blank"><img
+                    src="http://small.justeasy.cn/mall/201610/20161031100338_5816a67ac991b.jpg" width="345" height="180"
+                    title="伍馬空间"/></a></li>
+    </ul>
+</div>
+<div class="footer-wrapper">
+    <div class="footer">
+        <div class="logo fl">
+            <a href="http://vr.justeasy.cn/panos/606/0/0/0.html">
+                全景效果图
+            </a>
+        </div>
+        <div class="foot-left fl">
+            <ul>
+                <li>
+                    <a href="http://vr.justeasy.cn/panos/606/0/0/0.html">
+                        全景效果图
+                    </a>
+                </li>
+                <li>
+                    <a href="http://vr.justeasy.cn/learn.html">
+                        VR资讯
+                    </a>
+                </li>
+                <li>
+                    <a href="http://vr.justeasy.cn/panos/607/0/0/0.html">
+                        全景图设计案例
+                    </a>
+                </li>
+                <li>
+                    <a href="http://www.justeasy.cn/helps/index/5.html">
+                        关于我们
+                    </a>
+                </li>
+                <li>
+                    <a href="http://vr.justeasy.cn/panos/608/0/0/0.html">
+                        摄影作品
+                    </a>
+                </li>
+                <li>
+                    <a href="http://www.justeasy.cn/sitemap.html">
+                        网站地图
+                    </a>
+                </li>
+                <li>
+                    <a href="http://www.justeasy.cn/helps/index/5.html">
+                        联系我们
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div class="foot-middle fl">
+            <h3>商务合作热线：</h3>
+            <div class="tel">
+                客服电话&amp;QQ: <span>400-600-2507</span><br>
+                官方全景VR交流QQ群1: 199599357(已满)<br>
+                官方全景VR交流QQ群2: 252980431(已满)<br>
+                官方全景VR交流QQ群3: 296148387<br>
+                官方咨询QQ: 2850139764
+            </div>
+        </div>
+    </div>
+    <div class="footer-copy">
+        Copyright 建E网 2006-2016 All Rights Reserved ICP证：苏ICP备11003578号-10
+    </div>
+    <script>
+        var _hmt = _hmt || [];
+        (function () {
+            var hm = document.createElement("script");
+            hm.src = "//hm.baidu.com/hm.js?a52e6717b4e5d6db2ce26d10cd51b262";
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(hm, s);
+        })();
+    </script>
+
+    <script>
+        // var _hmt = _hmt || [];
+        // (function() {
+        //   var hm = document.createElement("script");
+        //   hm.src = "//hm.baidu.com/hm.js?d780d9a48d9cbbf95e661b70bfb3279d";
+        //   var s = document.getElementsByTagName("script")[0];
+        //   s.parentNode.insertBefore(hm, s);
+        // })();
+    </script>
+    <script>
+        (function () {
+            var bp = document.createElement('script');
+            var curProtocol = window.location.protocol.split(':')[0];
+            if (curProtocol === 'https') {
+                bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+            }
+            else {
+                bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+            }
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(bp, s);
+        })();
+    </script>
+    <script type="text/javascript" src="http://res1.justeasy.cn/js/pano/panojs.js"></script>
+</div>
+
+<div class="plane none">
+    <ul>
+        <li>
+            <div class="show-box">
+                <i class="icon icon-qq">
+
+                </i>
+                <span>在线客服</span>
+            </div>
+            <div class="hide-box qq">
+                <script type="text/javascript"
+                        src="http://static.b.qq.com/account/bizqq/js/wpa.js?type=1&kfuin=4006002507&ws=www.justeasy.cn&btn1=%E4%BC%81%E4%B8%9AQQ%E4%BA%A4%E8%B0%88&aty=0&a="></script>
+            </div>
+        </li>
+        <li>
+            <div class="show-box">
+                <i class="icon icon-weixin">
+                </i>
+                <span>官方微信</span>
+            </div>
+            <div class="hide-box wx">
+                <img src="http://www.justeasy.cn/image/weixin.jpg" class="pic">
+            </div>
+        </li>
+        <li>
+            <div class="show-box">
+                <i class="icon icon-tel">
+                </i>
+                <span>联系电话</span>
+            </div>
+            <div class="hide-box tel">
+                <span>4006002507</span>
+            </div>
+        </li>
+        <li>
+            <div class="show-box">
+                <a href="javascript:void(0)" onclick="gototop();">
+                    <i class="icon icon-up">
+                    </i>
+                    <span>回到顶部</span>
+                </a>
+            </div>
+        </li>
+    </ul>
+</div>
+<script type="text/javascript">
+    var startPos = $('.public-header').offset().top;
+    $(function () {
+
+
+        var bannerSlider = new Slider($('#banner_tabs'), {
+            time: 5000000,
+            delay: 400,
+            event: 'hover',
+            auto: true,
+            mode: 'fade',
+            controller: $('#bannerCtrl'),
+            activeControllerCls: 'active'
+        });
+        $(document).on("mouseover", '.weixin', function () {
+            $(this).find('.show-wx').show();
+        });
+        $(document).on("mouseout", '.weixin', function () {
+            $(this).find('.show-wx').hide();
+        });
+        $(".m_left1 li").on("click", function () {
+            var ind = $(this).index();
+            $("#tmp1").val(ind);
+            var small1 = $("#small1").val();
+            var str = "";
+            $(this).addClass('active').siblings('li').removeClass('active');
+            $.ajax({
+                url: '/pano/vr/getpano.cgi',
+                type: 'post',
+                dataType: 'json',
+                data: {index: ind, num: 1, small: small1},
+            })
+                .done(function (data) {
+                    if (data.status == 200) {
+                        $.each(data.result, function (index, val) {
+                            var num = (index + 1) % 3;
+                            var has = val.has;
+                            if (has == 1) {
+                                var strr1 = '<a href="' + "http://vr.justeasy.cn/" + 'author/' + val.uid + '.html" target="_blank">' +
+                                    '<img src="' + getHead(val.avatar) + '" alt="全景个人头像" title="全景个人头像">' +
+                                    '</a>';
+                                var strr2 = '<a href="' + "http://vr.justeasy.cn/" + 'author/' + val.uid + '.html" class="name fl" target="_blank">' +
+                                    val.author +
+                                    '</a>';
+                            } else {
+                                var strr1 = '<a href="javascript:void(0);">' +
+                                    '<img src="' + getHead(val.avatar) + '" alt="全景个人头像" title="全景个人头像">' +
+                                    '</a>';
+                                var strr2 = '<div class="name fl" style="color:#999;">' + val.author + '</div>';
+                            }
+
+                            str += '<li' + (num == 0 ? ' class="no-margin"' : '') + '><div class="pic"><a href="' + "http://vr.justeasy.cn/" + 'show/' + val.id + '.html" target="_blank"><img src="http://small.justeasy.cn/' + val.preview + '" width="385" alt="' + val.name + '" title="' + val.name + '" /></a></div><h3 class="ellipsis"><a href="' + "http://vr.justeasy.cn/" + 'show/' + val.id + '.html" target="_blank">' + val.name + '</a></h3><div class="details"><ul><li><i class="fa fa-eye"></i>' + val.view_num + '</li><li><i class="fa fa-thumbs-o-up"></i>' + val.like_num + '</li></ul></div><div class="pic-bottom"><div class="left"><div class="photo fl">' + strr1 + '</div>' + strr2 + '<div class="weixin fr"><i class="icon-wx"></i><div class="show-wx"><img src="' + "/pano/vr/wxcode.cgi?type=1&id=" + val.id + "&logo=" + val.av2 + "&time=" + val.lasttime + '" width="242" height="242"></div></div></div></div></li>';
+                        });
+                        $("#vr1").html(str);
+                    } else {
+                        layer.msg(data.msg);
+                    }
+                })
+                .fail(function () {
+                    console.log("error");
+                })
+                .always(function () {
+                    console.log("complete");
+                });
+
+        });
+        $(".m_left2 li").on("click", function () {
+            var ind = $(this).index();
+            $("#tmp2").val(ind);
+            var small2 = $("#small2").val();
+            var str = "";
+            $(this).addClass('active').siblings('li').removeClass('active');
+            $.ajax({
+                url: '/pano/vr/getpano.cgi',
+                type: 'post',
+                dataType: 'json',
+                data: {index: ind, num: 2, small: small2},
+            })
+                .done(function (data) {
+                    if (data.status == 200) {
+                        $.each(data.result, function (index, val) {
+                            var num = (index + 1) % 3;
+                            var has = val.has;
+                            if (has == 1) {
+                                var strr1 = '<a href="' + "http://vr.justeasy.cn/" + 'author/' + val.uid + '.html" target="_blank">' +
+                                    '<img src="' + getHead(val.avatar) + '" alt="全景个人头像" title="全景个人头像">' +
+                                    '</a>';
+                                var strr2 = '<a href="' + "http://vr.justeasy.cn/" + 'author/' + val.uid + '.html" class="name fl" target="_blank">' +
+                                    val.author +
+                                    '</a>';
+                            } else {
+                                var strr1 = '<a href="javascript:void(0);">' +
+                                    '<img src="' + getHead(val.avatar) + '" alt="全景个人头像" title="全景个人头像">' +
+                                    '</a>';
+                                var strr2 = '<div class="name fl" style="color:#999;">' + val.author + '</div>';
+                            }
+
+                            str += '<li' + (num == 0 ? ' class="no-margin"' : '') + '><div class="pic"><a href="' + "http://vr.justeasy.cn/" + 'show/' + val.id + '.html" target="_blank"><img src="http://small.justeasy.cn/' + val.preview + '" width="385" alt="' + val.name + '" title="' + val.name + '" /></a></div><h3 class="ellipsis"><a href="' + "http://vr.justeasy.cn/" + 'show/' + val.id + '.html" target="_blank">' + val.name + '</a></h3><div class="details"><ul><li><i class="fa fa-eye"></i>' + val.view_num + '</li><li><i class="fa fa-thumbs-o-up"></i>' + val.like_num + '</li></ul></div><div class="pic-bottom"><div class="left"><div class="photo fl">' + strr1 + '</div>' + strr2 + '<div class="weixin fr"><i class="icon-wx"></i><div class="show-wx"><img src="' + "/pano/vr/wxcode.cgi?type=1&id=" + val.id + "&logo=" + val.av2 + "&time=" + val.lasttime + '" width="242" height="242"></div></div></div></div></li>';
+                        });
+                        $("#vr2").html(str);
+                    } else {
+                        layer.msg(data.msg);
+                    }
+                })
+                .fail(function () {
+                    console.log("error");
+                })
+                .always(function () {
+                    console.log("complete");
+                });
+
+        });
+        $(".m_left3 li").on("click", function () {
+            var ind = $(this).index();
+            $("#tmp3").val(ind);
+            var small3 = $("#small3").val();
+            var str = "";
+            $(this).addClass('active').siblings('li').removeClass('active');
+            $.ajax({
+                url: '/pano/vr/getpano.cgi',
+                type: 'post',
+                dataType: 'json',
+                data: {index: ind, num: 3, small: small3},
+            })
+                .done(function (data) {
+                    if (data.status == 200) {
+                        $.each(data.result, function (index, val) {
+                            var num = (index + 1) % 3;
+                            var has = val.has;
+                            if (has == 1) {
+                                var strr1 = '<a href="' + "http://vr.justeasy.cn/" + 'author/' + val.uid + '.html" target="_blank">' +
+                                    '<img src="' + getHead(val.avatar) + '" alt="全景个人头像" title="全景个人头像">' +
+                                    '</a>';
+                                var strr2 = '<a href="' + "http://vr.justeasy.cn/" + 'author/' + val.uid + '.html" class="name fl" target="_blank">' +
+                                    val.author +
+                                    '</a>';
+                            } else {
+                                var strr1 = '<a href="javascript:void(0);">' +
+                                    '<img src="' + getHead(val.avatar) + '" alt="全景个人头像" title="全景个人头像">' +
+                                    '</a>';
+                                var strr2 = '<div class="name fl" style="color:#999;">' + val.author + '</div>';
+                            }
+
+                            str += '<li' + (num == 0 ? ' class="no-margin"' : '') + '><div class="pic"><a href="' + "http://vr.justeasy.cn/" + 'show/' + val.id + '.html" target="_blank"><img src="http://small.justeasy.cn/' + val.preview + '" width="385" alt="' + val.name + '" title="' + val.name + '" /></a></div><h3 class="ellipsis"><a href="' + "http://vr.justeasy.cn/" + 'show/' + val.id + '.html" target="_blank">' + val.name + '</a></h3><div class="details"><ul><li><i class="fa fa-eye"></i>' + val.view_num + '</li><li><i class="fa fa-thumbs-o-up"></i>' + val.like_num + '</li></ul></div><div class="pic-bottom"><div class="left"><div class="photo fl">' + strr1 + '</div>' + strr2 + '<div class="weixin fr"><i class="icon-wx"></i><div class="show-wx"><img src="' + "/pano/vr/wxcode.cgi?type=1&id=" + val.id + "&logo=" + val.av2 + "&time=" + val.lasttime + '" width="242" height="242"></div></div></div></div></li>';
+                        });
+                        $("#vr3").html(str);
+                    } else {
+                        layer.msg(data.msg);
+                    }
+                })
+                .fail(function () {
+                    console.log("error");
+                })
+                .always(function () {
+                    console.log("complete");
+                });
+
+        });
+        $(".submenu1 li").on("click", function () {
+            $(this).addClass('active2').siblings('li').removeClass('active2');
+            var num = $(this).val();
+            var str = "";
+            var ind = $("#tmp1").val();
+            if ($("#small1").val() == num) {
+                $(this).removeClass('active2');
+                $("#small1").val(0);
+                $(".m_left1 li").eq(ind).click();
+            } else {
+                $("#small1").val(num);
+            }
+
+            $.ajax({
+                url: '/pano/vr/getpano2.cgi',
+                type: 'post',
+                dataType: 'json',
+                data: {index: ind, num: num},
+            })
+                .done(function (data) {
+                    if (data.status == 200) {
+                        $.each(data.result, function (index, val) {
+                            var num = (index + 1) % 3;
+                            var has = val.has;
+                            if (has == 1) {
+                                var strr1 = '<a href="' + "http://vr.justeasy.cn/" + 'author/' + val.uid + '.html" target="_blank">' +
+                                    '<img src="' + getHead(val.avatar) + '" alt="全景个人头像" title="全景个人头像">' +
+                                    '</a>';
+                                var strr2 = '<a href="' + "http://vr.justeasy.cn/" + 'author/' + val.uid + '.html" class="name fl" target="_blank">' +
+                                    val.author +
+                                    '</a>';
+                            } else {
+                                var strr1 = '<a href="javascript:void(0);">' +
+                                    '<img src="' + getHead(val.avatar) + '" alt="全景个人头像" title="全景个人头像">' +
+                                    '</a>';
+                                var strr2 = '<div class="name fl" style="color:#999;">' + val.author + '</div>';
+                            }
+
+                            str += '<li' + (num == 0 ? ' class="no-margin"' : '') + '><div class="pic"><a href="' + "http://vr.justeasy.cn/" + 'show/' + val.id + '.html" target="_blank"><img src="http://small.justeasy.cn/' + val.preview + '" width="385" alt="' + val.name + '" title="' + val.name + '" /></a></div><h3 class="ellipsis"><a href="' + "http://vr.justeasy.cn/" + 'show/' + val.id + '.html" target="_blank">' + val.name + '</a></h3><div class="details"><ul><li><i class="fa fa-eye"></i>' + val.view_num + '</li><li><i class="fa fa-thumbs-o-up"></i>' + val.like_num + '</li></ul></div><div class="pic-bottom"><div class="left"><div class="photo fl">' + strr1 + '</div>' + strr2 + '<div class="weixin fr"><i class="icon-wx"></i><div class="show-wx"><img src="' + "/pano/vr/wxcode.cgi?type=1&id=" + val.id + "&logo=" + val.av2 + "&time=" + val.lasttime + '" width="242" height="242"></div></div></div></div></li>';
+                        });
+                        $("#vr1").html(str);
+                    } else {
+                        layer.msg(data.msg);
+                    }
+                })
+                .fail(function () {
+                    console.log("error");
+                })
+                .always(function () {
+                    console.log("complete");
+                });
+        })
+        $(".submenu2 li").on("click", function () {
+            $(this).addClass('active2').siblings('li').removeClass('active2');
+            var num = $(this).val();
+            var str = "";
+            var ind = $("#tmp2").val();
+            if ($("#small2").val() == num) {
+                $(this).removeClass('active2');
+                $("#small2").val(0);
+                $(".m_left2 li").eq(ind).click();
+            } else {
+                $("#small2").val(num);
+            }
+
+            $.ajax({
+                url: '/pano/vr/getpano2.cgi',
+                type: 'post',
+                dataType: 'json',
+                data: {index: ind, num: num},
+            })
+                .done(function (data) {
+                    if (data.status == 200) {
+                        $.each(data.result, function (index, val) {
+                            var num = (index + 1) % 3;
+                            var has = val.has;
+                            if (has == 1) {
+                                var strr1 = '<a href="' + "http://vr.justeasy.cn/" + 'author/' + val.uid + '.html" target="_blank">' +
+                                    '<img src="' + getHead(val.avatar) + '" alt="全景个人头像" title="全景个人头像">' +
+                                    '</a>';
+                                var strr2 = '<a href="' + "http://vr.justeasy.cn/" + 'author/' + val.uid + '.html" class="name fl" target="_blank">' +
+                                    val.author +
+                                    '</a>';
+                            } else {
+                                var strr1 = '<a href="javascript:void(0);">' +
+                                    '<img src="' + getHead(val.avatar) + '" alt="全景个人头像" title="全景个人头像">' +
+                                    '</a>';
+                                var strr2 = '<div class="name fl" style="color:#999;">' + val.author + '</div>';
+                            }
+
+                            str += '<li' + (num == 0 ? ' class="no-margin"' : '') + '><div class="pic"><a href="' + "http://vr.justeasy.cn/" + 'show/' + val.id + '.html" target="_blank"><img src="http://small.justeasy.cn/' + val.preview + '" width="385" alt="' + val.name + '" title="' + val.name + '" /></a></div><h3 class="ellipsis"><a href="' + "http://vr.justeasy.cn/" + 'show/' + val.id + '.html" target="_blank">' + val.name + '</a></h3><div class="details"><ul><li><i class="fa fa-eye"></i>' + val.view_num + '</li><li><i class="fa fa-thumbs-o-up"></i>' + val.like_num + '</li></ul></div><div class="pic-bottom"><div class="left"><div class="photo fl">' + strr1 + '</div>' + strr2 + '<div class="weixin fr"><i class="icon-wx"></i><div class="show-wx"><img src="' + "/pano/vr/wxcode.cgi?type=1&id=" + val.id + "&logo=" + val.av2 + "&time=" + val.lasttime + '" width="242" height="242"></div></div></div></div></li>';
+                        });
+                        $("#vr2").html(str);
+                    } else {
+                        layer.msg(data.msg);
+                    }
+                })
+                .fail(function () {
+                    console.log("error");
+                })
+                .always(function () {
+                    console.log("complete");
+                });
+        })
+        $(".submenu3 li").on("click", function () {
+            $(this).addClass('active2').siblings('li').removeClass('active2');
+            var num = $(this).val();
+            var str = "";
+            var ind = $("#tmp3").val();
+            if ($("#small3").val() == num) {
+                $(this).removeClass('active2');
+                $("#small3").val(0);
+                $(".m_left3 li").eq(ind).click();
+            } else {
+                $("#small3").val(num);
+            }
+
+            $.ajax({
+                url: '/pano/vr/getpano2.cgi',
+                type: 'post',
+                dataType: 'json',
+                data: {index: ind, num: num},
+            })
+                .done(function (data) {
+                    if (data.status == 200) {
+                        $.each(data.result, function (index, val) {
+                            var num = (index + 1) % 3;
+                            var has = val.has;
+                            if (has == 1) {
+                                var strr1 = '<a href="' + "http://vr.justeasy.cn/" + 'author/' + val.uid + '.html" target="_blank">' +
+                                    '<img src="' + getHead(val.avatar) + '" alt="全景个人头像" title="全景个人头像">' +
+                                    '</a>';
+                                var strr2 = '<a href="' + "http://vr.justeasy.cn/" + 'author/' + val.uid + '.html" class="name fl" target="_blank">' +
+                                    val.author +
+                                    '</a>';
+                            } else {
+                                var strr1 = '<a href="javascript:void(0);">' +
+                                    '<img src="' + getHead(val.avatar) + '" alt="全景个人头像" title="全景个人头像">' +
+                                    '</a>';
+                                var strr2 = '<div class="name fl" style="color:#999;">' + val.author + '</div>';
+                            }
+
+                            str += '<li' + (num == 0 ? ' class="no-margin"' : '') + '><div class="pic"><a href="' + "http://vr.justeasy.cn/" + 'show/' + val.id + '.html" target="_blank"><img src="http://small.justeasy.cn/' + val.preview + '" width="385" alt="' + val.name + '" title="' + val.name + '" /></a></div><h3 class="ellipsis"><a href="' + "http://vr.justeasy.cn/" + 'show/' + val.id + '.html" target="_blank">' + val.name + '</a></h3><div class="details"><ul><li><i class="fa fa-eye"></i>' + val.view_num + '</li><li><i class="fa fa-thumbs-o-up"></i>' + val.like_num + '</li></ul></div><div class="pic-bottom"><div class="left"><div class="photo fl">' + strr1 + '</div>' + strr2 + '<div class="weixin fr"><i class="icon-wx"></i><div class="show-wx"><img src="' + "/pano/vr/wxcode.cgi?type=1&id=" + val.id + "&logo=" + val.av2 + "&time=" + val.lasttime + '" width="242" height="242"></div></div></div></div></li>';
+                        });
+                        $("#vr3").html(str);
+                    } else {
+                        layer.msg(data.msg);
+                    }
+                })
+                .fail(function () {
+                    console.log("error");
+                })
+                .always(function () {
+                    console.log("complete");
+                });
+        })
+
+        $(".m_xuexi li").on("click", function () {
+            var num = $(this).val();
+            $("#more").attr('data', num);
+            $(this).addClass('active').siblings('li').removeClass('active');
+            var str = '';
+            $.ajax({
+                url: '/pano/vr/getxuexi.cgi',
+                type: 'post',
+                dataType: 'json',
+                data: {num: num},
+            })
+                .done(function (data) {
+                    if (data.status == 200) {
+                        $.each(data.result, function (index, val) {
+                            str += '<li class="list">' +
+                                '<div class="pic-b fl" style="width:450px;height:170px;">' +
+                                '<a href="' + "http://vr.justeasy.cn/" + 'detail/' + val.id + '.html" target="_blank">' +
+                                '<img src="' + 'http://small.justeasy.cn/' + val.pic + '" onload=\"ImgPosInitMobs(this,2);\">' +
+                                '</a>' +
+                                '</div>' +
+                                '<div class="info">' +
+                                '<h3 class="ellipsis">' +
+                                '<a href="' + "http://vr.justeasy.cn/" + 'detail/' + val.id + '.html" title="' + val.title + '" target="_blank">' +
+                                val.title +
+                                '</a>' +
+                                '</h3>' +
+                                '<p class="txt">' +
+                                val.intro +
+                                '</p>' +
+                                '<div class="details">' +
+                                '<ul>' +
+                                '<li>' +
+                                '来源：<span>' + val.source + '</span>' +
+                                '</li>' +
+                                '<li>' +
+                                '创建时间：<span>' + val.addtime + '</span>' +
+                                '</li>' +
+                                '<li>' +
+                                '浏览量：<span>' + val.view_num + '</span>' +
+                                '</li>' +
+                                '</ul>' +
+                                '</div>' +
+                                '</div>' +
+                                '</li>';
+
+                        });
+                        $("#studylearn").html(str);
+                    } else {
+                        layer.msg(data.msg);
+                    }
+                })
+                .fail(function () {
+                    console.log("error");
+                })
+                .always(function () {
+                    console.log("complete");
+                });
+        });
+        $('.m_jigou li').on("click", function () {
+            var ind = $(this).index();
+            var value = $(this).val();
+            var str = '';
+            $(this).addClass('active').siblings('li').removeClass('active');
+            $.ajax({
+                url: '/pano/vr/getjigou.cgi',
+                type: 'post',
+                dataType: 'json',
+                data: {num: ind, val: value},
+            })
+                .done(function (data) {
+                    if (data.status == 200) {
+                        $.each(data.result, function (index, val) {
+                            var num = (index + 1) % 3;
+                            /*合作机构*/
+                            if (value == 618) {
+                                var url = val.url;
+                                if (url != '') {
+                                    var str33 = '<a href="' + url + '" target="_blank">' + '<img src=' + "http://small.justeasy.cn/" + val.path + ' width="345" height="180" title="伍馬空间" alt="伍馬空间" />' + '</a>';
+                                } else {
+                                    var str33 = '<img src=' + "http://small.justeasy.cn/" + val.path + ' width="345" height="180" title="伍馬空间" alt="伍馬空间" />';
+                                }
+                                str += '<li class="list ' + (num == 0 ? ' no-margin' : '') + '">' +
+                                    str33 +
+                                    '</li>';
+                            } else {
+                                str += '<li class="list ' + (num == 0 ? ' no-margin' : '') + '">' +
+                                    '<div class="pic fl">' +
+                                    '<a href="' + "http://vr.justeasy.cn/" + "author/" + val.uid + '.html" target="_blank">' +
+                                    '<img src="' + getHead(val.avatar) + '" width="180" height="180" >' +
+                                    '</a>' +
+                                    '</div>' +
+                                    '<div class="info">' +
+                                    '<h3 class="ellipsis">' +
+                                    '<a href="' + "http://vr.justeasy.cn/" + "author/" + val.uid + '.html" target="_blank">' +
+                                    val.nickname +
+                                    '</a>' +
+                                    '</h3>' +
+                                    '<div class="identity">' +
+                                    '<i class="icon icon-zw"></i>' +
+                                    '<span>' + val.catename + '</span>' +
+                                    '</div>' +
+                                    '<div class="details">' +
+                                    '<ul>' +
+                                    '<li>' +
+                                    '作品：<span>' + val.pano2_num + '</span>' +
+                                    '</li>' +
+                                    '<li>' +
+                                    '人气：<span>' + val.like2_num + '</span>' +
+                                    '</li>' +
+                                    '</ul>' +
+                                    '</div>' +
+                                    '<div class="weixin2 fr">' +
+                                    '<i class="icon-wx-h"></i>' +
+                                    '<div class="show-wx">' +
+                                    '<img src="' + "/pano/vr/wxcode.cgi?type=2&id=" + val.uid + "&logo=" + val.avatar + '" width="100%">' +
+                                    '</div>' +
+                                    '</div>' +
+                                    '</div>' +
+                                    '</li>';
+                            }
+                        });
+                        $("#jigou").html(str);
+                    } else {
+                        layer.msg(data.msg);
+                    }
+                })
+                .fail(function () {
+                    console.log("error");
+                })
+                .always(function () {
+                    console.log("complete");
+                });
+
+        });
+    })
+    $(document).scroll(function (event) {
+        if ($(document).scrollTop() > 300) {
+            $(".plane").show();
+        } else {
+            $(".plane").hide();
+        }
+    });
+    function gototop() {
+        $("html,body").animate({scrollTop: $("body").offset().top}, 500);
+    }
+    $(".plane ul li").hover(function () {
+        $(this).find(".hide-box").show();
+    }, function () {
+        $(this).find(".hide-box").hide();
+    });
+</script>
+
+<script type="text/javascript">
+    // 最新签到上下滚动列表
+    (function ($) {
+
+        $.fn.myScroll = function (options) {
+            //默认配置
+            var defaults = {
+                speed: 40,  //滚动速度,值越大速度越慢
+                rowHeight: 24 //每行的高度
+            };
+
+            var opts = $.extend({}, defaults, options), intId = [];
+
+            function marquee(obj, step) {
+
+                obj.find("ul").animate({
+                    marginTop: '-=1'
+                }, 0, function () {
+                    var s = Math.abs(parseInt($(this).css("margin-top")));
+                    if (s >= step) {
+                        $(this).find("li").slice(0, 1).appendTo($(this));
+                        $(this).css("margin-top", 0);
+                    }
+                });
+            }
+
+            this.each(function (i) {
+                var sh = opts["rowHeight"], speed = opts["speed"], _this = $(this);
+                intId[i] = setInterval(function () {
+                    if (_this.find("ul").height() <= _this.height()) {
+                        clearInterval(intId[i]);
+                    } else {
+                        marquee(_this, sh);
+                    }
+                }, speed);
+
+                _this.hover(function () {
+                    clearInterval(intId[i]);
+                }, function () {
+                    intId[i] = setInterval(function () {
+                        if (_this.find("ul").height() <= _this.height()) {
+                            clearInterval(intId[i]);
+                        } else {
+                            marquee(_this, sh);
+                        }
+                    }, speed);
+                });
+
+            });
+
+        }
+
+    })(jQuery);
+
+    $(function () {
+
+        $("div.ranklist").myScroll({
+            speed: 60,
+            rowHeight: 30
+        });
+
+    });
+
+    function gotoUrl(num) {
+        var str = '';
+        var bcate = scate = dog = 0;
+        if (num == 1) {
+            bcate = 606;
+        } else if (num == 2) {
+            bcate = 607;
+        } else {
+            bcate = 608;
+        }
+        var tmp = $("#tmp" + num).val();
+        if (!tmp || tmp == 0) {
+            dog = 1;
+        } else {
+            dog = 0;
+        }
+        var small = $("#small" + num).val();
+        if (small) {
+            scate = small;
+        } else {
+            scate = 0;
+        }
+        window.location.href = "http://vr.justeasy.cn/" + 'panos/' + bcate + '/' + dog + '/' + scate + '/0.html';
+    }
+    $("#actives li").eq(0).addClass('active').siblings('li').removeClass('active');
+    function gotoxuexi() {
+        var num = $("#more").attr('data');
+        if (num == 601) {
+            window.location.href = "http://vr.justeasy.cn/learn.html";
+        } else if (num == 602) {
+            window.location.href = "http://vr.justeasy.cn/teach.html";
+        } else {
+            window.location.href = "http://vr.justeasy.cn/example.html";
+        }
+    }
+</script>
+</body>
+</html>

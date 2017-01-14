@@ -331,6 +331,8 @@ button {
     left: 50%;
     margin-left: -30px;
     display: none;
+    color: #444;
+    background-color: rgba(255, 255, 255, .5);
 }
 
 #vrSetting {

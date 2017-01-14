@@ -12,7 +12,7 @@
 
     var isFromPc = fromPC();
     var stats = null;
-    var renderer, stereoRenderer, scene, transformScene, camera, transformCamera, raycaster, orbitControls, deviceControls;
+    var renderer, scene, transformScene, camera, stereoCamera, raycaster, orbitControls, deviceControls;
     var logoMesh, logoMaterial;
     var textureLoader, imageLoader;
     var sphere, transformSphere;
@@ -43,7 +43,6 @@
     var front = 0, back = 0, left = 0, right = 0, up = 0, down = 0;
     var radius = 200;
     var _transform = null;
-    var cameraPos = null;
 
     // 可访问变量
     var _stage = null,  // canvas容器
@@ -133,9 +132,9 @@
         renderer.setClearColor(0x000000);
         renderer.autoClear = false;
 
-        // 立体效果渲染器
-        stereoRenderer = new THREE.StereoEffect(renderer);
-        stereoRenderer.setSize(STAGE_WIDTH, STAGE_HEIGHT);
+        // 立体摄像机
+        stereoCamera = new THREE.StereoCamera();
+        stereoCamera.aspect = 0.5;
         _stage = renderer.domElement;
         _stage.id = 'scene-canvas';
         options.container.appendChild(_stage);
@@ -147,7 +146,6 @@
         scene = new THREE.Scene();
         transformScene = new THREE.Scene();  // TODO 用于转换
         camera = new THREE.PerspectiveCamera(cameraFov, STAGE_WIDTH / STAGE_HEIGHT, 0.1, 1000);
-        transformCamera = new THREE.PerspectiveCamera(cameraFov, STAGE_WIDTH / STAGE_HEIGHT, 0.1, 1000);
 
         raycaster = new THREE.Raycaster();
 
@@ -259,7 +257,7 @@
             scene.add(sphere);
 
             // 热点添加指示
-            hotSpot = new THREE.Mesh(new THREE.PlaneGeometry(10, 10), hotSpotMat);
+            hotSpot = new THREE.Mesh(new THREE.PlaneGeometry(15, 15), hotSpotMat);
             hotSpot.position.set(0, 0, 0);
             hotSpot.lookAt(camera.position);
             hotSpot.visible = false;
@@ -364,11 +362,6 @@
             orbitControls.autoRotate = options.autoRotate;
             orbitControls.addEventListener('change', function () {
                 callbacks.onCameraChanged(camera.getWorldDirection());
-                // console.log(camera.position.x);
-                /*if (_editingHot) {
-                 transformCamera.position.set(camera.position.x, camera.position.y, camera.position.z);
-                 transformCamera.lookAt(sceneCenter);
-                 }*/
             });
             // 初始化设备控制器
             deviceControls = new THREE.DeviceOrientationControls(camera, true);
@@ -434,9 +427,9 @@
                         break;
                 }
                 _transform = {
-                    px: camera.position.x.toFixed(4),
-                    py: camera.position.y.toFixed(4),
-                    pz: camera.position.z.toFixed(4)
+                    px: sphere.position.x.toFixed(4),
+                    py: sphere.position.y.toFixed(4),
+                    pz: sphere.position.z.toFixed(4)
                 };
             };
 
@@ -497,10 +490,6 @@
 
             callbacks.onShown(toSpaceId);
 
-            transformCamera.fov = camera.fov;
-            transformCamera.updateProjectionMatrix();
-            transformCamera.position.copy(camera.position);
-            transformCamera.lookAt(sceneCenter);
             if (hotInfo && (hotInfo.px || hotInfo.py || hotInfo.pz)) {
                 // 有转场效果
                 logoMesh.visible = false;
@@ -512,8 +501,7 @@
                 }).to(hotInfo, animateTime)
                     .easing(TWEEN.Easing.Quadratic.InOut)
                     .onUpdate(function () {
-                        transformCamera.position.set(this.px, this.py, this.pz);
-                        // transformCamera.rotation.set(this.rx, this.ry, this.rz);
+                        transformSphere.position.set(this.px, this.py, this.pz);
                     });
                 // 转场球opacity减小
                 var tween1 = new TWEEN.Tween({opacity: 1})
@@ -527,9 +515,10 @@
                         transiting = false;
                     });
                 tween0.start();
-                tween1.delay(animateTime - 250).start();
+                tween1.delay(500).start();
             } else {
                 // 直接切换
+                transformSphere.position.set(0, 0, 0);
                 new TWEEN.Tween({opacity: 1})
                     .to({opacity: 0}, 1000)
                     .easing(TWEEN.Easing.Quadratic.InOut)
@@ -653,9 +642,9 @@
             // rx: transform.rx,
             // ry: transform.ry,
             // rz: transform.rz,
-            px: camera.position.x,
-            py: camera.position.y,
-            pz: camera.position.z
+            px: sphere.position.x,
+            py: sphere.position.y,
+            pz: sphere.position.z
         });
         this.editingHot = false;
         _transform = null;
@@ -672,9 +661,7 @@
         transformSphere.material.opacity = 0.5;
         var hotInfo = currentSpace.hotInfoDict[selectedHot.hotId];
         // 设置相机朝向与位置
-        camera.position.copy(cameraPos);
-        camera.lookAt(sceneCenter);
-        camera.position.set(hotInfo.px, hotInfo.py, hotInfo.pz);
+        sphere.position.set(hotInfo.px, hotInfo.py, hotInfo.pz);
         return hotInfo;
     };
 
@@ -706,9 +693,8 @@
         STAGE_WIDTH = stageWidth;
         STAGE_HEIGHT = stageHeight;
         renderer.setSize(STAGE_WIDTH, STAGE_HEIGHT);
-        camera.aspect = transformCamera.aspect = STAGE_WIDTH / STAGE_HEIGHT;
+        camera.aspect = STAGE_WIDTH / STAGE_HEIGHT;
         camera.updateProjectionMatrix();
-        transformCamera.updateProjectionMatrix();
         renderer.clear();
         renderer.render(scene, camera);
         if (transiting || _editingHot) {
@@ -757,12 +743,12 @@
         }
         return {
             opacity: sphere.material.opacity,
-            px: camera.position.x,
-            py: camera.position.y,
-            pz: camera.position.z,
-            rx: camera.rotation.x,
-            ry: camera.rotation.y,
-            rz: camera.rotation.z
+            px: sphere.position.x,
+            py: sphere.position.y,
+            pz: sphere.position.z,
+            rx: sphere.rotation.x,
+            ry: sphere.rotation.y,
+            rz: sphere.rotation.z
         }
     };
 
@@ -874,12 +860,7 @@
                     targetHotId = selectedHot.hotId;
                     if (options.debug) {
                         if ($e.which == 3) {  // 右击热点
-                            cameraPos = camera.position.clone();  // 记录编辑前相机位置
-                            // 设置转场相机位置与朝向
-                            transformCamera.position.copy(cameraPos);
-                            transformCamera.lookAt(sceneCenter);
                             this.editingHot = true;
-                            callbacks.onEditingHot(this.resetHot());
                         } else {
                             this.showSpace(null, targetHotId);
                         }
@@ -1034,13 +1015,8 @@
     Object.defineProperty(Panorama.prototype, "stereoMode", {
         set: function (val) {
             _stereoMode = !!val;
-            if (_stereoMode) {
-                // raycaster.set(sceneCenter, camera.getWorldDirection());
-                stereoRenderer.setSize(STAGE_WIDTH, STAGE_HEIGHT);
-            } else {
-                // raycaster.setFromCamera(mousePos, camera);
-                renderer.setSize(STAGE_WIDTH, STAGE_HEIGHT);
-            }
+            _stereoMode ? renderer.setScissorTest(true): renderer.setScissorTest(false);
+            renderer.setSize(STAGE_WIDTH, STAGE_HEIGHT);
         },
         get: function () {
             return _stereoMode;
@@ -1083,18 +1059,18 @@
             if (_editingHot == !!val) return false;
             _editingHot = !!val;
             var i;
-            if (!_editingHot) {  // false
+            sphere.position.set(0, 0, 0);
+            transformSphere.position.set(0, 0, 0);
+            if (!_editingHot) {  // 关闭
                 sphere.material = materialDict[currentSpace.id];
                 for (i = 0; i < spaceHots.length; i++)spaceHots[i].visible = true;
                 sphere.material.opacity = 1;
-                camera.position.copy(cameraPos);
-                camera.lookAt(sceneCenter);
-                orbitControls.enabled = true;
-            } else {  // true
+                transformSphere.position.set(0, 0, 0);
+                // orbitControls.enabled = true;
+            } else {  // 打开
                 for (i = 0; i < spaceHots.length; i++)spaceHots[i].visible = false;
-                transformCamera.position.copy(cameraPos);
-                transformCamera.lookAt(sceneCenter);
-                orbitControls.enabled = false;
+                callbacks.onEditingHot(this.resetHot());
+                // orbitControls.enabled = false;
             }
         },
         get: function () {
@@ -1125,30 +1101,47 @@
         if (orbitControls && orbitControls.enabled) orbitControls.update();
         if (deviceControls && deviceControls.enabled) deviceControls.update();
         stats && stats.update();
+        renderer.clear();
         if (_stereoMode) {
-            stereoRenderer.clear();
-            stereoRenderer.render(scene, camera);
+            scene.updateMatrixWorld();
+            camera.updateMatrixWorld();
+            stereoCamera.update(camera);
+            var size = renderer.getSize();
+            renderer.clear();
+
+            // 左侧渲染
+            renderer.setScissor(0, 0, size.width / 2, size.height);
+            renderer.setViewport(0, 0, size.width / 2, size.height);
+            renderer.render(scene, stereoCamera.cameraL);
             if (transiting) {
-                stereoRenderer.clearDepth();
-                stereoRenderer.render(transformScene, transformCamera);
+                renderer.clearDepth();
+                renderer.render(transformScene, stereoCamera.cameraL);
+            }
+
+            // 右侧渲染
+            renderer.setScissor(size.width / 2, 0, size.width / 2, size.height);
+            renderer.setViewport(size.width / 2, 0, size.width / 2, size.height);
+            renderer.render(scene, stereoCamera.cameraR);
+            if (transiting) {
+                renderer.clearDepth();
+                renderer.render(transformScene, stereoCamera.cameraR);
             }
         } else {
-            renderer.clear();
             renderer.render(scene, camera);
             if (transiting) {
                 renderer.clearDepth();
-                renderer.render(transformScene, transformCamera);
+                renderer.render(transformScene, camera);
             } else if (_editingHot) {
 
-                front && camera.translateZ(0.3);
-                back && camera.translateZ(-0.3);
-                left && camera.translateX(0.3);
-                right && camera.translateX(-0.3);
-                up && camera.translateY(-0.1);
-                down && camera.translateY(0.1);
+                front && sphere.translateZ(0.3);
+                back && sphere.translateZ(-0.3);
+                left && sphere.translateX(0.3);
+                right && sphere.translateX(-0.3);
+                up && sphere.translateY(0.1);
+                down && sphere.translateY(-0.1);
 
                 renderer.clearDepth();
-                renderer.render(transformScene, transformCamera);
+                renderer.render(transformScene, camera);
             }
         }
         if (renderOver) {  // 执行渲染完后的方法（只执行一次）

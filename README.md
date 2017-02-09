@@ -1,4 +1,4 @@
-# vray.scene.js插件接口列表：
+# panorama.js插件接口列表：
 
 ### 1. 初始化参数
 

@@ -3,6 +3,7 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render_to_response
 from django.views.decorators.csrf import csrf_exempt
 from panorama.models import *
+from django.core.management import call_command
 
 STATIC_PREFIX = '/static/panorama/'
 
@@ -287,3 +288,9 @@ def update_seller(request):
             '<script>window.parent.%s({ success: true, seller:{name: "%s",desc: "%s",logo: "%s"}});</script>' %
             (cb, seller.name, seller.desc, seller.logo.url))
     return HttpResponse("<script>window.parent.%s({ success: false});</script>" % cb)
+
+
+def init_database(request):
+    call_command('migrate')
+    call_command('loaddata', 'init_panorama.json')
+    return HttpResponse("success！")

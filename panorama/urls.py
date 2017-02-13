@@ -4,10 +4,10 @@ from django.conf.urls import url
 from . import views
 
 urlpatterns = [
+    url(r'^merge', views.test, name='merge'),
+
     url(r'^$', views.index, name='index'),
-    url(r'^test$', views.test, name='test'),
     url(r'^view$', views.view, name='view'),
-    url(r'^vr_index$', views.vr_index, name='vr_index'),
     url(r'^edit$', views.edit, name='edit'),
     url(r'^init_scene$', views.init_scene, name='init_scene'),
     url(r'^list_spaces$', views.list_spaces, name='list_spaces'),

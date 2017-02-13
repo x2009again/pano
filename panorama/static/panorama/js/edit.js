@@ -64,7 +64,7 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
     var hotImg = '/static/panorama/img/foot_step.png';
     var saved = true;
     var sceneContainer = null;
-    var logoUrl = seller.logo || '/panorama/img/logo/logo.png';
+    var logoUrl = seller.logo || '/panorama/img/logo.png';
     var entryId = sceneInfo.entry;
 
     var spacesDict = {};

@@ -18,15 +18,11 @@ def index(request):
 
 
 def test(request):
-    return render_to_response('panorama/test.html')
+    return render_to_response('panorama/merge.html')
 
 
 def view(request):
     return render_to_response('panorama/view.html')
-
-
-def vr_index(request):
-    return render_to_response('panorama/vr_index.html')
 
 
 def edit(request):
@@ -92,7 +88,7 @@ def init_scene(request):
         'seller': {
             'id': seller.id,
             'name': seller.name,
-            'logo': seller.logo.url,
+            'logo': seller.logo.url if seller.logo else '/static/panorama/img/logo.png',
             'phone': seller.phone,
             'address': seller.address,
             'desc': seller.desc,

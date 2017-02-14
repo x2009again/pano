@@ -617,6 +617,9 @@
             vx: hotPos.vx,
             vy: hotPos.vy,
             vz: hotPos.vz,
+            px: 0,
+            py: 0,
+            pz: 0,
             mesh: newHotSpot
         };
 
@@ -656,11 +659,14 @@
      */
     Panorama.prototype.resetHot = function () {
         sphere.material = materialDict[currentSpace.id];
+        console.log(currentSpace.hotInfoDict[targetHotId].to);
+        console.log(materialDict[currentSpace.hotInfoDict[targetHotId].to]);
         transformSphere.material = materialDict[currentSpace.hotInfoDict[targetHotId].to];
         sphere.material.opacity = 0.7;
         transformSphere.material.opacity = 0.5;
         var hotInfo = currentSpace.hotInfoDict[selectedHot.hotId];
         // 设置相机朝向与位置
+        console.log(hotInfo);
         sphere.position.set(hotInfo.px, hotInfo.py, hotInfo.pz);
         return hotInfo;
     };
@@ -1015,7 +1021,7 @@
     Object.defineProperty(Panorama.prototype, "stereoMode", {
         set: function (val) {
             _stereoMode = !!val;
-            _stereoMode ? renderer.setScissorTest(true): renderer.setScissorTest(false);
+            _stereoMode ? renderer.setScissorTest(true) : renderer.setScissorTest(false);
             renderer.setSize(STAGE_WIDTH, STAGE_HEIGHT);
         },
         get: function () {

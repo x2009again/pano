@@ -564,6 +564,10 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
         ui.$addHotDialog.find('.add-btn').click(function () {
             var toSpaceId = ui.$addHotDialog.find('select').val();
             var title = $.trim(ui.$addHotDialog.find('input').val());
+            if (!title) {
+                alert('请输入标题');
+                return false;
+            }
             if (toSpaceId == panorama.spaceId) {
                 alert('不可与当前场景相同！');
                 return false;

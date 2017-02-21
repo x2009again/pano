@@ -4,7 +4,7 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render_to_response
 from django.views.decorators.csrf import csrf_exempt
 from panorama.models import *
-from django.core.management import call_command
+from collections import OrderedDict
 
 STATIC_PREFIX = '/static/panorama/'
 
@@ -28,6 +28,10 @@ def view(request):
 
 def edit(request):
     return render_to_response('panorama/edit.html')
+
+
+def check(request):
+    return render_to_response('panorama/check.html')
 
 
 def init_scene(request):
@@ -95,6 +99,58 @@ def init_scene(request):
             'desc': seller.desc,
         }
     }, safe=False)
+
+
+def get_space(request):
+    """
+    获取单个空间数据
+    :param request:
+    :return:
+    """
+    space_id = request.GET.get('space_id')
+    space_filter = Space.objects.filter(pk=space_id)
+    if not space_filter.exists():
+        return JsonResponse({'success': False, 'err_msg': '不存在编号为%s的空间' % space_id})
+    space = space_filter[0]
+    seller = space.creator
+    textures = OrderedDict()
+    for t in Texture.objects.filter(space=space):
+        if t.category in textures:
+            textures[t.category].append({
+                'id': t.pk,
+                'label': t.label,
+                'url': STATIC_PREFIX + t.url
+            })
+        else:
+            textures[t.category] = [{
+                'id': t.pk,
+                'label': t.label,
+                'url': STATIC_PREFIX + t.url
+            }]
+    texture_list = []
+    for t in textures:
+        texture_list.append({
+            'category': Texture.CATEGORY_CHOICES[t],
+            'list': textures[t]
+        })
+
+    return JsonResponse({'success': True, 'data': {
+        'id': space.id,
+        'name': space.name,
+        'url': STATIC_PREFIX + space.url,
+        'cache_url': space.cache_url and (STATIC_PREFIX + space.cache_url),
+        'thumb_url': space.thumb_url and (STATIC_PREFIX + space.thumb_url),
+        'create_time': timezone.localtime(space.create_time),
+        'seller': {
+            'id': seller.id,
+            'name': seller.name,
+            'logo': seller.logo.url if seller.logo else '/static/panorama/img/logo.png',
+            'phone': seller.phone,
+            'address': seller.address,
+            'desc': seller.desc,
+        },
+        'textures': texture_list
+    }})
 
 
 def list_spaces(request):
@@ -286,9 +342,3 @@ def update_seller(request):
             '<script>window.parent.%s({ success: true, seller:{name: "%s",desc: "%s",logo: "%s"}});</script>' %
             (cb, seller.name, seller.desc, seller.logo.url))
     return HttpResponse("<script>window.parent.%s({ success: false});</script>" % cb)
-
-
-def init_database(request):
-    call_command('migrate')
-    call_command('loaddata', 'init_panorama.json')
-    return HttpResponse("success！")

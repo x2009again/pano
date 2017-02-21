@@ -107,6 +107,43 @@
         $alertDialog.fadeOut();
     };
 
+    window.Progress = function (ele) {
+        var container = ele ? $(ele) : $(document.body);
+        var $progress = container.children('#_progress');
+        var $num = null;
+        if ($progress.length == 0) {
+            $progress = $('<div id="_progress" </div>');
+            $progress.html(
+                '<div><div></div><div></div><div></div><div></div></div>' +
+                '<div><div></div><div></div><div></div><div></div></div>');
+            $num = $('<div></div>');
+            $num.css({
+                'line-height': '40px',
+                'font-size': '14px',
+                'text-align': 'center',
+                'color': '#fff',
+                'text-shadow': '0px 0px 5px #000'
+            });
+            $progress.append($num);
+            container.append($progress);
+        }
+        console.log($num);
+        this.start = function () {
+            $progress.addClass('show');
+            $num.html('');
+            return this;
+        };
+        this.update = function (num) {
+            $num.html(num + '%');
+            return this;
+        };
+        this.end = function () {
+            $progress.removeClass('show');
+            return this;
+        };
+        return this;
+    };
+
     window.MaskLayer = function (ele) {
         var container = ele ? $(ele) : $(document.body);
         var $mask = container.children('#mask-layer');

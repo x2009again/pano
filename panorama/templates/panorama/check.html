@@ -6,9 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>全景漫屏</title>
+    <title>查看空间</title>
     <link rel="stylesheet" type="text/css" href="{% static 'panorama/css/common.css' %}"/>
-    <link rel="stylesheet" type="text/css" href="{% static 'panorama/css/view.css' %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'panorama/css/check.css' %}"/>
     <script src="{% static 'panorama/lib/three.js/Detector.js' %}"></script>
 </head>
 <body>
@@ -18,25 +18,11 @@
         throw '浏览器不支持WebGL';
     }
 </script>
-<div id="loading" class="show">
-    <div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-    </div>
-    <div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-    </div>
-</div>
 <div id="main">
     <img src="{% static 'panorama/img/play.png' %}" id="play-btn">
     <div class="dialog seller-info">
         <div class="header">
-            <span class="title"></span>
+            <span class="title">商家信息</span>
             <i class="close-btn">×</i>
         </div>
         <div class="body">
@@ -53,17 +39,13 @@
                 </tr>
             </table>
         </div>
-        <div class="footer">技术支持：xxxx</div>
+        <div class="footer">技术支持：场景大师</div>
     </div>
 
     <div id="nav">
         <!-- 操作面板 -->
-        <div id="left-btn"></div>
-        <div id="right-btn"></div>
-        <div id="gallery">
-            <div>
-                <ul></ul>
-            </div>
+        <div id="texture">
+
         </div>
         <div id="operate-panel-PC">
             <div style="float:left;">
@@ -121,6 +103,6 @@
 <script src="{% static 'panorama/js/utils.js' %}"></script>
 <script src="{% static 'panorama/lib/jquery.mousewheel.min.js' %}"></script>
 <script src="{% static 'panorama/js/panorama.js' %}"></script>
-<script src="{% static 'panorama/js/view.js' %}"></script>
+<script src="{% static 'panorama/js/check.js' %}"></script>
 </body>
 </html>

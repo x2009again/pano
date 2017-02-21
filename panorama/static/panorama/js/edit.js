@@ -58,6 +58,7 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
     /** ====================================== variable ====================================== **/
 
     var maskLayer = new MaskLayer().show();
+    var progress = new Progress().start();
     var sceneInfo = ret['scene'];
     var seller = ret['seller'];
     var spaceList = ret['spaceList'];
@@ -85,8 +86,9 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
         fps: false,
         callbacks: {
             onLoad: onLoad,
-            onShowSpaceFail: onShowSpaceFail,
+            onShowing: onShowing,
             onShown: onShown,
+            onShowFail: onShowFail,
             onAddingHot: onAddingHot,
             onOverHot: onOverHot,
             onLeaveHot: onLeaveHot,
@@ -119,7 +121,7 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
         $('#space_id_' + entryId).addClass('active');
         ui.$spaceBar.height(ui.$editSidebar.height() - 140);
 
-        ui.$loading.fadeOut(1000);
+        progress.end();
         if (options.autoPlay) {
             maskLayer.hide(1000);
         } else {
@@ -130,41 +132,31 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
         animate();
     }
 
-    // 场景跳转失败
-    var loading = false;
+    function onShowing() {
+        maskLayer.show();
+        progress.start();
+    }
 
-    function onShowSpaceFail(code, data) {
-        if (code == 1) {
-            if (!loading) {
-                loading = true;
-                maskLayer.show();
-                ui.$loading.stop().fadeIn(1000);
-            }
-            window.setTimeout(function () {
-                panorama.showSpace(data.spaceId, data.hotId);
-            }, 500);
-        } else if (code == 2) {
-            var hotId = data.hotId;
-            if (confirm('目标空间不存在，删除该无效热点？')) {
-                $.get('delete_hot', {
-                    id: hotId
-                }, function (data) {
-                    if (data.success) {
-                        panorama.deleteHot(hotId);
-                        ui.$hotTitle.hide();
-                    }
-                });
-            }
+    function onShowFail(data) {
+        var hotId = data.hotId;
+        if (confirm('目标空间不存在，删除该无效热点？')) {
+            $.get('delete_hot', {
+                id: hotId
+            }, function (data) {
+                if (data.success) {
+                    panorama.deleteHot(hotId);
+                    ui.$hotTitle.hide();
+                }
+            });
         }
     }
 
+
     // 场景切换完毕
     function onShown(spaceId) {
-        ui.$spaceBar.find('li').removeClass('active');
-        $('#space_id_' + spaceId).addClass('active');
+        $('#space_id_' + spaceId).addClass('active').siblings('li').removeClass('active');
         maskLayer.hide();
-        ui.$loading.stop().fadeOut(700);
-        loading = false;
+        progress.end();
     }
 
     // 鼠标在热点上时

@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50715
 File Encoding         : 65001
 
-Date: 2017-02-15 02:07:05
+Date: 2017-02-21 10:53:31
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -61,7 +61,7 @@ CREATE TABLE `auth_permission` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `auth_permission_content_type_id_01ab375a_uniq` (`content_type_id`,`codename`),
   CONSTRAINT `auth_permissi_content_type_id_2f476e4b_fk_django_content_type_id` FOREIGN KEY (`content_type_id`) REFERENCES `django_content_type` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=34 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=37 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of auth_permission
@@ -84,21 +84,24 @@ INSERT INTO `auth_permission` VALUES ('15', 'Can delete content type', '5', 'del
 INSERT INTO `auth_permission` VALUES ('16', 'Can add session', '6', 'add_session');
 INSERT INTO `auth_permission` VALUES ('17', 'Can change session', '6', 'change_session');
 INSERT INTO `auth_permission` VALUES ('18', 'Can delete session', '6', 'delete_session');
-INSERT INTO `auth_permission` VALUES ('19', 'Can add hot', '7', 'add_hot');
-INSERT INTO `auth_permission` VALUES ('20', 'Can change hot', '7', 'change_hot');
-INSERT INTO `auth_permission` VALUES ('21', 'Can delete hot', '7', 'delete_hot');
-INSERT INTO `auth_permission` VALUES ('22', 'Can add scene', '8', 'add_scene');
-INSERT INTO `auth_permission` VALUES ('23', 'Can change scene', '8', 'change_scene');
-INSERT INTO `auth_permission` VALUES ('24', 'Can delete scene', '8', 'delete_scene');
-INSERT INTO `auth_permission` VALUES ('25', 'Can add scene space', '9', 'add_scenespace');
-INSERT INTO `auth_permission` VALUES ('26', 'Can change scene space', '9', 'change_scenespace');
-INSERT INTO `auth_permission` VALUES ('27', 'Can delete scene space', '9', 'delete_scenespace');
-INSERT INTO `auth_permission` VALUES ('28', 'Can add seller', '10', 'add_seller');
-INSERT INTO `auth_permission` VALUES ('29', 'Can change seller', '10', 'change_seller');
-INSERT INTO `auth_permission` VALUES ('30', 'Can delete seller', '10', 'delete_seller');
-INSERT INTO `auth_permission` VALUES ('31', 'Can add space', '11', 'add_space');
-INSERT INTO `auth_permission` VALUES ('32', 'Can change space', '11', 'change_space');
-INSERT INTO `auth_permission` VALUES ('33', 'Can delete space', '11', 'delete_space');
+INSERT INTO `auth_permission` VALUES ('19', 'Can add scene', '7', 'add_scene');
+INSERT INTO `auth_permission` VALUES ('20', 'Can change scene', '7', 'change_scene');
+INSERT INTO `auth_permission` VALUES ('21', 'Can delete scene', '7', 'delete_scene');
+INSERT INTO `auth_permission` VALUES ('22', 'Can add texture', '8', 'add_texture');
+INSERT INTO `auth_permission` VALUES ('23', 'Can change texture', '8', 'change_texture');
+INSERT INTO `auth_permission` VALUES ('24', 'Can delete texture', '8', 'delete_texture');
+INSERT INTO `auth_permission` VALUES ('25', 'Can add seller', '9', 'add_seller');
+INSERT INTO `auth_permission` VALUES ('26', 'Can change seller', '9', 'change_seller');
+INSERT INTO `auth_permission` VALUES ('27', 'Can delete seller', '9', 'delete_seller');
+INSERT INTO `auth_permission` VALUES ('28', 'Can add scene space', '10', 'add_scenespace');
+INSERT INTO `auth_permission` VALUES ('29', 'Can change scene space', '10', 'change_scenespace');
+INSERT INTO `auth_permission` VALUES ('30', 'Can delete scene space', '10', 'delete_scenespace');
+INSERT INTO `auth_permission` VALUES ('31', 'Can add hot', '11', 'add_hot');
+INSERT INTO `auth_permission` VALUES ('32', 'Can change hot', '11', 'change_hot');
+INSERT INTO `auth_permission` VALUES ('33', 'Can delete hot', '11', 'delete_hot');
+INSERT INTO `auth_permission` VALUES ('34', 'Can add space', '12', 'add_space');
+INSERT INTO `auth_permission` VALUES ('35', 'Can change space', '12', 'change_space');
+INSERT INTO `auth_permission` VALUES ('36', 'Can delete space', '12', 'delete_space');
 
 -- ----------------------------
 -- Table structure for auth_user
@@ -107,7 +110,7 @@ DROP TABLE IF EXISTS `auth_user`;
 CREATE TABLE `auth_user` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `password` varchar(128) NOT NULL,
-  `last_login` datetime DEFAULT NULL,
+  `last_login` datetime(6) DEFAULT NULL,
   `is_superuser` tinyint(1) NOT NULL,
   `username` varchar(150) NOT NULL,
   `first_name` varchar(30) NOT NULL,
@@ -115,7 +118,7 @@ CREATE TABLE `auth_user` (
   `email` varchar(254) NOT NULL,
   `is_staff` tinyint(1) NOT NULL,
   `is_active` tinyint(1) NOT NULL,
-  `date_joined` datetime NOT NULL,
+  `date_joined` datetime(6) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `username` (`username`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -168,7 +171,7 @@ CREATE TABLE `auth_user_user_permissions` (
 DROP TABLE IF EXISTS `django_admin_log`;
 CREATE TABLE `django_admin_log` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `action_time` datetime NOT NULL,
+  `action_time` datetime(6) NOT NULL,
   `object_id` longtext,
   `object_repr` varchar(200) NOT NULL,
   `action_flag` smallint(5) unsigned NOT NULL,
@@ -196,7 +199,7 @@ CREATE TABLE `django_content_type` (
   `model` varchar(100) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `django_content_type_app_label_76bd3d3b_uniq` (`app_label`,`model`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of django_content_type
@@ -206,11 +209,12 @@ INSERT INTO `django_content_type` VALUES ('4', 'auth', 'group');
 INSERT INTO `django_content_type` VALUES ('2', 'auth', 'permission');
 INSERT INTO `django_content_type` VALUES ('3', 'auth', 'user');
 INSERT INTO `django_content_type` VALUES ('5', 'contenttypes', 'contenttype');
-INSERT INTO `django_content_type` VALUES ('7', 'panorama', 'hot');
-INSERT INTO `django_content_type` VALUES ('8', 'panorama', 'scene');
-INSERT INTO `django_content_type` VALUES ('9', 'panorama', 'scenespace');
-INSERT INTO `django_content_type` VALUES ('10', 'panorama', 'seller');
-INSERT INTO `django_content_type` VALUES ('11', 'panorama', 'space');
+INSERT INTO `django_content_type` VALUES ('11', 'panorama', 'hot');
+INSERT INTO `django_content_type` VALUES ('7', 'panorama', 'scene');
+INSERT INTO `django_content_type` VALUES ('10', 'panorama', 'scenespace');
+INSERT INTO `django_content_type` VALUES ('9', 'panorama', 'seller');
+INSERT INTO `django_content_type` VALUES ('12', 'panorama', 'space');
+INSERT INTO `django_content_type` VALUES ('8', 'panorama', 'texture');
 INSERT INTO `django_content_type` VALUES ('6', 'sessions', 'session');
 
 -- ----------------------------
@@ -221,27 +225,27 @@ CREATE TABLE `django_migrations` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `app` varchar(255) NOT NULL,
   `name` varchar(255) NOT NULL,
-  `applied` datetime NOT NULL,
+  `applied` datetime(6) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of django_migrations
 -- ----------------------------
-INSERT INTO `django_migrations` VALUES ('1', 'contenttypes', '0001_initial', '2017-02-14 18:00:35.286000');
-INSERT INTO `django_migrations` VALUES ('2', 'auth', '0001_initial', '2017-02-14 18:00:35.636000');
-INSERT INTO `django_migrations` VALUES ('3', 'admin', '0001_initial', '2017-02-14 18:00:35.722000');
-INSERT INTO `django_migrations` VALUES ('4', 'admin', '0002_logentry_remove_auto_add', '2017-02-14 18:00:35.733000');
-INSERT INTO `django_migrations` VALUES ('5', 'contenttypes', '0002_remove_content_type_name', '2017-02-14 18:00:35.804000');
-INSERT INTO `django_migrations` VALUES ('6', 'auth', '0002_alter_permission_name_max_length', '2017-02-14 18:00:35.893000');
-INSERT INTO `django_migrations` VALUES ('7', 'auth', '0003_alter_user_email_max_length', '2017-02-14 18:00:35.960000');
-INSERT INTO `django_migrations` VALUES ('8', 'auth', '0004_alter_user_username_opts', '2017-02-14 18:00:35.979000');
-INSERT INTO `django_migrations` VALUES ('9', 'auth', '0005_alter_user_last_login_null', '2017-02-14 18:00:36.024000');
-INSERT INTO `django_migrations` VALUES ('10', 'auth', '0006_require_contenttypes_0002', '2017-02-14 18:00:36.027000');
-INSERT INTO `django_migrations` VALUES ('11', 'auth', '0007_alter_validators_add_error_messages', '2017-02-14 18:00:36.037000');
-INSERT INTO `django_migrations` VALUES ('12', 'auth', '0008_alter_user_username_max_length', '2017-02-14 18:00:36.075000');
-INSERT INTO `django_migrations` VALUES ('13', 'panorama', '0001_initial', '2017-02-14 18:00:36.450000');
-INSERT INTO `django_migrations` VALUES ('14', 'sessions', '0001_initial', '2017-02-14 18:00:36.476000');
+INSERT INTO `django_migrations` VALUES ('1', 'contenttypes', '0001_initial', '2017-02-21 02:52:24.881000');
+INSERT INTO `django_migrations` VALUES ('2', 'auth', '0001_initial', '2017-02-21 02:52:29.346000');
+INSERT INTO `django_migrations` VALUES ('3', 'admin', '0001_initial', '2017-02-21 02:52:30.472000');
+INSERT INTO `django_migrations` VALUES ('4', 'admin', '0002_logentry_remove_auto_add', '2017-02-21 02:52:30.515000');
+INSERT INTO `django_migrations` VALUES ('5', 'contenttypes', '0002_remove_content_type_name', '2017-02-21 02:52:31.338000');
+INSERT INTO `django_migrations` VALUES ('6', 'auth', '0002_alter_permission_name_max_length', '2017-02-21 02:52:31.862000');
+INSERT INTO `django_migrations` VALUES ('7', 'auth', '0003_alter_user_email_max_length', '2017-02-21 02:52:32.797000');
+INSERT INTO `django_migrations` VALUES ('8', 'auth', '0004_alter_user_username_opts', '2017-02-21 02:52:32.828000');
+INSERT INTO `django_migrations` VALUES ('9', 'auth', '0005_alter_user_last_login_null', '2017-02-21 02:52:33.033000');
+INSERT INTO `django_migrations` VALUES ('10', 'auth', '0006_require_contenttypes_0002', '2017-02-21 02:52:33.057000');
+INSERT INTO `django_migrations` VALUES ('11', 'auth', '0007_alter_validators_add_error_messages', '2017-02-21 02:52:33.097000');
+INSERT INTO `django_migrations` VALUES ('12', 'auth', '0008_alter_user_username_max_length', '2017-02-21 02:52:34.213000');
+INSERT INTO `django_migrations` VALUES ('13', 'panorama', '0001_initial', '2017-02-21 02:52:40.347000');
+INSERT INTO `django_migrations` VALUES ('14', 'sessions', '0001_initial', '2017-02-21 02:52:40.778000');
 
 -- ----------------------------
 -- Table structure for django_session
@@ -250,7 +254,7 @@ DROP TABLE IF EXISTS `django_session`;
 CREATE TABLE `django_session` (
   `session_key` varchar(40) NOT NULL,
   `session_data` longtext NOT NULL,
-  `expire_date` datetime NOT NULL,
+  `expire_date` datetime(6) NOT NULL,
   PRIMARY KEY (`session_key`),
   KEY `django_session_de54fa62` (`expire_date`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -377,7 +381,7 @@ CREATE TABLE `panorama_seller` (
   `phone` varchar(20) DEFAULT NULL,
   `address` varchar(100) DEFAULT NULL,
   `desc` varchar(300) DEFAULT NULL,
-  `create_time` datetime NOT NULL,
+  `create_time` datetime(6) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
@@ -397,7 +401,7 @@ CREATE TABLE `panorama_space` (
   `url` varchar(100) NOT NULL,
   `cache_url` varchar(100) DEFAULT NULL,
   `thumb_url` varchar(100) DEFAULT NULL,
-  `create_time` datetime NOT NULL,
+  `create_time` datetime(6) NOT NULL,
   `creator_id` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `panorama_space_creator_id_731ae96f_fk_panorama_seller_id` (`creator_id`),
@@ -423,8 +427,39 @@ INSERT INTO `panorama_space` VALUES ('2', '空间名称：2', 'img/real/2.jpg', 
 INSERT INTO `panorama_space` VALUES ('20', '空间6', 'img/real/new_6.jpg', 'img/cache/new_6.jpg', 'img/thumb/new_6.jpg', '2016-10-05 06:48:05.472000', '1');
 INSERT INTO `panorama_space` VALUES ('21', '空间7', 'img/real/new_7.jpg', 'img/cache/new_7.jpg', 'img/thumb/new_7.jpg', '2016-10-05 06:48:05.472000', '1');
 INSERT INTO `panorama_space` VALUES ('22', '空间8', 'img/real/new_8.jpg', 'img/cache/new_8.jpg', 'img/thumb/new_8.jpg', '2016-10-05 06:48:05.472000', '1');
+INSERT INTO `panorama_space` VALUES ('23', '工业·灵感源地(HTC版)', 'img/real/23.jpg', 'img/cache/23.jpg', 'img/thumb/23.jpg', '2017-02-20 06:48:05.472000', '1');
 INSERT INTO `panorama_space` VALUES ('5', '空间名称：5', 'img/real/5.jpg', 'img/cache/5.jpg', 'img/thumb/5.jpg', '2016-10-05 06:48:05.472000', '1');
 INSERT INTO `panorama_space` VALUES ('6', '空间名称：6', 'img/real/6.jpg', 'img/cache/6.jpg', 'img/thumb/6.jpg', '2016-10-05 06:48:05.472000', '1');
 INSERT INTO `panorama_space` VALUES ('7', '空间名称：7', 'img/real/7.jpg', 'img/cache/7.jpg', 'img/thumb/7.jpg', '2016-10-05 06:48:05.472000', '1');
 INSERT INTO `panorama_space` VALUES ('8', '空间名称：8', 'img/real/8.jpg', 'img/cache/8.jpg', 'img/thumb/8.jpg', '2016-10-05 06:48:05.472000', '1');
 INSERT INTO `panorama_space` VALUES ('9', '空间名称：9', 'img/real/9.jpg', 'img/cache/9.jpg', 'img/thumb/9.jpg', '2016-10-05 06:48:05.472000', '1');
+
+-- ----------------------------
+-- Table structure for panorama_texture
+-- ----------------------------
+DROP TABLE IF EXISTS `panorama_texture`;
+CREATE TABLE `panorama_texture` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `category` smallint(6) DEFAULT NULL,
+  `url` varchar(100) NOT NULL,
+  `label` varchar(30) NOT NULL,
+  `space_id` varchar(50) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `panorama_texture_space_id_0d75953e_fk_panorama_space_id` (`space_id`),
+  CONSTRAINT `panorama_texture_space_id_0d75953e_fk_panorama_space_id` FOREIGN KEY (`space_id`) REFERENCES `panorama_space` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Records of panorama_texture
+-- ----------------------------
+INSERT INTO `panorama_texture` VALUES ('1', '1', 'img/real/23_1.jpg', '儿童系列241', '23');
+INSERT INTO `panorama_texture` VALUES ('2', '1', 'img/real/23_2.jpg', '欧式系列107', '23');
+INSERT INTO `panorama_texture` VALUES ('3', '1', 'img/real/23_3.jpg', '现代系列809', '23');
+INSERT INTO `panorama_texture` VALUES ('4', '1', 'img/real/23_4.jpg', '骑士风范5CHI', '23');
+INSERT INTO `panorama_texture` VALUES ('5', '2', 'img/real/23_5.jpg', '山核桃S-46', '23');
+INSERT INTO `panorama_texture` VALUES ('6', '2', 'img/real/23_6.jpg', '太空漫步JS8278', '23');
+INSERT INTO `panorama_texture` VALUES ('7', '2', 'img/real/23_7.jpg', '现代系列167', '23');
+INSERT INTO `panorama_texture` VALUES ('8', '3', 'img/real/23_8.jpg', '通体砖', '23');
+INSERT INTO `panorama_texture` VALUES ('9', '3', 'img/real/23_9.jpg', '釉面砖', '23');
+INSERT INTO `panorama_texture` VALUES ('10', '4', 'img/real/23_10.jpg', '木饰面', '23');
+INSERT INTO `panorama_texture` VALUES ('11', '4', 'img/real/23_11.jpg', '铝扣板', '23');

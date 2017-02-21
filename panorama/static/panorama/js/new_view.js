@@ -83,7 +83,7 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
         callbacks: {
             onLoad: onLoad,
             onCameraChanged: onCameraChanged,
-            onShowSpaceFail: onShowSpaceFail,
+            onShowFail: onShowSpaceFail,
             onShown: onShown,
             onOverHot: onOverHot,
             onLeaveHot: onLeaveHot
@@ -126,8 +126,8 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
         }
 
         if (fromMobile) {
-            $('#opera-panel-mobile').show();
-            $('#opera-panel-PC').hide();
+            $('#operate-panel-mobile').show();
+            $('#operate-panel-PC').hide();
         }
         $nav.addClass('show');
 

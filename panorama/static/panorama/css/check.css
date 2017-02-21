@@ -78,59 +78,37 @@ button {
     transition: bottom 0.3s linear;
 }
 
-#gallery {
-    overflow: hidden;
-    height: 95px;
-    padding-top: 18px;
+#texture {
+    height: 40px;
+    line-height: 40px;
 }
 
-#gallery > div {
-    height: 115px;
-    overflow-x: auto;
-    overflow-y: hidden;
-}
-
-#gallery ul {
-    word-break: break-all;
-    white-space: nowrap;
-}
-
-#gallery li {
-    border: 2px solid rgba(255, 255, 255, 0);
-    position: relative;
+#texture > ul > li {
+    float: left;
     cursor: pointer;
-    margin-right: 5px;
-    height: 90px;
-    width: 160px;
-    display: inline-block;
-}
-
-#gallery li span {
+    margin: 0 5px;
+    position: relative;
     color: #fff;
+}
+
+#texture > ul > li > ul {
     position: absolute;
-    bottom: 0;
-    left: 0;
-    height: 18px;
-    line-height: 18px;
-    width: 100%;
-    -moz-box-sizing: border-box;
-    -webkit-box-sizing: border-box;
-    box-sizing: border-box;
-    padding-left: 12px;
-    background-color: rgba(31, 31, 31, 0.6);
+    bottom: 40px;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: none;
 }
 
-#gallery li.active {
-    border: 2px solid rgba(255, 255, 255, 1);
-}
-
-#gallery li.active span, #gallery li:hover span {
+#texture > ul > li.show > ul {
     display: block;
 }
 
-#gallery img {
-    width: 160px;
-    height: 90px;
+#texture > ul > li > ul > li {
+    padding: 0 5px;
+    white-space: nowrap;
+}
+
+#texture > ul > li > ul > li:hover {
+    background-color: rgba(0, 0, 0, 0.8);
 }
 
 #nav.show {

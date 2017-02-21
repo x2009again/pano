@@ -16,7 +16,6 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
 
     var fromMobile = !fromPC();
 
-    var $loading = $('#loading');
     var $body = $(document.body);
     var $playBtn = $('#play-btn');
     var $nav = $('#nav');
@@ -69,6 +68,7 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
 
     var container = document.getElementById('main');
     var maskLayer = new MaskLayer(container).show();
+    var progress = new Progress(container).start();
     var $container = $(container);
     var options = {
         container: container,
@@ -82,9 +82,11 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
         fps: false,
         callbacks: {
             onLoad: onLoad,
+            textureLoadProgress: textureLoadProgress,
             onCameraChanged: onCameraChanged,
-            onShowSpaceFail: onShowSpaceFail,
+            onShowing: onShowing,
             onShown: onShown,
+            onShowFail: onShowFail,
             onOverHot: onOverHot,
             onLeaveHot: onLeaveHot
         }
@@ -126,13 +128,13 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
         }
 
         if (fromMobile) {
-            $('#opera-panel-mobile').show();
-            $('#opera-panel-PC').hide();
+            $('#operate-panel-mobile').show();
+            $('#operate-panel-PC').hide();
         }
         $nav.addClass('show');
 
         // 隐藏loading动画
-        $loading.removeClass('show');
+        progress.end();
         if (options.autoPlay) {
             maskLayer.hide();
         } else {
@@ -140,6 +142,10 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
         }
         animate();
         bindUIListener();
+    }
+
+    function textureLoadProgress(num) {
+        progress.update(num);
     }
 
     var $torch = $('#mini-map').find('i');
@@ -150,40 +156,30 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
         $torch.css({'transform': cssText});
     }
 
-    // 场景跳转失败
-    var loading = false;
-    function onShowSpaceFail(code, data) {
-        if (code == 1) {
-            if (!loading) {
-                loading = true;
-                maskLayer.show();
-                ui.$loading.stop().fadeIn(1000);
-            }
-            window.setTimeout(function () {
-                panorama.showSpace(data.spaceId, data.hotId);
-            }, 500);
-        } else if (code == 2) {
-            var hotId = data.hotId;
-            if (confirm('目标空间不存在，删除该无效热点？')) {
-                $.get('delete_hot', {
-                    id: hotId
-                }, function (data) {
-                    if (data.success) {
-                        panorama.deleteHot(hotId);
-                        ui.$hotTitle.hide();
-                    }
-                });
-            }
+    function onShowing() {
+        maskLayer.show();
+        progress.start();
+    }
+
+    function onShowFail(data) {
+        var hotId = data.hotId;
+        if (confirm('目标空间不存在，删除该无效热点？')) {
+            $.get('delete_hot', {
+                id: hotId
+            }, function (data) {
+                if (data.success) {
+                    panorama.deleteHot(hotId);
+                    ui.$hotTitle.hide();
+                }
+            });
         }
     }
 
     // 场景切换完毕
     function onShown(spaceId) {
         maskLayer.hide();
-        $loading.removeClass('show');
-        // $loading.stop().fadeOut(700);
-        $gallery.find('.active').removeClass('active');
-        $('#space_id_' + spaceId).addClass('active');
+        progress.end();
+        $('#space_id_' + spaceId).addClass('active').siblings('li').removeClass('active');
     }
 
     var switchSpaceDelayer = null;
@@ -268,16 +264,12 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
             $nav.removeClass('mobile-show show');
             setTimeout(function () {
                 $miniNav.addClass('show');
-            }, 500);
+            }, 300);
             return false;
         });
         $showNav.click(function () {
             $miniNav.removeClass('mobile-show show');
-            (function ($nav) {
-                setTimeout(function () {
-                    $nav.addClass(fromMobile ? 'mobile-show' : 'show');
-                }, 300);
-            })($nav);
+            $nav.addClass(fromMobile ? 'mobile-show' : 'show');
             return false;
         });
         // 漫步模式

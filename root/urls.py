@@ -24,7 +24,6 @@ from . import views
 urlpatterns = [
                   url(r'^favicon\.ico$', RedirectView.as_view(url='/static/favicon.ico')),
                   url(r'^$', views.index, name='index'),
-                  url(r'^init_database$', views.init_database, name='init_database'),
                   url(r'^panorama/', include('panorama.urls')),
                   url(r'^admin/', admin.site.urls),
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)  # 使MEDIA_ROOT目录可以访问

@@ -4,6 +4,9 @@
 
 "use strict";
 var sceneId = getParam('scene_id');
+var container = document.getElementById('main');
+var maskLayer = new MaskLayer(container).show();
+var progress = new Progress(container).start();
 $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, function (ret) {
     if (!ret.success) {
         alert(ret['err_msg']);
@@ -66,9 +69,6 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
         spacesDict[spaceList[i].id] = spaceList[i];  // 空间集合
     }
 
-    var container = document.getElementById('main');
-    var maskLayer = new MaskLayer(container).show();
-    var progress = new Progress(container).start();
     var $container = $(container);
     var options = {
         container: container,

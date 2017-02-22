@@ -13,6 +13,7 @@
 - 启动django：python manage.py runserver 0.0.0.0:8000
 - 访问查看页面：http://localhost:8000/panorama/view?scene_id=first
 - 访问编辑页面：http://localhost:8000/panorama/edit?scene_id=first
+- 访问单空间材质切换页面：http://localhost:8000/panorama/check?space_id=23
 
 # panorama.js插件接口列表：
 
@@ -27,6 +28,7 @@
 |autoRotate | boolean | false | 是否自动旋转 |
 |logoUrl | string | 无 | 场景logo |
 |hotImg | string | /static/panorama/img/foot_step.png | 热点图片 |
+|debug | boolean | false | 进入编辑模式 |
 |fps | boolean | false | 显示帧速 |
 
 ### 2. 实例属性

@@ -18,6 +18,21 @@
         throw '浏览器不支持WebGL';
     }
 </script>
+<div id="loading" class="show">
+    <div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+    <div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+</div>
+
 <img src="{% static 'panorama/img/play.png' %}" id="play-btn">
 <div id="edit-sidebar">
     <div id="name-bar">
@@ -56,19 +71,19 @@
         <select id="input-hot-to"></select>
         <fieldset>
             <legend>平移</legend>
-{#            <label for="input-position-x">上下：</label>#}
+            {#            <label for="input-position-x">上下：</label>#}
             <div class="range">
                 <i>下</i>
                 <input type="range" min="-140" max="140" step="1" data-default="0" value="0" id="input-position-x"/>
                 <i>上</i>
             </div>
-{#            <label for="input-position-y">前后：</label>#}
+            {#            <label for="input-position-y">前后：</label>#}
             <div class="range">
                 <i>后</i>
                 <input type="range" min="-140" max="140" step="1" data-default="0" value="0" id="input-position-y"/>
                 <i>前</i>
             </div>
-{#            <label for="input-position-z">左右：</label>#}
+            {#            <label for="input-position-z">左右：</label>#}
             <div class="range">
                 <i>左</i>
                 <input type="range" min="-140" max="140" step="1" data-default="0" value="0" id="input-position-z"/>
@@ -125,9 +140,9 @@
         <input type="hidden" id="seller_id" name="seller_id" value="">
         <input type="hidden" name="cb" value="getResultStr">
     </form>
-    <div class="dialog-operation" style="margin:50px auto 50px 220px;">
+    <div class="dialog-operation">
         <a class="btn dialog-cancel">取消</a>
-        <a class="btn" id="add-space-btn">确定</a>
+        <a class="btn dialog-confirm">确定</a>
     </div>
 </div>
 <iframe id="upload_iframe" name="upload_iframe" src="" style="display: none;"></iframe>
@@ -141,7 +156,7 @@
     <div class="dialog-ele" style="margin-top:70px;">
         <input type="text" id="scene-title" placeholder="输入全景图名称，限制10个字" value="" maxlength="10"/>
     </div>
-    <div class="dialog-operation" style="margin:50px auto 60px 115px;">
+    <div class="dialog-operation">
         <a class="btn dialog-cancel">取消</a>
         <a class="btn dialog-confirm">确定</a>
     </div>
@@ -155,9 +170,9 @@
         <div class="dialog-close">×</div>
     </div>
     <div id="spaces-container"></div>
-    <div class="dialog-operation" style="margin:40px auto 20px 275px;">
+    <div class="dialog-operation">
         <a class="btn dialog-cancel">取消</a>
-        <a class="btn dialog-confirm">确定</a>
+        <a class="btn dialog-confirm" id="add-space-btn">确定</a>
     </div>
 </div>
 

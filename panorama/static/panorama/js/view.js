@@ -4,9 +4,6 @@
 
 "use strict";
 var sceneId = getParam('scene_id');
-var container = document.getElementById('main');
-var maskLayer = new MaskLayer(container).show();
-var progress = new Progress(container).start();
 $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, function (ret) {
     if (!ret.success) {
         alert(ret['err_msg']);
@@ -69,6 +66,9 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
         spacesDict[spaceList[i].id] = spaceList[i];  // 空间集合
     }
 
+    var container = document.getElementById('main');
+    var maskLayer = new MaskLayer(container).show();
+    var progress = new Progress(container).start();
     var $container = $(container);
     var options = {
         container: container,
@@ -81,21 +81,22 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
         autoRotate: true,
         fps: false,
         callbacks: {
-            onLoad: onLoad,
-            textureLoadProgress: textureLoadProgress,
+            onInit: onInit,
             onCameraChanged: onCameraChanged,
-            onShowing: onShowing,
-            onShown: onShown,
-            onShowFail: onShowFail,
+            onLoadStart: onLoadStart,
+            onLoading: onLoading,
+            onLoadEnd: onLoadEnd,
+            onLoadFail: onLoadFail,
             onOverHot: onOverHot,
             onLeaveHot: onLeaveHot
         }
     };
 
+    // 首屏载入成功
+    var maskTimer = null;  // 防止请求太快造成闪烁
     var panorama = new Panorama(options);
 
-    // 首屏载入成功
-    function onLoad() {
+    function onInit() {
         var galleryHtml = '';
         spaceCount = spaceList.length;
 
@@ -134,6 +135,7 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
         $nav.addClass('show');
 
         // 隐藏loading动画
+        window.clearTimeout(maskTimer);
         progress.end();
         if (options.autoPlay) {
             maskLayer.hide();
@@ -144,10 +146,6 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
         bindUIListener();
     }
 
-    function textureLoadProgress(num) {
-        progress.update(num);
-    }
-
     var $torch = $('#mini-map').find('i');
 
     function onCameraChanged(cameraDirection) {
@@ -156,13 +154,26 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
         $torch.css({'transform': cssText});
     }
 
-    function onShowing() {
-        maskLayer.show();
-        progress.start();
+    function onLoadStart() {
+        maskTimer = window.setTimeout(function () {
+            maskLayer.show();
+            progress.start();
+        }, 500);
     }
 
-    function onShowFail(data) {
-        var hotId = data.hotId;
+    function onLoading(num) {
+        progress.update(num);
+    }
+
+    function onLoadEnd(spaceId) {
+        window.clearTimeout(maskTimer);
+        maskLayer.hide();
+        progress.end();
+        $('#space_id_' + spaceId).addClass('active').siblings('li').removeClass('active');
+    }
+
+    function onLoadFail(data) {
+        /*var hotId = data.hotId;
         if (confirm('目标空间不存在，删除该无效热点？')) {
             $.get('delete_hot', {
                 id: hotId
@@ -172,14 +183,7 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
                     ui.$hotTitle.hide();
                 }
             });
-        }
-    }
-
-    // 场景切换完毕
-    function onShown(spaceId) {
-        maskLayer.hide();
-        progress.end();
-        $('#space_id_' + spaceId).addClass('active').siblings('li').removeClass('active');
+        }*/
     }
 
     var switchSpaceDelayer = null;
@@ -197,7 +201,7 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
             switchSpaceDelayer = window.setTimeout(function () {
                 window.clearTimeout(switchSpaceDelayer);
                 switchSpaceDelayer = null;
-                panorama.showSpace(hotInfo.to, hotInfo.id);
+                panorama.loadSpace(hotInfo.to, hotInfo.id);
             }, 2000)
         }
     }
@@ -256,7 +260,7 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
 
         // 切换场景
         $gallery.on('click', 'li', function () {
-            panorama.showSpace($(this).data('index'));
+            panorama.loadSpace($(this).data('index'));
             return false;
         });
 

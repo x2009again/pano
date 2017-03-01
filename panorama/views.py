@@ -9,15 +9,6 @@ from collections import OrderedDict
 STATIC_PREFIX = '/static/panorama/'
 
 
-def index(request):
-    return HttpResponse(
-        '<a href="/panorama/view?scene_id=first">查看场景first</a><br/>'
-        '<a href="/panorama/edit?scene_id=first">编辑场景first</a><br/>'
-        '<a href="/panorama/view?scene_id=second">查看场景second</a><br/>'
-        '<a href="/panorama/edit?scene_id=second">编辑场景second</a><br/>'
-    )
-
-
 def test(request):
     return render_to_response('panorama/merge.html')
 
@@ -41,7 +32,7 @@ def init_scene(request):
     if scene_id:
         scene_filter = Scene.objects.filter(pk=scene_id)
         if not scene_filter.exists():
-            return JsonResponse({'success': False, 'err_msg': '不存在编号为%s的场景' % scene_id})
+            return JsonResponse({'success': False, 'err_msg': u'不存在编号为%s的场景' % scene_id})
         scene = scene_filter[0]
         scene_info = {
             'id': scene.id,
@@ -71,7 +62,7 @@ def init_scene(request):
     elif space_id:
         space_filter = Space.objects.filter(pk=space_id)
         if not space_filter.exists():
-            return JsonResponse({'success': False, 'err_msg': '不存在编号为%s的空间' % space_id})
+            return JsonResponse({'success': False, 'err_msg': u'不存在编号为%s的空间' % space_id})
         space = space_filter[0]
         scene_info = {'entry': space.id}
         space_list.append({
@@ -83,7 +74,7 @@ def init_scene(request):
             'create_time': timezone.localtime(space.create_time)
         })
     else:
-        return JsonResponse({'success': False, 'err_msg': '参数错误'})
+        return JsonResponse({'success': False, 'err_msg': u'参数错误'})
 
     seller = Seller.objects.get(pk=1)  # 假设登录用户id为1
     return JsonResponse({
@@ -110,7 +101,7 @@ def get_space(request):
     space_id = request.GET.get('space_id')
     space_filter = Space.objects.filter(pk=space_id)
     if not space_filter.exists():
-        return JsonResponse({'success': False, 'err_msg': '不存在编号为%s的空间' % space_id})
+        return JsonResponse({'success': False, 'err_msg': u'不存在编号为%s的空间' % space_id})
     space = space_filter[0]
     seller = space.creator
     textures = OrderedDict()
@@ -186,10 +177,11 @@ def update_scene(request):
     if not ordered_spaces:
         return JsonResponse({'success': False})
     ordered_spaces = json.loads(ordered_spaces)
+    #  TODO 会导致热点全部消失，待改进
     if scene_id:  # 场景已存在则更新
         scene_filter = Scene.objects.filter(pk=scene_id)
         if not scene_filter.exists():
-            return JsonResponse({'success': False, 'err_msg': '不存在场景：%s' % scene_id})
+            return JsonResponse({'success': False, 'err_msg': u'不存在场景：%s' % scene_id})
         scene = scene_filter[0]
         entry_id = scene.entry_id
         SceneSpace.objects.filter(scene=scene).delete()  # 先删除已经存在的关联
@@ -251,7 +243,7 @@ def add_hot(request):
     if not (space_id and scene_id and vx and vy and vz and to and ss_filter.exists()):
         return JsonResponse({
             'success': False,
-            'err_msg': '参数错误'
+            'err_msg': u'参数错误'
         })
     hot = Hot(
         scene_space=ss_filter[0],
@@ -283,13 +275,13 @@ def update_hot(request):
     if not to or not hot_id:
         return JsonResponse({
             'success': False,
-            'err_msg': '参数错误'
+            'err_msg': u'参数错误'
         })
     h_filter = Hot.objects.filter(pk=hot_id)
     if not h_filter.exists():
         return JsonResponse({
             'success': False,
-            'err_msg': '没有该热点'
+            'err_msg': u'没有该热点'
         })
     hot = h_filter[0]
     hot.title = title
@@ -315,7 +307,7 @@ def delete_hot(request):
     if not hot_id or not h_filter.exists():
         return JsonResponse({
             'success': False,
-            'err_msg': '参数错误'
+            'err_msg': u'参数错误'
         })
     h_filter.delete()
     return JsonResponse({'success': True})

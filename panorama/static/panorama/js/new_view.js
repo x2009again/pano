@@ -83,7 +83,7 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
         callbacks: {
             onLoad: onLoad,
             onCameraChanged: onCameraChanged,
-            onShowFail: onShowSpaceFail,
+            onLoadFail: onShowSpaceFail,
             onShown: onShown,
             onOverHot: onOverHot,
             onLeaveHot: onLeaveHot

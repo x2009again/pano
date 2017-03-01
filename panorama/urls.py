@@ -6,7 +6,6 @@ from . import views
 urlpatterns = [
     url(r'^merge', views.test, name='merge'),
 
-    url(r'^$', views.index, name='index'),
     url(r'^view$', views.view, name='view'),
     url(r'^edit$', views.edit, name='edit'),
     url(r'^check', views.check, name='check'),

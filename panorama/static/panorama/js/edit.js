@@ -73,29 +73,7 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
         spacesDict[spaceList[i].id] = spaceList[i];  // 空间集合
     }
 
-    var options = {
-        // container: container,
-        logoUrl: logoUrl,
-        hotImg: hotImg,
-        spacesDict: spacesDict,
-        entryId: entryId,
-        smoothStart: false,
-        autoPlay: true,
-        autoRotate: false,
-        debug: true,
-        fps: false,
-        callbacks: {
-            onLoad: onLoad,
-            onShowing: onShowing,
-            onShown: onShown,
-            onShowFail: onShowFail,
-            onAddingHot: onAddingHot,
-            onOverHot: onOverHot,
-            onLeaveHot: onLeaveHot,
-            onEditingHot: resetEditPanel
-        }
-    };
-    var panorama = new Panorama(options);
+    var maskTimer = null;  // 防止请求太快造成闪烁
     var rClickedPos = null;  // 右键点击的位置
     // var transform;
     var editingHotInfo;
@@ -103,7 +81,7 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
     /** ====================================== function ====================================== **/
 
     // 首屏载入成功
-    function onLoad() {
+    function onInit() {
         // 空间列表
         var lisHtml = '';
         for (var i = 0; i < spaceList.length; i++) {
@@ -121,6 +99,8 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
         $('#space_id_' + entryId).addClass('active');
         ui.$spaceBar.height(ui.$editSidebar.height() - 140);
 
+        // 隐藏loading动画
+        window.clearTimeout(maskTimer);
         progress.end();
         if (options.autoPlay) {
             maskLayer.hide(1000);
@@ -132,31 +112,38 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
         animate();
     }
 
-    function onShowing() {
-        maskLayer.show();
-        progress.start();
+
+    function onLoadStart() {
+        maskTimer = window.setTimeout(function () {
+            maskLayer.show();
+            progress.start();
+        }, 500);
     }
 
-    function onShowFail(data) {
-        var hotId = data.hotId;
-        if (confirm('目标空间不存在，删除该无效热点？')) {
-            $.get('delete_hot', {
-                id: hotId
-            }, function (data) {
-                if (data.success) {
-                    panorama.deleteHot(hotId);
-                    ui.$hotTitle.hide();
-                }
-            });
-        }
+    function onLoading(num) {
+        progress.update(num);
     }
 
-
-    // 场景切换完毕
-    function onShown(spaceId) {
-        $('#space_id_' + spaceId).addClass('active').siblings('li').removeClass('active');
+    function onLoadEnd(spaceId) {
+        window.clearTimeout(maskTimer);
         maskLayer.hide();
         progress.end();
+        $('#space_id_' + spaceId).addClass('active').siblings('li').removeClass('active');
+    }
+
+    function onLoadFail(data) {
+        console.log(data);
+        /*var hotId = data.hotId;
+         if (confirm('目标空间不存在，删除该无效热点？')) {
+         $.get('delete_hot', {
+         id: hotId
+         }, function (data) {
+         if (data.success) {
+         panorama.deleteHot(hotId);
+         ui.$hotTitle.hide();
+         }
+         });
+         }*/
     }
 
     // 鼠标在热点上时
@@ -184,7 +171,7 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
     }
 
     // 选中热点进入编辑时的回调
-    function resetEditPanel(hotInfo) {
+    function onEditingHot(hotInfo) {
         editingHotInfo = hotInfo;
         ui.$hotIdInput.val(editingHotInfo.id);// 热点ID
         ui.$hotTitleInput.val(editingHotInfo.title);  // 热点标题
@@ -192,7 +179,6 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
         var eleIdList = ui.$spaceBar.sortable('toArray');
         var spaceId, optionsHtml = '';
         var space = null;
-        // TODO 添加onchange事件，在to属性修改时修改sphere[1]的材质
         for (var i = 0; i < eleIdList.length; i++) {
             spaceId = eleIdList[i].replace('space_id_', '');
             space = spacesDict[spaceId];
@@ -321,6 +307,7 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
                         var space = tempSpaceDict[key];
                         saved = false;
                         panorama.addSpace(space);
+                        // 左侧列表增加
                         ui.$spaceBar.append('<li class="space-ele" id="space_id_' + key + '" data-index="' + key + '">' +
                             '<div class="ele-pic"><img src="' + space['thumb_url'] + '"/></div>' +
                             '<div class="ele-name"><input type="text" value=""/><span>' + space.name + '</span></div>' +
@@ -408,7 +395,7 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
 
         // 侧边栏切换场景
         ui.$spaceBar.on('click', 'li', function () {
-            panorama.showSpace($(this).data('index'));
+            panorama.loadSpace($(this).data('index'));
         });
 
         ui.$spaceBar.on('blur', 'input', function () {
@@ -597,34 +584,14 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
         // 热点编辑面板
         ui.$hotToInput.change(function () {
             console.log(this.value);
-            // transform = panorama.applyTransform({to: this.value, opacity: 0.5});
-            // ui.$opacityInput.val(transform.opacity);
+            if (this.value == panorama.spaceId) {
+                alert('不能与当前空间相同！');
+                return false;
+            }
+            panorama.changeToSpace(this.value);
         });
         ui.$editPanel.find('.range input').on('input', function () {
-            // switch (true) {
-            //     case this.id == 'input-opacity':
-            //         console.log(this.value);
-            //         transform = panorama.applyTransform({opacity: this.value});
-            //         break;
-            //     case this.id == 'input-rotation-x':
-            //         transform = panorama.applyTransform({rx: this.value});
-            //         break;
-            //     case this.id == 'input-rotation-y':
-            //         transform = panorama.applyTransform({ry: this.value});
-            //         break;
-            //     case this.id == 'input-rotation-z':
-            //         transform = panorama.applyTransform({rz: this.value});
-            //         break;
-            //     case this.id == 'input-position-x':
-            //         transform = panorama.applyTransform({px: this.value});
-            //         break;
-            //     case this.id == 'input-position-y':
-            //         transform = panorama.applyTransform({py: this.value});
-            //         break;
-            //     case this.id == 'input-position-z':
-            //         transform = panorama.applyTransform({pz: this.value});
-            //         break;
-            // }
+            console.log(this.value);
         }).dblclick(function () {
             var _this = this;
             $(this).attr('step', window.prompt('请输入步长', _this.step) || _this.step);
@@ -633,40 +600,11 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
         $('.range>i').click(function () {
             var inputEle = $(this).parent().find('input')[0];
             var val = $(this).text() == '-' ? parseFloat(inputEle.value) - parseFloat(inputEle.step) : parseFloat(inputEle.value) + parseFloat(inputEle.step);
-            // switch (true) {
-            //     case inputEle.id == 'input-opacity':
-            //         transform = panorama.applyTransform({opacity: parseFloat(val)});
-            //         inputEle.value = transform.opacity;
-            //         break;
-            //     case inputEle.id == 'input-rotation-x':
-            //         transform = panorama.applyTransform({rx: parseFloat(val)});
-            //         inputEle.value = transform.rx;
-            //         break;
-            //     case inputEle.id == 'input-rotation-y':
-            //         transform = panorama.applyTransform({ry: parseFloat(val)});
-            //         inputEle.value = transform.ry;
-            //         break;
-            //     case inputEle.id == 'input-rotation-z':
-            //         transform = panorama.applyTransform({rz: parseFloat(val)});
-            //         inputEle.value = transform.rz;
-            //         break;
-            //     case inputEle.id == 'input-position-x':
-            //         transform = panorama.applyTransform({px: parseFloat(val)});
-            //         inputEle.value = transform.px;
-            //         break;
-            //     case inputEle.id == 'input-position-y':
-            //         transform = panorama.applyTransform({py: parseFloat(val)});
-            //         inputEle.value = transform.py;
-            //         break;
-            //     case inputEle.id == 'input-position-z':
-            //         transform = panorama.applyTransform({pz: parseFloat(val)});
-            //         inputEle.value = transform.pz;
-            //         break;
-            // }
+
         });
 
         ui.$resetHotBtn.click(function () {
-            resetEditPanel(panorama.resetHot());
+            onEditingHot(panorama.resetHot());
         }).keydown(function (e) {
             e.preventDefault();
         });
@@ -674,23 +612,26 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
         ui.$saveHotBtn.click(function () {
             var hotTitle = ui.$hotTitleInput.val();
             var hotTo = ui.$hotToInput.val();
-            var transform = panorama.transform;
-            $.post('update_hot', {
-                id: editingHotInfo.id,
-                title: hotTitle,
-                to: hotTo,
-                px: transform.px,
-                py: transform.py,
-                pz: transform.pz
-            }, function (data) {
-                if (data.success) {
-                    panorama.saveHot(hotTo, hotTitle);
-                    ui.$editPanel.removeClass('show');
-                }
-            });
+            var transform = panorama.transformation;
+            console.log(editingHotInfo);
+            console.log(transform);
+            if (transform) {
+                $.post('update_hot', {
+                    id: editingHotInfo.id,
+                    title: hotTitle,
+                    to: hotTo,
+                    px: transform.px,
+                    py: transform.py,
+                    pz: transform.pz
+                }, function (data) {
+                    if (data.success) {
+                        panorama.saveHot(hotTo, hotTitle);
+                        ui.$editPanel.removeClass('show');
+                    }
+                });
+            }
         }).keydown(function (e) {
             e.preventDefault();
-
         });
 
         ui.$cancelEditBtn.click(function () {
@@ -785,6 +726,31 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
     }
     ui.$sellerName.val(seller.name || '');
     ui.$sellerDesc.val(seller.desc || '');
+
+    var options = {
+        // container: container,
+        logoUrl: logoUrl,
+        hotImg: hotImg,
+        spacesDict: spacesDict,
+        entryId: entryId,
+        smoothStart: false,
+        autoPlay: true,
+        autoRotate: false,
+        debug: true,
+        fps: false,
+        callbacks: {
+            onInit: onInit,
+            onLoadStart: onLoadStart,
+            onLoading: onLoading,
+            onLoadEnd: onLoadEnd,
+            onLoadFail: onLoadFail,
+            onAddingHot: onAddingHot,
+            onOverHot: onOverHot,
+            onLeaveHot: onLeaveHot,
+            onEditingHot: onEditingHot
+        }
+    };
+    var panorama = new Panorama(options);
 
     window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
 

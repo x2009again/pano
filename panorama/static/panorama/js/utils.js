@@ -127,7 +127,6 @@
             $progress.append($num);
             container.append($progress);
         }
-        console.log($num);
         this.start = function () {
             $progress.addClass('show');
             $num.html('');
@@ -146,9 +145,9 @@
 
     window.MaskLayer = function (ele) {
         var container = ele ? $(ele) : $(document.body);
-        var $mask = container.children('#mask-layer');
+        var $mask = container.children('#_mask-layer');
         if ($mask.length == 0) {
-            $mask = $('<div id="mask-layer" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:9;background-color:rgba(0,0,0,0.2);display:none;"></div>');
+            $mask = $('<div id="_mask-layer" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:9;background-color:rgba(0,0,0,0.2);display:none;"></div>');
             container.append($mask);
         }
         this.show = function (time) {

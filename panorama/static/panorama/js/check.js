@@ -3,8 +3,6 @@
  */
 
 "use strict";
-var container = document.getElementById('main');
-var progress = new Progress(container).start();
 $.ajax({
     url: 'get_space',
     type: "get",
@@ -54,6 +52,9 @@ $.ajax({
                 document.getElementById('seller-phone').innerHTML = seller['phone'] || '';
                 document.getElementById('seller-address').innerHTML = seller['address'] || '';
 
+                var container = document.getElementById('main');
+                var maskLayer = new MaskLayer(container).show();
+                var progress = new Progress(container).start();
                 var $container = $(container);
 
 
@@ -70,8 +71,9 @@ $.ajax({
                 }
                 textureEle.innerHTML = texturesHtml;
 
+                var maskTimer = null;  // 防止请求太快造成闪烁
                 // 首屏载入成功
-                var onLoad = function () {
+                var onInit = function () {
                     if (fromMobile) {
                         $('#operate-panel-mobile').show();
                         $('#operate-panel-PC').hide();
@@ -79,36 +81,32 @@ $.ajax({
                     $nav.addClass('show');
 
                     // 隐藏loading动画
+                    window.clearTimeout(maskTimer);
                     progress.end();
+                    maskLayer.hide();
                     animate();
                     bindUIListener();
                 };
 
-                var textureLoadProgress = function (num) {
+                var onLoadStart = function () {
+                    maskTimer = window.setTimeout(function () {
+                        maskLayer.show();
+                        progress.start();
+                    }, 500);
+                };
+
+                var onLoading = function (num) {
                     progress.update(num);
                 };
 
-                var $torch = $('#mini-map').find('i');
-
-                var onCameraChanged = function (cameraDirection) {
-                    // 弧度单位rad
-                    var cssText = 'translateY(-50%) rotate(' + Math.atan2(cameraDirection.x, -cameraDirection.z) + 'rad)';
-                    $torch.css({'transform': cssText});
-                };
-
-                var onShowing = function () {
-                    console.log('onShowing');
-                    progress.start();
-                };
-
-                var onShowFail = function (data) {
-                    alert(data.msg);
-                };
-
-                // 场景切换完毕
-                var onShown = function () {
-                    console.log('onShown');
+                var onLoadEnd = function () {
+                    window.clearTimeout(maskTimer);
+                    maskLayer.hide();
                     progress.end();
+                };
+
+                var onLoadFail = function (data) {
+                    alert(data.msg);
                 };
 
                 window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
@@ -284,12 +282,11 @@ $.ajax({
                     autoRotate: true,
                     fps: true,
                     callbacks: {
-                        onLoad: onLoad,
-                        textureLoadProgress: textureLoadProgress,
-                        onCameraChanged: onCameraChanged,
-                        onShowing: onShowing,
-                        onShown: onShown,
-                        onShowFail: onShowFail
+                        onInit: onInit,
+                        onLoadStart: onLoadStart,
+                        onLoading: onLoading,
+                        onLoadEnd: onLoadEnd,
+                        onLoadFail: onLoadFail
                     }
                 };
                 var panorama = new Panorama(options);

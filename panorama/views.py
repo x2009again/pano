@@ -34,6 +34,7 @@ def init_scene(request):
         if not scene_filter.exists():
             return JsonResponse({'success': False, 'err_msg': u'不存在编号为%s的场景' % scene_id})
         scene = scene_filter[0]
+        seller = scene.seller
         scene_info = {
             'id': scene.id,
             'title': scene.title,
@@ -64,6 +65,7 @@ def init_scene(request):
         if not space_filter.exists():
             return JsonResponse({'success': False, 'err_msg': u'不存在编号为%s的空间' % space_id})
         space = space_filter[0]
+        seller = space.creator
         scene_info = {'entry': space.id}
         space_list.append({
             'id': space.id,
@@ -76,7 +78,6 @@ def init_scene(request):
     else:
         return JsonResponse({'success': False, 'err_msg': u'参数错误'})
 
-    seller = Seller.objects.get(pk=1)  # 假设登录用户id为1
     return JsonResponse({
         'success': True,
         'scene': scene_info,

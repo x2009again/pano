@@ -3,6 +3,9 @@
  */
 
 "use strict";
+var container = document.getElementById('main');
+var maskLayer = new MaskLayer(container).show();
+var progress = new Progress(container).start();
 $.ajax({
     url: 'get_space',
     type: "get",
@@ -52,9 +55,6 @@ $.ajax({
                 document.getElementById('seller-phone').innerHTML = seller['phone'] || '';
                 document.getElementById('seller-address').innerHTML = seller['address'] || '';
 
-                var container = document.getElementById('main');
-                var maskLayer = new MaskLayer(container).show();
-                var progress = new Progress(container).start();
                 var $container = $(container);
 
 

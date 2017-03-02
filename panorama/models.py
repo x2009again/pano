@@ -20,6 +20,7 @@ class Space(models.Model):
     """
     空间
     """
+
     id = models.CharField(max_length=50, primary_key=True)
     name = models.CharField(max_length=20, null=False)
     url = models.CharField(max_length=100, null=False)

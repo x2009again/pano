@@ -3,6 +3,8 @@
  */
 
 "use strict";
+var maskLayer = new MaskLayer().show();
+var progress = new Progress().start();
 var sceneId = getParam('scene_id');
 $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, function (ret) {
     if (!ret.success) {
@@ -57,8 +59,6 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
 
     /** ====================================== variable ====================================== **/
 
-    var maskLayer = new MaskLayer().show();
-    var progress = new Progress().start();
     var sceneInfo = ret['scene'];
     var seller = ret['seller'];
     var spaceList = ret['spaceList'];
@@ -66,7 +66,7 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
     var saved = true;
     var sceneContainer = null;
     var logoUrl = seller.logo || '/panorama/img/logo.png';
-    var entryId = sceneInfo.entry;
+    var entryId = sceneInfo['entry'];
 
     var spacesDict = {};
     for (var i = 0; i < spaceList.length; i++) {
@@ -132,7 +132,6 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
     }
 
     function onLoadFail(data) {
-        console.log(data);
         /*var hotId = data.hotId;
          if (confirm('目标空间不存在，删除该无效热点？')) {
          $.get('delete_hot', {
@@ -478,7 +477,7 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
                 }, function (ret) {
                     if (ret.success) {
                         saved = true;
-                        entryId = ret.entry;
+                        entryId = ret['entry'];
                         alert('保存成功');
                     } else {
                         alert('保存失败！');
@@ -523,7 +522,7 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
                 spaces: JSON.stringify(spacesOfScene)
             }, function (ret) {
                 if (ret.success) {
-                    entryId = ret.entry;
+                    entryId = ret['entry'];
                     saved = true;
                     alert('保存成功');
                     if (ret.scene_id) {
@@ -600,7 +599,7 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
         $('.range>i').click(function () {
             var inputEle = $(this).parent().find('input')[0];
             var val = $(this).text() == '-' ? parseFloat(inputEle.value) - parseFloat(inputEle.step) : parseFloat(inputEle.value) + parseFloat(inputEle.step);
-
+            console.log(val);
         });
 
         ui.$resetHotBtn.click(function () {

@@ -3,6 +3,9 @@
  */
 
 "use strict";
+var container = document.getElementById('main');
+var maskLayer = new MaskLayer(container).show();
+var progress = new Progress(container).start();
 var sceneId = getParam('scene_id');
 $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, function (ret) {
     if (!ret.success) {
@@ -11,7 +14,7 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
     }
     var sceneInfo = ret['scene'];
     var seller = ret['seller'];
-    var spaceList = ret.spaceList;
+    var spaceList = ret['spaceList'];
     var spacesDict = {};
 
     var fromMobile = !fromPC();
@@ -35,7 +38,6 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
     var $vrOpen = $('#vr-open');
     var $vrClose = $('#vr-close');
     var $hotTitle = $('#hot-title');
-    var $display = $('#display'); // TODO 临时
     // var $scenePanel = $('#scene-panel');
 
     var i, j, k;  // 计数器
@@ -60,15 +62,12 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
     document.getElementById('seller-phone').innerHTML = seller['phone'] || '';
     document.getElementById('seller-address').innerHTML = seller['address'] || '';
     var hotImg = '/static/panorama/img/foot_step.png';
-    var entryId = sceneInfo.entry;
+    var entryId = sceneInfo['entry'];
 
     for (i = 0; i < spaceList.length; i++) {
         spacesDict[spaceList[i].id] = spaceList[i];  // 空间集合
     }
 
-    var container = document.getElementById('main');
-    var maskLayer = new MaskLayer(container).show();
-    var progress = new Progress(container).start();
     var $container = $(container);
     var options = {
         container: container,
@@ -174,16 +173,16 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
 
     function onLoadFail(data) {
         /*var hotId = data.hotId;
-        if (confirm('目标空间不存在，删除该无效热点？')) {
-            $.get('delete_hot', {
-                id: hotId
-            }, function (data) {
-                if (data.success) {
-                    panorama.deleteHot(hotId);
-                    ui.$hotTitle.hide();
-                }
-            });
-        }*/
+         if (confirm('目标空间不存在，删除该无效热点？')) {
+         $.get('delete_hot', {
+         id: hotId
+         }, function (data) {
+         if (data.success) {
+         panorama.deleteHot(hotId);
+         ui.$hotTitle.hide();
+         }
+         });
+         }*/
     }
 
     var switchSpaceDelayer = null;

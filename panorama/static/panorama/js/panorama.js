@@ -222,9 +222,10 @@
             logoMaterial = new THREE.MeshBasicMaterial({
                 map: textureLoader.load(options.logoUrl),
                 transparent: true,
-                side: THREE.DoubleSide
+                side: THREE.FrontSide
             });
             logoMesh = new THREE.Mesh(new THREE.PlaneGeometry(50, 50), logoMaterial);
+            logoMesh.scale.x = -1;
             logoMesh.position.set(0, -150, 0);
             logoMesh.lookAt(sceneCenter);
             sphere.add(logoMesh);

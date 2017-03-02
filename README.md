@@ -8,13 +8,14 @@
 # 运行
 - 安装python环境
 - 修改settings.py中的DATABASES项为mysql或sqlite3，前者需要安装并配置自己的账号密码
-- 在数据库中创建新的schema名为panorama
-- 生成生成migration文件：python manage.py makemigrations panorama
+- 如果使用mysql请在数据库中创建新的schema名为panorama
+- 生成migration文件：python manage.py makemigrations panorama
 - 执行migration：python manage.py migrate
 - 初始化数据：manage.py loaddata init_panorama.json
 - 启动django：python manage.py runserver 0.0.0.0:8000
-- 访问查看页面：http://localhost:8000/panorama/view?scene_id=first
-- 访问编辑页面：http://localhost:8000/panorama/edit?scene_id=first
+- 访问主页：http://localhost:8000
+- 访问查看页面：http://localhost:8000/panorama/view?scene_id=second
+- 访问编辑页面：http://localhost:8000/panorama/edit?scene_id=second
 - 访问单空间材质切换页面：http://localhost:8000/panorama/check?space_id=23
 
 # panorama.js插件接口列表：

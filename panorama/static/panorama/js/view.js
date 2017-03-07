@@ -92,7 +92,6 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
     };
 
     // 首屏载入成功
-    var maskTimer = null;  // 防止请求太快造成闪烁
     var panorama = new Panorama(options);
 
     function onInit() {
@@ -134,7 +133,6 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
         $nav.addClass('show');
 
         // 隐藏loading动画
-        window.clearTimeout(maskTimer);
         progress.end();
         if (options.autoPlay) {
             maskLayer.hide();
@@ -154,10 +152,8 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
     }
 
     function onLoadStart() {
-        maskTimer = window.setTimeout(function () {
-            maskLayer.show();
-            progress.start();
-        }, 500);
+        maskLayer.show(1000);
+        progress.start();
     }
 
     function onLoading(num) {
@@ -165,24 +161,15 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
     }
 
     function onLoadEnd(spaceId) {
-        window.clearTimeout(maskTimer);
         maskLayer.hide();
         progress.end();
         $('#space_id_' + spaceId).addClass('active').siblings('li').removeClass('active');
     }
 
-    function onLoadFail(data) {
-        /*var hotId = data.hotId;
-         if (confirm('目标空间不存在，删除该无效热点？')) {
-         $.get('delete_hot', {
-         id: hotId
-         }, function (data) {
-         if (data.success) {
-         panorama.deleteHot(hotId);
-         ui.$hotTitle.hide();
-         }
-         });
-         }*/
+    function onLoadFail(msg) {
+        alert(msg);
+        maskLayer.hide();
+        progress.end();
     }
 
     var switchSpaceDelayer = null;
@@ -198,9 +185,9 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
         }
         if (panorama.walkMode && !switchSpaceDelayer) {
             switchSpaceDelayer = window.setTimeout(function () {
-                window.clearTimeout(switchSpaceDelayer);
                 switchSpaceDelayer = null;
                 panorama.loadSpace(hotInfo.to, hotInfo.id);
+                window.clearTimeout(switchSpaceDelayer);
             }, 2000)
         }
     }
@@ -250,7 +237,7 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
 
         // 播放操作
         $playBtn.click(function () {
-            maskLayer.hide(500);
+            maskLayer.hide();
             $playBtn.stop().fadeOut(500);
             panorama.play();
             $nav.addClass(fromMobile ? 'mobile-show' : 'show');

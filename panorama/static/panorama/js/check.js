@@ -22,7 +22,10 @@ $.ajax({
                 }
                 var spaceInfo = ret.data;
                 var seller = spaceInfo['seller'];
-                var textures = spaceInfo['textures'];
+                var area2texture = spaceInfo['area2texture'];
+                var groupList = spaceInfo['group_list'];
+                var urlList = spaceInfo['url_list'];
+                var entryCodes = spaceInfo['entry_codes'];
 
                 var fromMobile = !fromPC();
 
@@ -58,20 +61,33 @@ $.ajax({
                 var $container = $(container);
 
 
-                var textureEle = document.getElementById('texture');
+                var textureEle = document.getElementById('opt-panel');
                 var texturesHtml = '<ul>';
-                var list = null;
-                for (i = 0; i < textures.length; i++) {
-                    texturesHtml += '<li>' + textures[i]['category'] + '<ul>';
-                    list = textures[i]['list'];
-                    for (j = 0; j < list.length; j++) {
-                        texturesHtml += '<li data-url="' + list[j].url + '">' + list[j].label + '</li>';
+                var area2code = {};  // 记录每个areaCode对应的当前textureCode
+                var textures = null;
+
+                var entryTextures = entryCodes ? entryCodes.split(',').map(function (o) {
+                        return parseInt(o);
+                    }) : [];
+                Object.keys(area2texture).forEach(function (k) {
+                    texturesHtml += '<li class="area">' + area2texture[k]['area_label'] + '<ul data-code="' + k + '">';
+                    textures = area2texture[k]['textures'];
+                    for (i = 0; i < textures.length; i++) {
+                        var textureCode = textures[i].code;
+                        var textureClass = null;
+                        if (entryTextures.contains(textureCode)) {
+                            textureClass = 'texture show';
+                            area2code[k] = textureCode;
+                        } else {
+                            textureClass = 'texture';
+                        }
+                        console.log(textureCode);
+                        texturesHtml += '<li class="' + textureClass + '" data-code="' + textureCode + '">' + textures[i].label + '</li>';
                     }
                     texturesHtml += '</ul></li>';
-                }
+                });
                 textureEle.innerHTML = texturesHtml;
 
-                var maskTimer = null;  // 防止请求太快造成闪烁
                 // 首屏载入成功
                 var onInit = function () {
                     if (fromMobile) {
@@ -81,7 +97,6 @@ $.ajax({
                     $nav.addClass('show');
 
                     // 隐藏loading动画
-                    window.clearTimeout(maskTimer);
                     progress.end();
                     maskLayer.hide();
                     animate();
@@ -89,10 +104,8 @@ $.ajax({
                 };
 
                 var onLoadStart = function () {
-                    maskTimer = window.setTimeout(function () {
-                        maskLayer.show();
-                        progress.start();
-                    }, 500);
+                    maskLayer.show(1000);
+                    progress.start();
                 };
 
                 var onLoading = function (num) {
@@ -100,13 +113,14 @@ $.ajax({
                 };
 
                 var onLoadEnd = function () {
-                    window.clearTimeout(maskTimer);
                     maskLayer.hide();
                     progress.end();
                 };
 
-                var onLoadFail = function (data) {
-                    alert(data.msg);
+                var onLoadFail = function (msg) {
+                    alert(msg);
+                    maskLayer.hide();
+                    progress.end();
                 };
 
                 window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
@@ -117,13 +131,33 @@ $.ajax({
 
                 var bindUIListener = function () {
 
-                    $('#texture').on('click', 'li', function () {
-                        var textureUrl = $(this).data('url');
+                    $('.area').click(function () {
+                        $(this).toggleClass('show').siblings('li').removeClass('show');
+                    });
+
+                    $('.texture').click(function () {
+                        var textureCode = parseInt($(this).data('code'));
+                        var areaCode = parseInt($(this).parent().data('code'));
+                        area2code[areaCode] = textureCode;
+                        var group = [];
+                        Object.keys(area2code).forEach(function (key) {
+                            group.push(area2code[key]);
+                        });
+                        var textureUrl;
+                        for (i = 0; i < groupList.length; i++) {
+                            if (groupList[i].contains(group)) {
+                                textureUrl = urlList[i];
+                                console.log(urlList[i]);
+                                break;
+                            }
+                        }
                         if (textureUrl) {
                             panorama.changeTexture(textureUrl);
-                        } else {
                             $(this).toggleClass('show').siblings('li').removeClass('show');
+                        } else {
+                            alert('没有该组合');
                         }
+
                     });
 
                     $hideBtn.click(function () {
@@ -213,11 +247,11 @@ $.ajax({
                 };
 
                 // 监听设备方向变化（用于判断是否有方向传感器）
-                window.addEventListener('deviceorientation', setOrientationControls);
                 var setOrientationControls = function (e) {
                     e.alpha !== null && e.beta !== null && e.gamma !== null && (hasOSensor = true);
                     window.removeEventListener('deviceorientation', setOrientationControls);  // 移除监听器
                 };
+                window.addEventListener('deviceorientation', setOrientationControls);
 
                 // 监听横竖屏变化
                 window.addEventListener('orientationchange', function () {

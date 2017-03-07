@@ -2,14 +2,11 @@
  * Created by CK on 2016/8/26.
  */
 ;
-/**
- * @namespace e.touches
- * @namespace e.changedTouches
- * @namespace space.cache_url
- * @namespace xhr.loaded
- */
+/** @namespace xhr.loaded */
+/** @namespace e.touches */
+/** @namespace e.changedTouches */
 // TODO 移除所有jquery依赖
-// TODO 焦点在input上时阻止键盘旋转
+// FIXME bug：焦点在input上时禁止键盘控制场景
 (function (window, document, $, undefined) {
     "use strict";
 
@@ -30,6 +27,7 @@
 
     var intersects = [];  // 鼠标与热点的交点
     var selectedHot = null;  // 鼠标按下的热点
+    var selectedHotPos = null;  // 鼠标按下的热点
     var targetHotId = null;  // 目标热点的ID
 
     var hotLeaved = true;
@@ -85,7 +83,7 @@
         /**
          * 场景跳转失败回调
          */
-        onLoadFail: function (code, data) {
+        onLoadFail: function (msg, data) {
         },
         /**
          * 选择器在热点上移动时
@@ -149,7 +147,7 @@
         imageLoader.setCrossOrigin('anonymous');
 
         scene = new THREE.Scene();
-        transformScene = new THREE.Scene();  // TODO 用于转换
+        transformScene = new THREE.Scene();  // 转换场景
         camera = new THREE.PerspectiveCamera(cameraFov, STAGE_WIDTH / STAGE_HEIGHT, 0.1, 1000);
 
         raycaster = new THREE.Raycaster();
@@ -201,7 +199,7 @@
             scene.add(sphere);
 
             transformSphere = sphere.clone();
-            transformScene.add(transformSphere);  // TODO 用于场景转换
+            transformScene.add(transformSphere);  // 场景转换球
 
             if (haveHot) {
                 hotSpotMat = new THREE.MeshBasicMaterial({
@@ -253,11 +251,13 @@
         }
     };
 
+    var _lockScene = true;
     /**
      * 开始播放场景
      */
     Panorama.prototype.play = function () {
 
+        _lockScene = true;
         var scope = this;
         renderOver = function () {
             if (options.smoothStart) {
@@ -279,6 +279,7 @@
                         camera.rotation.x = this.rotateX;
                     }).onComplete(function () {
                     camera.position.set(0, 0, 0.1);
+                    _lockScene = false;
                     initControls();
                 }).delay(500).start();
 
@@ -291,6 +292,7 @@
                         }).delay(1000).start();
                 }
             } else {
+                _lockScene = false;
                 initControls();
             }
         };
@@ -388,7 +390,8 @@
      * @param beforeTransform 材质加载完成后的回调
      */
     Panorama.prototype.loadSpace = function (toSpaceId, hotId, beforeTransform) {
-        if (initialized && (transferring || _editingHot || currentSpace.id == toSpaceId)) return false;
+        if (initialized && (_lockScene || transferring || _editingHot || currentSpace.id == toSpaceId)) return false;
+        _lockScene = true;
         var hotInfo = hotId && currentSpace.hotInfoDict[hotId];
         var toSpace = hotInfo && hotInfo.to ? _spacesDict[hotInfo.to] : _spacesDict[toSpaceId];
         if (!toSpace) {
@@ -428,7 +431,7 @@
             },
             function (xhr) {
                 console.error('载入场景失败！');
-                callbacks.onLoadFail(xhr);
+                callbacks.onLoadFail('载入场景失败！', xhr);
             }
         );
     };
@@ -485,6 +488,7 @@
                     logoMesh.visible = true;
                     initHotSpots();
                     transferring = false;
+                    _lockScene = false;
                 });
             tween0.start();
             tween1.delay(500).start();
@@ -500,6 +504,7 @@
                 logoMesh.visible = true;
                 initHotSpots();
                 transferring = false;
+                _lockScene = false;
             }).start();
         }
 
@@ -529,7 +534,7 @@
             },
             function (xhr) {
                 console.error('载入场景失败！');
-                callbacks.onLoadFail(xhr);
+                callbacks.onLoadFail('载入场景失败！', xhr);
             }
         );
     };
@@ -572,7 +577,7 @@
             },
             function (xhr) {
                 console.error('载入场景失败！');
-                callbacks.onLoadFail(xhr);
+                callbacks.onLoadFail('载入场景失败！', xhr);
             }
         );
     };
@@ -685,21 +690,27 @@
 
         var targetHotInfo = currentSpace.hotInfoDict[targetHotId];
         var toSpace = _spacesDict[targetHotInfo.to];
-
-        sphere.material.opacity = 0.7;
-        transformSphere.material.opacity = 0.5;
-        if (first) {
-            transformSphere.material.map.needsUpdate = true;
-            transformSphere.material.map = sphere.material.map;
-        }
         imageLoader.load(
             toSpace.url,
             function (image) {
                 var toTexture = new THREE.Texture();
                 toTexture.image = image;
                 toTexture.needsUpdate = true;
-                callbacks.onLoadEnd(currentSpace.id);
+
+                sphere.material.opacity = 0.7;
+                transformSphere.material.opacity = 0.5;
+                if (first) {
+                    transformSphere.material.map.needsUpdate = true;
+                    transformSphere.material.map = sphere.material.map;
+                }
                 sphere.material.map = toTexture;
+
+                // 编辑热点时禁用控制器
+                orbitControls.enabled = false;
+                camera.lookAt(selectedHotPos);  // 设置相机朝向
+                // 重置transformSphere位置
+                transformSphere.position.set(targetHotInfo.px, targetHotInfo.py, targetHotInfo.pz);
+                callbacks.onLoadEnd(currentSpace.id);
             },
             function (xhr) {
                 var num = parseInt((xhr.loaded / xhr.total * 100));
@@ -708,14 +719,9 @@
             },
             function (xhr) {
                 console.error('载入场景失败！');
-                callbacks.onLoadFail(xhr);
+                callbacks.onLoadFail('载入场景失败！', xhr);
             }
         );
-
-        // TODO 设置相机朝向
-        // camera.lookAt(selectedHot.position);
-        // 重置transformSphere位置
-        transformSphere.position.set(targetHotInfo.px, targetHotInfo.py, targetHotInfo.pz);
         return targetHotInfo;
     };
 
@@ -782,7 +788,7 @@
                     tempHotSpot.visible = true;
                     tempHotSpot.material = hotSpot.material.clone();
                     hotPos = tempIntersects[0].point.clone();
-                    hotPos.setLength(radius - 10);  // TODO 抽取出
+                    hotPos.setLength(radius - 10);
                     tempHotSpot.position.set(
                         -hotPos.x,
                         hotPos.y,
@@ -801,15 +807,18 @@
     };
 
     var mouseDown = function ($e) {
-        clicking = true;
-        startPoint1 = {x: $e.pageX, y: $e.pageY};
+        if (!_lockScene) {
+            clickOrTap = true;
+            startPoint1 = {x: $e.pageX, y: $e.pageY};
+        }
     };
 
+    var clickOrTap = false;  // 是否为点击或触击操作
     var mouseMove = function ($e) {
-        if (!(transferring || $e.which == 3)) {
+        if (!(_lockScene || transferring || $e.which == 3)) {
             // 2px内认为没有拖动
-            if (clicking && ((Math.abs(parseInt(startPoint1.x) - parseInt($e.pageX)) > 2) || (Math.abs(parseInt(startPoint1.y) - parseInt($e.pageY)) > 2))) {
-                orbitControls.autoRotate = clicking = false;
+            if (clickOrTap && ((Math.abs(parseInt(startPoint1.x) - parseInt($e.pageX)) > 2) || (Math.abs(parseInt(startPoint1.y) - parseInt($e.pageY)) > 2))) {
+                orbitControls.autoRotate = clickOrTap = false;
             }
             if (_addingHot) {  // 开始添加热点
                 raycaster.setFromCamera(mousePos, camera);
@@ -840,10 +849,10 @@
                         selectedHot.material.color.set(0xffffff);
                     }
                     hotLeaved = false;
-                    !clicking && callbacks.onOverHot(currentSpace.hotInfoDict[selectedHot.hotId], {
+                    !clickOrTap && callbacks.onOverHot(currentSpace.hotInfoDict[selectedHot.hotId], {
                         x: $e.pageX,
                         y: $e.pageY
-                    });  // TODO 应该使用相对于容器的位置
+                    });
                 } else if (!hotLeaved) {
                     hotLeaved = true;  // onLeaveHot只执行一次
                     callbacks.onLeaveHot();
@@ -856,19 +865,19 @@
         }
     };
 
-    // TODO 增加右键事件回调
     var mouseUp = function ($e) {
-        if (clicking) {
+        if (!_lockScene && clickOrTap) {
             if (_addingHot) {  // 添加脚印
                 callbacks.onAddingHot({x: $e.pageX, y: $e.pageY});
             } else {
                 if (intersects.length > 0) {  // 单击热点
                     targetHotId = selectedHot.hotId;
-                    var beforeTransform = null;
                     if (options.debug && $e.which == 3) {  // debug模式下右击热点
+                        selectedHotPos = selectedHot.position;
                         this.editingHot = true;
+                    } else {
+                        this.loadSpace(null, targetHotId);
                     }
-                    this.loadSpace(null, targetHotId, beforeTransform);
                 } else if (spaceHots.length > 0) {  // 单击空白处
                     // hoverPoint = raycaster.intersectObjects([spheres[1]]);
                     // if (e.button != '2' && hoverPoint && hoverPoint.length > 0) {
@@ -891,7 +900,6 @@
         }
     };
 
-    // TODO 回弹效果
     var mouseWheel = function ($e) {
         var e = $e.originalEvent;
         var fovDelta;
@@ -906,10 +914,8 @@
             camera.updateProjectionMatrix();
         }
     };
-
-    var clicking = false;  // 是否点击了canvas
     var touchStart = function ($e) {
-        clicking = true;
+        clickOrTap = true;
         var e = $e.originalEvent;
         if (e.touches) {
             startPoint1.x = e.touches[0].clientX;
@@ -927,12 +933,11 @@
             var touch0X = e.touches[0].clientX;
             var touch0Y = e.touches[0].clientY;
             // 2px内认为没有拖动
-            if (clicking && ((Math.abs(parseInt(startPoint1.x) - parseInt(touch0X)) > 2) || (Math.abs(parseInt(startPoint1.y) - parseInt(touch0Y)) > 2))) {
+            if (clickOrTap && ((Math.abs(parseInt(startPoint1.x) - parseInt(touch0X)) > 2) || (Math.abs(parseInt(startPoint1.y) - parseInt(touch0Y)) > 2))) {
                 // 标为移动操作
-                orbitControls.autoRotate = clicking = false;
+                orbitControls.autoRotate = clickOrTap = false;
             }
             if (e.touches.length > 1) {  // 如果是双指操作
-                // TODO 回弹效果
                 var lastDistance = Math.sqrt(Math.pow(startPoint2.x - startPoint1.x, 2) + Math.pow(startPoint2.y - startPoint1.y, 2));
                 var currentDistance = Math.sqrt(Math.pow(e.touches[1].clientX - touch0X, 2) + Math.pow(e.touches[1].clientY - touch0Y, 2));
                 camera.fov = cameraFov + (lastDistance - currentDistance ) / 5;
@@ -943,7 +948,7 @@
         }
     };
     var touchEnd = function ($e) {
-        if (!_stereoMode && clicking) {
+        if (!_stereoMode && clickOrTap) {
             if (spaceHots.length > 0) {
                 var e = $e.originalEvent;
                 if (e.changedTouches && e.changedTouches.length > 0) {
@@ -952,12 +957,11 @@
                     raycaster.setFromCamera(mousePos, camera);
                     intersects = raycaster.intersectObjects(spaceHots);
                     if (intersects.length > 0) {// 触击热点
-                        this.showSpace(null, intersects[0].object.hotId);
+                        this.loadSpace(null, intersects[0].object.hotId);
                     } else if (spaceHots.length > 0) {  // 触击空白处
                         // alert('触击空白处');
                     }
                 }
-
             }
         }
         cameraFov = camera.fov;
@@ -979,7 +983,7 @@
                 selectedHot.material.color.set(0xffffff);
 
                 hotLeaved = false;
-                callbacks.onOverHot(currentSpace.hotInfoDict[selectedHot.hotId]);  // TODO 应该使用相对于容器的位置
+                callbacks.onOverHot(currentSpace.hotInfoDict[selectedHot.hotId]);
             } else if (!hotLeaved) {
                 hotLeaved = true;  // onLeaveHot只执行一次
                 callbacks.onLeaveHot();
@@ -1058,6 +1062,7 @@
             transformSphere.position.set(0, 0, 0);
             if (_editingHot) {  // 关闭
                 _editingHot = false;
+                orbitControls.enabled = true;  // 重新启用控制器
                 sphere.material.map.needsUpdate = true;
                 sphere.material.map = transformSphere.material.map;
                 for (i = 0; i < spaceHots.length; i++)spaceHots[i].visible = true;
@@ -1066,6 +1071,7 @@
             } else {  // 打开
                 for (i = 0; i < spaceHots.length; i++) spaceHots[i].visible = false;
                 _editingHot = true;
+                callbacks.onLoadStart();
                 var hotInfo = this.resetHot(true);
                 callbacks.onEditingHot(hotInfo);
             }
@@ -1075,7 +1081,6 @@
         }
     });
 
-    // transformation
     Object.defineProperty(Panorama.prototype, "transformation", {
         get: function () {
             return _editingHot ? {

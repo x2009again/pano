@@ -16,7 +16,7 @@
         "pk": 2,
         "fields": {
             "name": "\u9aa8\u5934\u793e",
-            "logo": "seller-logo/logo.png",
+            "logo": "seller-logo/wr.png",
             "phone": "0751-1234567",
             "address": "\u9713\u8679",
             "desc": "\u52a8\u6f2b",
@@ -27,11 +27,11 @@
         "model": "panorama.seller",
         "pk": 3,
         "fields": {
-            "name": "\u5409\u535c\u529b\u5de5\u4f5c\u5ba4",
-            "logo": "",
-            "phone": "0751-931744325",
-            "address": "\u4e1c\u4eac\u90fd\u5c0f\u91d1\u4e95\u5e02\u68b6\u91ce\u753a1\u4e01\u76ee4\u756a25\u53f7",
-            "desc": "\u76ee\u524d\u7ea6\u6709300\u540d\u5458\u5de5\uff0c\u7531\u5bfc\u6f14\u5bab\u5d0e\u9a8f\u4ee5\u53ca\u4ed6\u7684\u540c\u4e8b\u9ad8\u7551\u52cb\u3001\u94c3\u6728\u654f\u592b\u7b49\u4e00\u8d77\u7edf\u7b79",
+            "name": "\u6ed1\u7a3d\u5e01\u4ee3\u5237\u5de5\u4f5c\u5ba4",
+            "logo": "seller-logo/huaji.png",
+            "phone": "2582587758",
+            "address": "\u8fbd\u5b81\u7701\u5927\u8fde\u5e02\u897f\u5c97\u533a\u5927\u8fde\u9020\u8239\u5382",
+            "desc": "\u6700\u65e9\u7814\u7a76\u300c\u6ed1\u7a3d\u300d\u7684\u662f\u897f\u6c49\u53f2\u5b66\u5bb6\u53f8\u9a6c\u8fc1\uff0c\u300a\u53f2\u8bb0\u300b\u7b2c\u4e00\u767e\u4e8c\u5341\u516d\u5377\u5f53\u4e2d\u300a\u6ed1\u7a3d\u5217\u4f20\u300b\u662f\u4e13\u8bb0\u6ed1\u7a3d\u4eba\u7269\u7684\u7c7b\u4f20\uff0c\u9882\u626c\u5f53\u65f6\u4e00\u7c7b\u6ed1\u7a3d\u4eba\u7269\u300c\u4e0d\u6d41\u4e16\u4fd7\uff0c\u4e0d\u4e89\u52bf\u5229\u300d\u7684\u53ef\u8d35\u7cbe\u795e\uff0c\u53ca\u5176\u300c\u8c08\u8a00\u5fae\u4e2d\uff0c\u4ea6\u53ef\u4ee5\u89e3\u7eb7\u300d\u7684\u975e\u51e1\u8bbd\u8c0f\u624d\u80fd\u3002\r\n",
             "create_time": "2016-10-05T06:48:05.472Z"
         }
     },
@@ -41,7 +41,6 @@
         "fields": {
             "name": "\u7a7a\u95f4\u540d\u79f0\uff1a0",
             "url": "img/real/0.jpg",
-            "cache_url": "img/cache/0.jpg",
             "thumb_url": "img/thumb/0.jpg",
             "creator": 3,
             "create_time": "2016-10-05T06:48:05.472Z"
@@ -53,7 +52,6 @@
         "fields": {
             "name": "\u7a7a\u95f4\u540d\u79f0\uff1a1",
             "url": "img/real/1.jpg",
-            "cache_url": "img/cache/1.jpg",
             "thumb_url": "img/thumb/1.jpg",
             "creator": 3,
             "create_time": "2016-10-05T06:48:05.472Z"
@@ -65,7 +63,6 @@
         "fields": {
             "name": "\u7a7a\u95f4\u540d\u79f0\uff1a10",
             "url": "img/real/10.jpg",
-            "cache_url": "img/cache/10.jpg",
             "thumb_url": "img/thumb/10.jpg",
             "creator": 3,
             "create_time": "2016-10-05T06:48:05.472Z"
@@ -77,7 +74,6 @@
         "fields": {
             "name": "\u7a7a\u95f4\u540d\u79f0\uff1a11",
             "url": "img/real/11.jpg",
-            "cache_url": "img/cache/11.jpg",
             "thumb_url": "img/thumb/11.jpg",
             "creator": 3,
             "create_time": "2016-10-05T06:48:05.472Z"
@@ -89,7 +85,6 @@
         "fields": {
             "name": "\u7a7a\u95f4\u540d\u79f0\uff1a12",
             "url": "img/real/12.jpg",
-            "cache_url": "img/cache/12.jpg",
             "thumb_url": "img/thumb/12.jpg",
             "creator": 3,
             "create_time": "2016-10-05T06:48:05.472Z"
@@ -101,7 +96,6 @@
         "fields": {
             "name": "\u7a7a\u95f4\u540d\u79f0\uff1a13",
             "url": "img/real/13.jpg",
-            "cache_url": "img/cache/13.jpg",
             "thumb_url": "img/thumb/13.jpg",
             "creator": 3,
             "create_time": "2016-10-05T06:48:05.472Z"
@@ -113,7 +107,6 @@
         "fields": {
             "name": "\u7a7a\u95f4\u540d\u79f0\uff1a14",
             "url": "img/real/14.jpg",
-            "cache_url": "img/cache/14.jpg",
             "thumb_url": "img/thumb/14.jpg",
             "creator": 3,
             "create_time": "2016-10-05T06:48:05.472Z"
@@ -125,7 +118,6 @@
         "fields": {
             "name": "\u7a7a\u95f41",
             "url": "img/real/new_1.jpg",
-            "cache_url": "img/cache/new_1.jpg",
             "thumb_url": "img/thumb/new_1.jpg",
             "creator": 3,
             "create_time": "2016-10-05T06:48:05.472Z"
@@ -137,7 +129,6 @@
         "fields": {
             "name": "\u7a7a\u95f42",
             "url": "img/real/new_2.jpg",
-            "cache_url": "img/cache/new_2.jpg",
             "thumb_url": "img/thumb/new_2.jpg",
             "creator": 3,
             "create_time": "2016-10-05T06:48:05.472Z"
@@ -149,7 +140,6 @@
         "fields": {
             "name": "\u7a7a\u95f43",
             "url": "img/real/new_3.jpg",
-            "cache_url": "img/cache/new_3.jpg",
             "thumb_url": "img/thumb/new_3.jpg",
             "creator": 3,
             "create_time": "2016-10-05T06:48:05.472Z"
@@ -161,7 +151,6 @@
         "fields": {
             "name": "\u7a7a\u95f44",
             "url": "img/real/new_4.jpg",
-            "cache_url": "img/cache/new_4.jpg",
             "thumb_url": "img/thumb/new_4.jpg",
             "creator": 3,
             "create_time": "2016-10-05T06:48:05.472Z"
@@ -173,7 +162,6 @@
         "fields": {
             "name": "\u7a7a\u95f45",
             "url": "img/real/new_5.jpg",
-            "cache_url": "img/cache/new_5.jpg",
             "thumb_url": "img/thumb/new_5.jpg",
             "creator": 3,
             "create_time": "2016-10-05T06:48:05.472Z"
@@ -185,7 +173,6 @@
         "fields": {
             "name": "\u7a7a\u95f4\u540d\u79f0\uff1a2",
             "url": "img/real/2.jpg",
-            "cache_url": "img/cache/2.jpg",
             "thumb_url": "img/thumb/2.jpg",
             "creator": 3,
             "create_time": "2016-10-05T06:48:05.472Z"
@@ -197,7 +184,6 @@
         "fields": {
             "name": "\u7a7a\u95f46",
             "url": "img/real/new_6.jpg",
-            "cache_url": "img/cache/new_6.jpg",
             "thumb_url": "img/thumb/new_6.jpg",
             "creator": 3,
             "create_time": "2016-10-05T06:48:05.472Z"
@@ -209,7 +195,6 @@
         "fields": {
             "name": "\u7a7a\u95f47",
             "url": "img/real/new_7.jpg",
-            "cache_url": "img/cache/new_7.jpg",
             "thumb_url": "img/thumb/new_7.jpg",
             "creator": 3,
             "create_time": "2016-10-05T06:48:05.472Z"
@@ -221,7 +206,6 @@
         "fields": {
             "name": "\u7a7a\u95f48",
             "url": "img/real/new_8.jpg",
-            "cache_url": "img/cache/new_8.jpg",
             "thumb_url": "img/thumb/new_8.jpg",
             "creator": 3,
             "create_time": "2016-10-05T06:48:05.472Z"
@@ -233,7 +217,6 @@
         "fields": {
             "name": "\u5de5\u4e1a\u00b7\u7075\u611f\u6e90\u5730(HTC\u7248)",
             "url": "img/real/23.jpg",
-            "cache_url": "img/cache/23.jpg",
             "thumb_url": "img/thumb/23.jpg",
             "creator": 3,
             "create_time": "2017-02-20T06:48:05.472Z"
@@ -245,8 +228,18 @@
         "fields": {
             "name": "\u4e00\u54c1VR\u5168\u666f\u66f4\u6362\u6750\u8d28\u6848\u4f8b",
             "url": "img/real/24.jpg",
-            "cache_url": null,
             "thumb_url": "img/thumb/24.jpg",
+            "creator": 1,
+            "create_time": "2016-10-05T06:48:05.472Z"
+        }
+    },
+    {
+        "model": "panorama.space",
+        "pk": "25",
+        "fields": {
+            "name": "\u4e00\u54c1VR\u5168\u666f\u66f4\u6362\u6750\u8d28\u6848\u4f8b",
+            "url": "img/real/25.jpg",
+            "thumb_url": "img/thumb/25.jpg",
             "creator": 1,
             "create_time": "2016-10-05T06:48:05.472Z"
         }
@@ -257,7 +250,6 @@
         "fields": {
             "name": "\u7a7a\u95f4\u540d\u79f0\uff1a5",
             "url": "img/real/5.jpg",
-            "cache_url": "img/cache/5.jpg",
             "thumb_url": "img/thumb/5.jpg",
             "creator": 3,
             "create_time": "2016-10-05T06:48:05.472Z"
@@ -269,7 +261,6 @@
         "fields": {
             "name": "\u7a7a\u95f4\u540d\u79f0\uff1a6",
             "url": "img/real/6.jpg",
-            "cache_url": "img/cache/6.jpg",
             "thumb_url": "img/thumb/6.jpg",
             "creator": 3,
             "create_time": "2016-10-05T06:48:05.472Z"
@@ -281,7 +272,6 @@
         "fields": {
             "name": "\u7a7a\u95f4\u540d\u79f0\uff1a7",
             "url": "img/real/7.jpg",
-            "cache_url": "img/cache/7.jpg",
             "thumb_url": "img/thumb/7.jpg",
             "creator": 3,
             "create_time": "2016-10-05T06:48:05.472Z"
@@ -293,7 +283,6 @@
         "fields": {
             "name": "\u7a7a\u95f4\u540d\u79f0\uff1a8",
             "url": "img/real/8.jpg",
-            "cache_url": "img/cache/8.jpg",
             "thumb_url": "img/thumb/8.jpg",
             "creator": 3,
             "create_time": "2016-10-05T06:48:05.472Z"
@@ -305,190 +294,9 @@
         "fields": {
             "name": "\u7a7a\u95f4\u540d\u79f0\uff1a9",
             "url": "img/real/9.jpg",
-            "cache_url": "img/cache/9.jpg",
             "thumb_url": "img/thumb/9.jpg",
             "creator": 3,
             "create_time": "2016-10-05T06:48:05.472Z"
-        }
-    },
-    {
-        "model": "panorama.texture",
-        "pk": 1,
-        "fields": {
-            "category": 1,
-            "url": "img/real/23_1.jpg",
-            "label": "\u513f\u7ae5\u7cfb\u5217241",
-            "space": "23"
-        }
-    },
-    {
-        "model": "panorama.texture",
-        "pk": 2,
-        "fields": {
-            "category": 1,
-            "url": "img/real/23_2.jpg",
-            "label": "\u6b27\u5f0f\u7cfb\u5217107",
-            "space": "23"
-        }
-    },
-    {
-        "model": "panorama.texture",
-        "pk": 3,
-        "fields": {
-            "category": 1,
-            "url": "img/real/23_3.jpg",
-            "label": "\u73b0\u4ee3\u7cfb\u5217809",
-            "space": "23"
-        }
-    },
-    {
-        "model": "panorama.texture",
-        "pk": 4,
-        "fields": {
-            "category": 1,
-            "url": "img/real/23_4.jpg",
-            "label": "\u9a91\u58eb\u98ce\u83035CHI",
-            "space": "23"
-        }
-    },
-    {
-        "model": "panorama.texture",
-        "pk": 5,
-        "fields": {
-            "category": 2,
-            "url": "img/real/23_5.jpg",
-            "label": "\u5c71\u6838\u6843S-46",
-            "space": "23"
-        }
-    },
-    {
-        "model": "panorama.texture",
-        "pk": 6,
-        "fields": {
-            "category": 2,
-            "url": "img/real/23_6.jpg",
-            "label": "\u592a\u7a7a\u6f2b\u6b65JS8278",
-            "space": "23"
-        }
-    },
-    {
-        "model": "panorama.texture",
-        "pk": 7,
-        "fields": {
-            "category": 2,
-            "url": "img/real/23_7.jpg",
-            "label": "\u73b0\u4ee3\u7cfb\u5217167",
-            "space": "23"
-        }
-    },
-    {
-        "model": "panorama.texture",
-        "pk": 8,
-        "fields": {
-            "category": 3,
-            "url": "img/real/23_8.jpg",
-            "label": "\u901a\u4f53\u7816",
-            "space": "23"
-        }
-    },
-    {
-        "model": "panorama.texture",
-        "pk": 9,
-        "fields": {
-            "category": 3,
-            "url": "img/real/23_9.jpg",
-            "label": "\u91c9\u9762\u7816",
-            "space": "23"
-        }
-    },
-    {
-        "model": "panorama.texture",
-        "pk": 10,
-        "fields": {
-            "category": 4,
-            "url": "img/real/23_10.jpg",
-            "label": "\u6728\u9970\u9762",
-            "space": "23"
-        }
-    },
-    {
-        "model": "panorama.texture",
-        "pk": 11,
-        "fields": {
-            "category": 4,
-            "url": "img/real/23_11.jpg",
-            "label": "\u94dd\u6263\u677f",
-            "space": "23"
-        }
-    },
-    {
-        "model": "panorama.texture",
-        "pk": 12,
-        "fields": {
-            "category": 2,
-            "url": "img/real/24_1.jpg",
-            "label": "\u6728\u5730\u677f",
-            "space": "24"
-        }
-    },
-    {
-        "model": "panorama.texture",
-        "pk": 13,
-        "fields": {
-            "category": 3,
-            "url": "img/real/24.jpg",
-            "label": "\u767d\u5730\u7816",
-            "space": "24"
-        }
-    },
-    {
-        "model": "panorama.texture",
-        "pk": 14,
-        "fields": {
-            "category": 3,
-            "url": "img/real/24_2.jpg",
-            "label": "\u7c73\u8272\u5730\u7816",
-            "space": "24"
-        }
-    },
-    {
-        "model": "panorama.texture",
-        "pk": 16,
-        "fields": {
-            "category": 1,
-            "url": "img/real/24_1.jpg",
-            "label": "\u84dd\u8272\u7b80\u6b27\u5899\u7eb8",
-            "space": "24"
-        }
-    },
-    {
-        "model": "panorama.texture",
-        "pk": 17,
-        "fields": {
-            "category": 1,
-            "url": "img/real/24.jpg",
-            "label": "\u84dd\u8272ab\u5899\u7eb8",
-            "space": "24"
-        }
-    },
-    {
-        "model": "panorama.texture",
-        "pk": 18,
-        "fields": {
-            "category": 1,
-            "url": "img/real/24_2.jpg",
-            "label": "\u6696\u8272\u6b27\u5f0f\u5899\u7eb8",
-            "space": "24"
-        }
-    },
-    {
-        "model": "panorama.texture",
-        "pk": 19,
-        "fields": {
-            "category": 1,
-            "url": "img/real/24_3.jpg",
-            "label": "\u6761\u7eb9\u58c1\u7eb8",
-            "space": "24"
         }
     },
     {
@@ -645,7 +453,7 @@
         "fields": {
             "scene": "second",
             "space": "15",
-            "space_name": "",
+            "space_name": null,
             "ordinal": 6
         }
     },
@@ -655,7 +463,7 @@
         "fields": {
             "scene": "second",
             "space": "16",
-            "space_name": "",
+            "space_name": null,
             "ordinal": 3
         }
     },
@@ -665,7 +473,7 @@
         "fields": {
             "scene": "second",
             "space": "17",
-            "space_name": "",
+            "space_name": null,
             "ordinal": 2
         }
     },
@@ -675,7 +483,7 @@
         "fields": {
             "scene": "second",
             "space": "18",
-            "space_name": "",
+            "space_name": null,
             "ordinal": 4
         }
     },
@@ -685,7 +493,7 @@
         "fields": {
             "scene": "second",
             "space": "19",
-            "space_name": "",
+            "space_name": null,
             "ordinal": 5
         }
     },
@@ -695,7 +503,7 @@
         "fields": {
             "scene": "second",
             "space": "20",
-            "space_name": "",
+            "space_name": null,
             "ordinal": 8
         }
     },
@@ -705,7 +513,7 @@
         "fields": {
             "scene": "second",
             "space": "21",
-            "space_name": "",
+            "space_name": null,
             "ordinal": 7
         }
     },
@@ -715,7 +523,7 @@
         "fields": {
             "scene": "second",
             "space": "22",
-            "space_name": "",
+            "space_name": null,
             "ordinal": 1
         }
     },
@@ -957,6 +765,446 @@
             "title": "\u8fdb\u5165\u7a7a\u95f42",
             "vector": "{\"vx\": 2.4612, \"vy\": -11.9136, \"vz\": 43.3245}",
             "transition": "{\"pz\": -115.7217, \"to\": \"16\", \"px\": -22.9009, \"py\": -1.3234}"
+        }
+    },
+    {
+        "model": "panorama.texture",
+        "pk": 1,
+        "fields": {
+            "area": 1,
+            "label": "\u84dd\u8272\u6697\u7eb9\u58c1\u7eb8"
+        }
+    },
+    {
+        "model": "panorama.texture",
+        "pk": 2,
+        "fields": {
+            "area": 1,
+            "label": "\u84dd\u8272\u7b80\u6b27\u58c1\u7eb8"
+        }
+    },
+    {
+        "model": "panorama.texture",
+        "pk": 3,
+        "fields": {
+            "area": 1,
+            "label": "\u84dd\u8272\u6761\u7eb9\u58c1\u7eb8"
+        }
+    },
+    {
+        "model": "panorama.texture",
+        "pk": 4,
+        "fields": {
+            "area": 1,
+            "label": "\u6696\u8272\u58c1\u7eb8"
+        }
+    },
+    {
+        "model": "panorama.texture",
+        "pk": 5,
+        "fields": {
+            "area": 1,
+            "label": "\u82b1\u58c1\u7eb8"
+        }
+    },
+    {
+        "model": "panorama.texture",
+        "pk": 6,
+        "fields": {
+            "area": 1,
+            "label": "\u7d20\u5496\u8272\u58c1\u7eb8"
+        }
+    },
+    {
+        "model": "panorama.texture",
+        "pk": 7,
+        "fields": {
+            "area": 1,
+            "label": "\u7d20\u84dd\u8272\u58c1\u7eb8"
+        }
+    },
+    {
+        "model": "panorama.texture",
+        "pk": 8,
+        "fields": {
+            "area": 1,
+            "label": "\u7d20\u8272\u58c1\u7eb8"
+        }
+    },
+    {
+        "model": "panorama.texture",
+        "pk": 9,
+        "fields": {
+            "area": 2,
+            "label": "\u7235\u58eb\u767d\u5730\u7816"
+        }
+    },
+    {
+        "model": "panorama.texture",
+        "pk": 10,
+        "fields": {
+            "area": 2,
+            "label": "\u7c73\u8272\u5730\u7816"
+        }
+    },
+    {
+        "model": "panorama.texture",
+        "pk": 11,
+        "fields": {
+            "area": 2,
+            "label": "\u6728\u5730\u677f"
+        }
+    },
+    {
+        "model": "panorama.texture",
+        "pk": 12,
+        "fields": {
+            "area": 2,
+            "label": "\u7389\u77f3\u5730\u7816"
+        }
+    },
+    {
+        "model": "panorama.texture",
+        "pk": 13,
+        "fields": {
+            "area": 2,
+            "label": "\u4eff\u53e4\u7816"
+        }
+    },
+    {
+        "model": "panorama.texture",
+        "pk": 14,
+        "fields": {
+            "area": 1,
+            "label": "\u82b1\u8272\u58c1\u7eb8"
+        }
+    },
+    {
+        "model": "panorama.texture",
+        "pk": 15,
+        "fields": {
+            "area": 1,
+            "label": "\u7d20\u84dd\u8272\u58c1\u7eb8"
+        }
+    },
+    {
+        "model": "panorama.texturegroup",
+        "pk": 1,
+        "fields": {
+            "codes": "1,9",
+            "url": "img/real/24_1.jpg",
+            "entry": true,
+            "space": "24"
+        }
+    },
+    {
+        "model": "panorama.texturegroup",
+        "pk": 2,
+        "fields": {
+            "codes": "2,9",
+            "url": "img/real/24_2.jpg",
+            "entry": false,
+            "space": "24"
+        }
+    },
+    {
+        "model": "panorama.texturegroup",
+        "pk": 3,
+        "fields": {
+            "codes": "3,9",
+            "url": "img/real/24_3.jpg",
+            "entry": false,
+            "space": "24"
+        }
+    },
+    {
+        "model": "panorama.texturegroup",
+        "pk": 4,
+        "fields": {
+            "codes": "4,9",
+            "url": "img/real/24_4.jpg",
+            "entry": false,
+            "space": "24"
+        }
+    },
+    {
+        "model": "panorama.texturegroup",
+        "pk": 5,
+        "fields": {
+            "codes": "1,10",
+            "url": "img/real/24_5.jpg",
+            "entry": false,
+            "space": "24"
+        }
+    },
+    {
+        "model": "panorama.texturegroup",
+        "pk": 6,
+        "fields": {
+            "codes": "2,10",
+            "url": "img/real/24_6.jpg",
+            "entry": false,
+            "space": "24"
+        }
+    },
+    {
+        "model": "panorama.texturegroup",
+        "pk": 7,
+        "fields": {
+            "codes": "3,10",
+            "url": "img/real/24_7.jpg",
+            "entry": false,
+            "space": "24"
+        }
+    },
+    {
+        "model": "panorama.texturegroup",
+        "pk": 8,
+        "fields": {
+            "codes": "4,10",
+            "url": "img/real/24_8.jpg",
+            "entry": false,
+            "space": "24"
+        }
+    },
+    {
+        "model": "panorama.texturegroup",
+        "pk": 9,
+        "fields": {
+            "codes": "1,11",
+            "url": "img/real/24_9.jpg",
+            "entry": false,
+            "space": "24"
+        }
+    },
+    {
+        "model": "panorama.texturegroup",
+        "pk": 10,
+        "fields": {
+            "codes": "2,11",
+            "url": "img/real/24_10.jpg",
+            "entry": false,
+            "space": "24"
+        }
+    },
+    {
+        "model": "panorama.texturegroup",
+        "pk": 11,
+        "fields": {
+            "codes": "3,11",
+            "url": "img/real/24_11.jpg",
+            "entry": false,
+            "space": "24"
+        }
+    },
+    {
+        "model": "panorama.texturegroup",
+        "pk": 12,
+        "fields": {
+            "codes": "4,11",
+            "url": "img/real/24_12.jpg",
+            "entry": false,
+            "space": "24"
+        }
+    },
+    {
+        "model": "panorama.texturegroup",
+        "pk": 13,
+        "fields": {
+            "codes": "1,12",
+            "url": "img/real/24_13.jpg",
+            "entry": false,
+            "space": "24"
+        }
+    },
+    {
+        "model": "panorama.texturegroup",
+        "pk": 14,
+        "fields": {
+            "codes": "2,12",
+            "url": "img/real/24_14.jpg",
+            "entry": false,
+            "space": "24"
+        }
+    },
+    {
+        "model": "panorama.texturegroup",
+        "pk": 15,
+        "fields": {
+            "codes": "3,12",
+            "url": "img/real/24_15.jpg",
+            "entry": false,
+            "space": "24"
+        }
+    },
+    {
+        "model": "panorama.texturegroup",
+        "pk": 16,
+        "fields": {
+            "codes": "4,12",
+            "url": "img/real/24_16.jpg",
+            "entry": false,
+            "space": "24"
+        }
+    },
+    {
+        "model": "panorama.texturegroup",
+        "pk": 17,
+        "fields": {
+            "codes": "13,14",
+            "url": "img/real/25_1.jpg",
+            "entry": true,
+            "space": "25"
+        }
+    },
+    {
+        "model": "panorama.texturegroup",
+        "pk": 18,
+        "fields": {
+            "codes": "13,6",
+            "url": "img/real/25_2.jpg",
+            "entry": false,
+            "space": "25"
+        }
+    },
+    {
+        "model": "panorama.texturegroup",
+        "pk": 19,
+        "fields": {
+            "codes": "13,15",
+            "url": "img/real/25_3.jpg",
+            "entry": false,
+            "space": "25"
+        }
+    },
+    {
+        "model": "panorama.texturegroup",
+        "pk": 20,
+        "fields": {
+            "codes": "13,8",
+            "url": "img/real/25_4.jpg",
+            "entry": false,
+            "space": "25"
+        }
+    },
+    {
+        "model": "panorama.texturegroup",
+        "pk": 21,
+        "fields": {
+            "codes": "10,14",
+            "url": "img/real/25_5.jpg",
+            "entry": false,
+            "space": "25"
+        }
+    },
+    {
+        "model": "panorama.texturegroup",
+        "pk": 22,
+        "fields": {
+            "codes": "10,6",
+            "url": "img/real/25_6.jpg",
+            "entry": false,
+            "space": "25"
+        }
+    },
+    {
+        "model": "panorama.texturegroup",
+        "pk": 23,
+        "fields": {
+            "codes": "10,15",
+            "url": "img/real/25_7.jpg",
+            "entry": false,
+            "space": "25"
+        }
+    },
+    {
+        "model": "panorama.texturegroup",
+        "pk": 24,
+        "fields": {
+            "codes": "10,8",
+            "url": "img/real/25_8.jpg",
+            "entry": false,
+            "space": "25"
+        }
+    },
+    {
+        "model": "panorama.texturegroup",
+        "pk": 25,
+        "fields": {
+            "codes": "11,14",
+            "url": "img/real/25_9.jpg",
+            "entry": false,
+            "space": "25"
+        }
+    },
+    {
+        "model": "panorama.texturegroup",
+        "pk": 26,
+        "fields": {
+            "codes": "11,6",
+            "url": "img/real/25_10.jpg",
+            "entry": false,
+            "space": "25"
+        }
+    },
+    {
+        "model": "panorama.texturegroup",
+        "pk": 27,
+        "fields": {
+            "codes": "11,15",
+            "url": "img/real/25_11.jpg",
+            "entry": false,
+            "space": "25"
+        }
+    },
+    {
+        "model": "panorama.texturegroup",
+        "pk": 28,
+        "fields": {
+            "codes": "11,8",
+            "url": "img/real/25_12.jpg",
+            "entry": false,
+            "space": "25"
+        }
+    },
+    {
+        "model": "panorama.texturegroup",
+        "pk": 29,
+        "fields": {
+            "codes": "12,14",
+            "url": "img/real/25_13.jpg",
+            "entry": false,
+            "space": "25"
+        }
+    },
+    {
+        "model": "panorama.texturegroup",
+        "pk": 30,
+        "fields": {
+            "codes": "12,6",
+            "url": "img/real/25_14.jpg",
+            "entry": false,
+            "space": "25"
+        }
+    },
+    {
+        "model": "panorama.texturegroup",
+        "pk": 31,
+        "fields": {
+            "codes": "12,15",
+            "url": "img/real/25_15.jpg",
+            "entry": false,
+            "space": "25"
+        }
+    },
+    {
+        "model": "panorama.texturegroup",
+        "pk": 32,
+        "fields": {
+            "codes": "12,8",
+            "url": "img/real/25_16.jpg",
+            "entry": false,
+            "space": "25"
         }
     }
 ]

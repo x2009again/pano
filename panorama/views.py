@@ -44,6 +44,9 @@ def init_scene(request):
         spaces_of_scene = SceneSpace.objects.filter(scene=scene).order_by('ordinal')
         for ss in spaces_of_scene:
             space = ss.space
+            texture_group = TextureGroup.objects.filter(space=space, entry=True)
+            space_url = texture_group[0].url if texture_group.exists() else space.url
+            space_url = STATIC_PREFIX + space_url
             hot_info_dict = {}
             hot_filter = Hot.objects.filter(scene_space=ss)
             if hot_filter.exists():
@@ -54,8 +57,7 @@ def init_scene(request):
             space_list.append({
                 'id': space.id,
                 'name': ss.space_name if ss.space_name else space.name,
-                'url': STATIC_PREFIX + space.url,
-                'cache_url': space.cache_url and (STATIC_PREFIX + space.cache_url),
+                'url': space_url,
                 'thumb_url': space.thumb_url and (STATIC_PREFIX + space.thumb_url),
                 'hotInfoDict': hot_info_dict,
                 'create_time': timezone.localtime(space.create_time)
@@ -71,7 +73,6 @@ def init_scene(request):
             'id': space.id,
             'name': space.name,
             'url': STATIC_PREFIX + space.url,
-            'cache_url': space.cache_url and (STATIC_PREFIX + space.cache_url),
             'thumb_url': space.thumb_url and (STATIC_PREFIX + space.thumb_url),
             'create_time': timezone.localtime(space.create_time)
         })
@@ -93,6 +94,9 @@ def init_scene(request):
     }, safe=False)
 
 
+texture_dict = {}
+
+
 def get_space(request):
     """
     获取单个空间数据
@@ -103,34 +107,58 @@ def get_space(request):
     space_filter = Space.objects.filter(pk=space_id)
     if not space_filter.exists():
         return JsonResponse({'success': False, 'err_msg': u'不存在编号为%s的空间' % space_id})
-    space = space_filter[0]
-    seller = space.creator
-    textures = OrderedDict()
-    for t in Texture.objects.filter(space=space):
-        if t.category in textures:
-            textures[t.category].append({
-                'id': t.pk,
+    if not texture_dict:  # 全局变量
+        for t in Texture.objects.all():
+            texture_dict[t.code] = {
+                'code': t.code,
+                'area': t.area,
                 'label': t.label,
-                'url': STATIC_PREFIX + t.url
+            }
+    space = space_filter[0]
+    group_list = []
+    url_list = []
+    area2texture = {}
+    textures = {}
+    entry_texture = None
+    entry_codes = None
+    for tg in TextureGroup.objects.filter(space=space):
+        if tg.entry:
+            entry_texture = tg.url
+            entry_codes = tg.codes
+        code_group = [int(code) for code in tg.codes.split(',')]
+        group_list.append(code_group)
+        url_list.append(STATIC_PREFIX + tg.url)
+        for code in tg.codes.split(','):
+            code = int(code)
+            if code and code not in textures:
+                textures[code] = texture_dict[code]
+
+    for code in textures:
+        texture = textures[code]
+        area_code = texture['area']
+        texture_code = texture['code']
+        texture_label = texture['label']
+        if area_code in area2texture:
+            area2texture[area_code]['textures'].append({
+                'code': texture_code,
+                'label': texture_label,
             })
         else:
-            textures[t.category] = [{
-                'id': t.pk,
-                'label': t.label,
-                'url': STATIC_PREFIX + t.url
-            }]
-    texture_list = []
-    for t in textures:
-        texture_list.append({
-            'category': Texture.CATEGORY_CHOICES[t],
-            'list': textures[t]
-        })
+            area2texture[area_code] = {
+                'area_code': area_code,
+                'area_label': Texture.AREA_CHOICES[area_code],
+                'textures': [{
+                    'code': texture_code,
+                    'label': texture_label,
+                }]
+            }
 
+    seller = space.creator
     return JsonResponse({'success': True, 'data': {
         'id': space.id,
         'name': space.name,
-        'url': STATIC_PREFIX + space.url,
-        'cache_url': space.cache_url and (STATIC_PREFIX + space.cache_url),
+        'url': STATIC_PREFIX + (entry_texture or space.url),
+        'entry_codes': entry_codes,
         'thumb_url': space.thumb_url and (STATIC_PREFIX + space.thumb_url),
         'create_time': timezone.localtime(space.create_time),
         'seller': {
@@ -141,7 +169,9 @@ def get_space(request):
             'address': seller.address,
             'desc': seller.desc,
         },
-        'textures': texture_list
+        'area2texture': area2texture,
+        'group_list': group_list,
+        'url_list': url_list,
     }})
 
 

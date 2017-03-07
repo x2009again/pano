@@ -78,12 +78,12 @@ button {
     transition: bottom 0.3s linear;
 }
 
-#texture {
+#opt-panel {
     height: 40px;
     line-height: 40px;
 }
 
-#texture > ul > li {
+.area {
     float: left;
     cursor: pointer;
     margin: 0 5px;
@@ -91,23 +91,27 @@ button {
     color: #fff;
 }
 
-#texture > ul > li > ul {
+.area ul {
     position: absolute;
     bottom: 40px;
     background-color: rgba(0, 0, 0, 0.5);
     display: none;
 }
 
-#texture > ul > li.show > ul {
+.area.show > ul {
     display: block;
 }
 
-#texture > ul > li > ul > li {
+.texture {
     padding: 0 5px;
     white-space: nowrap;
 }
 
-#texture > ul > li > ul > li:hover {
+.texture.show {
+    background-color: rgba(0, 152, 255, 0.33);
+}
+
+.texture:hover {
     background-color: rgba(0, 0, 0, 0.8);
 }
 

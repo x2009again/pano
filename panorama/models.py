@@ -23,35 +23,10 @@ class Space(models.Model):
 
     id = models.CharField(max_length=50, primary_key=True)
     name = models.CharField(max_length=20, null=False)
-    url = models.CharField(max_length=100, null=False)
-    cache_url = models.CharField(max_length=100, null=True)
+    url = models.CharField(verbose_name='默认材质地址', max_length=100, null=False)
     thumb_url = models.CharField(max_length=100, null=True)
     creator = models.ForeignKey(Seller, verbose_name='创建者', related_name='+', null=False)
     create_time = models.DateTimeField(verbose_name='创建时间', default=timezone.now)
-
-
-class Texture(models.Model):
-    BI_ZHI = 1
-    DI_BAN = 2
-    CI_ZHUAN = 3
-    BAN_CAI = 4
-    BU_LIAO = 5
-    CATEGORY_CHOICES = {
-        BI_ZHI: '壁纸',
-        DI_BAN: '地板',
-        CI_ZHUAN: '瓷砖',
-        BAN_CAI: '板材',
-        BU_LIAO: '布料',
-    }
-
-    category = models.SmallIntegerField(
-        choices=CATEGORY_CHOICES.items(),
-        null=True,
-        default=None,
-    )
-    url = models.CharField(max_length=100, null=False)
-    label = models.CharField(max_length=30, null=False)
-    space = models.ForeignKey(Space, verbose_name='所属空间', related_name='+', null=False)
 
 
 class Scene(models.Model):
@@ -82,3 +57,46 @@ class Hot(models.Model):
     title = models.CharField(verbose_name='hover名称', max_length=20, null=True)
     vector = models.CharField(verbose_name='向量/位置', max_length=100, null=True)
     transition = models.CharField(verbose_name='转场动作', max_length=300, null=True)
+
+
+class Texture(models.Model):
+    QIANG_MIAN = 1  # 墙面
+    DI_MIAN = 2  # 地面
+    AREA_CHOICES = {
+        QIANG_MIAN: '墙面',
+        DI_MIAN: '地面',
+    }
+    QM_CHOICES = {
+        1: '蓝色暗纹壁纸',
+        2: '蓝色简欧壁纸',
+        3: '蓝色条纹壁纸',
+        4: '暖色壁纸',
+        5: '花壁纸',
+        6: '素咖色壁纸',
+        7: '素蓝色壁纸',
+        8: '素色壁纸',
+    }
+    DM_CHOICES = {
+        1: '爵士白地砖',
+        2: '米色地砖',
+        3: '木地板',
+        4: '玉石地砖',
+        5: '仿古砖',
+    }
+    code = models.PositiveIntegerField(verbose_name='贴图编号', primary_key=True)  # 不能是0
+    area = models.SmallIntegerField(
+        choices=AREA_CHOICES.items(),
+        null=True,
+        default=None,
+    )
+    label = models.CharField(max_length=20, null=False)
+
+
+class TextureGroup(models.Model):
+    """
+    空间贴图关联表
+    """
+    codes = models.CharField(verbose_name='贴图组合', max_length=50, null=True, default=None)  # 贴图code逗号分隔
+    url = models.CharField(max_length=100, null=False)
+    entry = models.BooleanField(verbose_name='是否是默认(入口)材质')
+    space = models.ForeignKey(Space, verbose_name='所属空间', related_name='+', null=False)

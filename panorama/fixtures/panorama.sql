@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50715
 File Encoding         : 65001
 
-Date: 2017-03-02 10:40:15
+Date: 2017-03-07 16:59:22
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -61,7 +61,7 @@ CREATE TABLE `auth_permission` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `auth_permission_content_type_id_01ab375a_uniq` (`content_type_id`,`codename`),
   CONSTRAINT `auth_permissi_content_type_id_2f476e4b_fk_django_content_type_id` FOREIGN KEY (`content_type_id`) REFERENCES `django_content_type` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=37 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=40 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of auth_permission
@@ -84,24 +84,27 @@ INSERT INTO `auth_permission` VALUES ('15', 'Can delete content type', '5', 'del
 INSERT INTO `auth_permission` VALUES ('16', 'Can add session', '6', 'add_session');
 INSERT INTO `auth_permission` VALUES ('17', 'Can change session', '6', 'change_session');
 INSERT INTO `auth_permission` VALUES ('18', 'Can delete session', '6', 'delete_session');
-INSERT INTO `auth_permission` VALUES ('19', 'Can add scene', '7', 'add_scene');
-INSERT INTO `auth_permission` VALUES ('20', 'Can change scene', '7', 'change_scene');
-INSERT INTO `auth_permission` VALUES ('21', 'Can delete scene', '7', 'delete_scene');
-INSERT INTO `auth_permission` VALUES ('22', 'Can add texture', '8', 'add_texture');
-INSERT INTO `auth_permission` VALUES ('23', 'Can change texture', '8', 'change_texture');
-INSERT INTO `auth_permission` VALUES ('24', 'Can delete texture', '8', 'delete_texture');
-INSERT INTO `auth_permission` VALUES ('25', 'Can add seller', '9', 'add_seller');
-INSERT INTO `auth_permission` VALUES ('26', 'Can change seller', '9', 'change_seller');
-INSERT INTO `auth_permission` VALUES ('27', 'Can delete seller', '9', 'delete_seller');
-INSERT INTO `auth_permission` VALUES ('28', 'Can add scene space', '10', 'add_scenespace');
-INSERT INTO `auth_permission` VALUES ('29', 'Can change scene space', '10', 'change_scenespace');
-INSERT INTO `auth_permission` VALUES ('30', 'Can delete scene space', '10', 'delete_scenespace');
-INSERT INTO `auth_permission` VALUES ('31', 'Can add hot', '11', 'add_hot');
-INSERT INTO `auth_permission` VALUES ('32', 'Can change hot', '11', 'change_hot');
-INSERT INTO `auth_permission` VALUES ('33', 'Can delete hot', '11', 'delete_hot');
-INSERT INTO `auth_permission` VALUES ('34', 'Can add space', '12', 'add_space');
-INSERT INTO `auth_permission` VALUES ('35', 'Can change space', '12', 'change_space');
-INSERT INTO `auth_permission` VALUES ('36', 'Can delete space', '12', 'delete_space');
+INSERT INTO `auth_permission` VALUES ('19', 'Can add texture', '7', 'add_texture');
+INSERT INTO `auth_permission` VALUES ('20', 'Can change texture', '7', 'change_texture');
+INSERT INTO `auth_permission` VALUES ('21', 'Can delete texture', '7', 'delete_texture');
+INSERT INTO `auth_permission` VALUES ('22', 'Can add texture group', '8', 'add_texturegroup');
+INSERT INTO `auth_permission` VALUES ('23', 'Can change texture group', '8', 'change_texturegroup');
+INSERT INTO `auth_permission` VALUES ('24', 'Can delete texture group', '8', 'delete_texturegroup');
+INSERT INTO `auth_permission` VALUES ('25', 'Can add scene', '9', 'add_scene');
+INSERT INTO `auth_permission` VALUES ('26', 'Can change scene', '9', 'change_scene');
+INSERT INTO `auth_permission` VALUES ('27', 'Can delete scene', '9', 'delete_scene');
+INSERT INTO `auth_permission` VALUES ('28', 'Can add seller', '10', 'add_seller');
+INSERT INTO `auth_permission` VALUES ('29', 'Can change seller', '10', 'change_seller');
+INSERT INTO `auth_permission` VALUES ('30', 'Can delete seller', '10', 'delete_seller');
+INSERT INTO `auth_permission` VALUES ('31', 'Can add scene space', '11', 'add_scenespace');
+INSERT INTO `auth_permission` VALUES ('32', 'Can change scene space', '11', 'change_scenespace');
+INSERT INTO `auth_permission` VALUES ('33', 'Can delete scene space', '11', 'delete_scenespace');
+INSERT INTO `auth_permission` VALUES ('34', 'Can add hot', '12', 'add_hot');
+INSERT INTO `auth_permission` VALUES ('35', 'Can change hot', '12', 'change_hot');
+INSERT INTO `auth_permission` VALUES ('36', 'Can delete hot', '12', 'delete_hot');
+INSERT INTO `auth_permission` VALUES ('37', 'Can add space', '13', 'add_space');
+INSERT INTO `auth_permission` VALUES ('38', 'Can change space', '13', 'change_space');
+INSERT INTO `auth_permission` VALUES ('39', 'Can delete space', '13', 'delete_space');
 
 -- ----------------------------
 -- Table structure for auth_user
@@ -199,7 +202,7 @@ CREATE TABLE `django_content_type` (
   `model` varchar(100) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `django_content_type_app_label_76bd3d3b_uniq` (`app_label`,`model`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of django_content_type
@@ -209,12 +212,13 @@ INSERT INTO `django_content_type` VALUES ('4', 'auth', 'group');
 INSERT INTO `django_content_type` VALUES ('2', 'auth', 'permission');
 INSERT INTO `django_content_type` VALUES ('3', 'auth', 'user');
 INSERT INTO `django_content_type` VALUES ('5', 'contenttypes', 'contenttype');
-INSERT INTO `django_content_type` VALUES ('11', 'panorama', 'hot');
-INSERT INTO `django_content_type` VALUES ('7', 'panorama', 'scene');
-INSERT INTO `django_content_type` VALUES ('10', 'panorama', 'scenespace');
-INSERT INTO `django_content_type` VALUES ('9', 'panorama', 'seller');
-INSERT INTO `django_content_type` VALUES ('12', 'panorama', 'space');
-INSERT INTO `django_content_type` VALUES ('8', 'panorama', 'texture');
+INSERT INTO `django_content_type` VALUES ('12', 'panorama', 'hot');
+INSERT INTO `django_content_type` VALUES ('9', 'panorama', 'scene');
+INSERT INTO `django_content_type` VALUES ('11', 'panorama', 'scenespace');
+INSERT INTO `django_content_type` VALUES ('10', 'panorama', 'seller');
+INSERT INTO `django_content_type` VALUES ('13', 'panorama', 'space');
+INSERT INTO `django_content_type` VALUES ('7', 'panorama', 'texture');
+INSERT INTO `django_content_type` VALUES ('8', 'panorama', 'texturegroup');
 INSERT INTO `django_content_type` VALUES ('6', 'sessions', 'session');
 
 -- ----------------------------
@@ -232,20 +236,20 @@ CREATE TABLE `django_migrations` (
 -- ----------------------------
 -- Records of django_migrations
 -- ----------------------------
-INSERT INTO `django_migrations` VALUES ('1', 'contenttypes', '0001_initial', '2017-03-02 01:30:00.414000');
-INSERT INTO `django_migrations` VALUES ('2', 'auth', '0001_initial', '2017-03-02 01:30:04.393000');
-INSERT INTO `django_migrations` VALUES ('3', 'admin', '0001_initial', '2017-03-02 01:30:05.000000');
-INSERT INTO `django_migrations` VALUES ('4', 'admin', '0002_logentry_remove_auto_add', '2017-03-02 01:30:05.019000');
-INSERT INTO `django_migrations` VALUES ('5', 'contenttypes', '0002_remove_content_type_name', '2017-03-02 01:30:05.592000');
-INSERT INTO `django_migrations` VALUES ('6', 'auth', '0002_alter_permission_name_max_length', '2017-03-02 01:30:06.781000');
-INSERT INTO `django_migrations` VALUES ('7', 'auth', '0003_alter_user_email_max_length', '2017-03-02 01:30:07.288000');
-INSERT INTO `django_migrations` VALUES ('8', 'auth', '0004_alter_user_username_opts', '2017-03-02 01:30:07.330000');
-INSERT INTO `django_migrations` VALUES ('9', 'auth', '0005_alter_user_last_login_null', '2017-03-02 01:30:07.530000');
-INSERT INTO `django_migrations` VALUES ('10', 'auth', '0006_require_contenttypes_0002', '2017-03-02 01:30:07.559000');
-INSERT INTO `django_migrations` VALUES ('11', 'auth', '0007_alter_validators_add_error_messages', '2017-03-02 01:30:07.612000');
-INSERT INTO `django_migrations` VALUES ('12', 'auth', '0008_alter_user_username_max_length', '2017-03-02 01:30:08.220000');
-INSERT INTO `django_migrations` VALUES ('13', 'panorama', '0001_initial', '2017-03-02 01:30:12.523000');
-INSERT INTO `django_migrations` VALUES ('14', 'sessions', '0001_initial', '2017-03-02 01:30:13.173000');
+INSERT INTO `django_migrations` VALUES ('1', 'contenttypes', '0001_initial', '2017-03-07 08:58:19.677000');
+INSERT INTO `django_migrations` VALUES ('2', 'auth', '0001_initial', '2017-03-07 08:58:24.262000');
+INSERT INTO `django_migrations` VALUES ('3', 'admin', '0001_initial', '2017-03-07 08:58:25.240000');
+INSERT INTO `django_migrations` VALUES ('4', 'admin', '0002_logentry_remove_auto_add', '2017-03-07 08:58:25.273000');
+INSERT INTO `django_migrations` VALUES ('5', 'contenttypes', '0002_remove_content_type_name', '2017-03-07 08:58:26.098000');
+INSERT INTO `django_migrations` VALUES ('6', 'auth', '0002_alter_permission_name_max_length', '2017-03-07 08:58:26.536000');
+INSERT INTO `django_migrations` VALUES ('7', 'auth', '0003_alter_user_email_max_length', '2017-03-07 08:58:26.932000');
+INSERT INTO `django_migrations` VALUES ('8', 'auth', '0004_alter_user_username_opts', '2017-03-07 08:58:26.951000');
+INSERT INTO `django_migrations` VALUES ('9', 'auth', '0005_alter_user_last_login_null', '2017-03-07 08:58:27.144000');
+INSERT INTO `django_migrations` VALUES ('10', 'auth', '0006_require_contenttypes_0002', '2017-03-07 08:58:27.179000');
+INSERT INTO `django_migrations` VALUES ('11', 'auth', '0007_alter_validators_add_error_messages', '2017-03-07 08:58:27.223000');
+INSERT INTO `django_migrations` VALUES ('12', 'auth', '0008_alter_user_username_max_length', '2017-03-07 08:58:27.643000');
+INSERT INTO `django_migrations` VALUES ('13', 'panorama', '0001_initial', '2017-03-07 08:58:32.979000');
+INSERT INTO `django_migrations` VALUES ('14', 'sessions', '0001_initial', '2017-03-07 08:58:33.570000');
 
 -- ----------------------------
 -- Table structure for django_session
@@ -361,14 +365,14 @@ INSERT INTO `panorama_scenespace` VALUES ('10', null, '10', 'first', '11');
 INSERT INTO `panorama_scenespace` VALUES ('11', null, '11', 'first', '12');
 INSERT INTO `panorama_scenespace` VALUES ('12', null, '12', 'first', '13');
 INSERT INTO `panorama_scenespace` VALUES ('13', null, '13', 'first', '14');
-INSERT INTO `panorama_scenespace` VALUES ('14', '', '6', 'second', '15');
-INSERT INTO `panorama_scenespace` VALUES ('15', '', '3', 'second', '16');
-INSERT INTO `panorama_scenespace` VALUES ('16', '', '2', 'second', '17');
-INSERT INTO `panorama_scenespace` VALUES ('17', '', '4', 'second', '18');
-INSERT INTO `panorama_scenespace` VALUES ('18', '', '5', 'second', '19');
-INSERT INTO `panorama_scenespace` VALUES ('19', '', '8', 'second', '20');
-INSERT INTO `panorama_scenespace` VALUES ('20', '', '7', 'second', '21');
-INSERT INTO `panorama_scenespace` VALUES ('21', '', '1', 'second', '22');
+INSERT INTO `panorama_scenespace` VALUES ('14', null, '6', 'second', '15');
+INSERT INTO `panorama_scenespace` VALUES ('15', null, '3', 'second', '16');
+INSERT INTO `panorama_scenespace` VALUES ('16', null, '2', 'second', '17');
+INSERT INTO `panorama_scenespace` VALUES ('17', null, '4', 'second', '18');
+INSERT INTO `panorama_scenespace` VALUES ('18', null, '5', 'second', '19');
+INSERT INTO `panorama_scenespace` VALUES ('19', null, '8', 'second', '20');
+INSERT INTO `panorama_scenespace` VALUES ('20', null, '7', 'second', '21');
+INSERT INTO `panorama_scenespace` VALUES ('21', null, '1', 'second', '22');
 
 -- ----------------------------
 -- Table structure for panorama_seller
@@ -389,8 +393,8 @@ CREATE TABLE `panorama_seller` (
 -- Records of panorama_seller
 -- ----------------------------
 INSERT INTO `panorama_seller` VALUES ('1', '一品效果图', 'seller-logo/yipin_logo.png', '13966759087', '安徽省合肥市九华山路', '合肥一品效果图有限责任公司成立于2006年，是一家专注于数字视觉表现的公司，经过十多年的创新和发展 ，目前公司拥有员工近五百人，业务覆盖国内31个省和直辖市；公司主营数字化效果表现、全景图、施工图等。', '2016-10-05 06:48:05.472000');
-INSERT INTO `panorama_seller` VALUES ('2', '骨头社', 'seller-logo/logo.png', '0751-1234567', '霓虹', '动漫', '2016-10-05 06:48:05.474000');
-INSERT INTO `panorama_seller` VALUES ('3', '吉卜力工作室', '', '0751-931744325', '东京都小金井市梶野町1丁目4番25号', '目前约有300名员工，由导演宫崎骏以及他的同事高畑勋、铃木敏夫等一起统筹', '2016-10-05 06:48:05.472000');
+INSERT INTO `panorama_seller` VALUES ('2', '骨头社', 'seller-logo/wr.png', '0751-1234567', '霓虹', '动漫', '2016-10-05 06:48:05.474000');
+INSERT INTO `panorama_seller` VALUES ('3', '滑稽币代刷工作室', 'seller-logo/huaji.png', '2582587758', '辽宁省大连市西岗区大连造船厂', '最早研究「滑稽」的是西汉史学家司马迁，《史记》第一百二十六卷当中《滑稽列传》是专记滑稽人物的类传，颂扬当时一类滑稽人物「不流世俗，不争势利」的可贵精神，及其「谈言微中，亦可以解纷」的非凡讽谏才能。\r\n', '2016-10-05 06:48:05.472000');
 
 -- ----------------------------
 -- Table structure for panorama_space
@@ -400,7 +404,6 @@ CREATE TABLE `panorama_space` (
   `id` varchar(50) NOT NULL,
   `name` varchar(20) NOT NULL,
   `url` varchar(100) NOT NULL,
-  `cache_url` varchar(100) DEFAULT NULL,
   `thumb_url` varchar(100) DEFAULT NULL,
   `create_time` datetime NOT NULL,
   `creator_id` int(11) NOT NULL,
@@ -412,63 +415,108 @@ CREATE TABLE `panorama_space` (
 -- ----------------------------
 -- Records of panorama_space
 -- ----------------------------
-INSERT INTO `panorama_space` VALUES ('0', '空间名称：0', 'img/real/0.jpg', 'img/cache/0.jpg', 'img/thumb/0.jpg', '2016-10-05 06:48:05.472000', '3');
-INSERT INTO `panorama_space` VALUES ('1', '空间名称：1', 'img/real/1.jpg', 'img/cache/1.jpg', 'img/thumb/1.jpg', '2016-10-05 06:48:05.472000', '3');
-INSERT INTO `panorama_space` VALUES ('10', '空间名称：10', 'img/real/10.jpg', 'img/cache/10.jpg', 'img/thumb/10.jpg', '2016-10-05 06:48:05.472000', '3');
-INSERT INTO `panorama_space` VALUES ('11', '空间名称：11', 'img/real/11.jpg', 'img/cache/11.jpg', 'img/thumb/11.jpg', '2016-10-05 06:48:05.472000', '3');
-INSERT INTO `panorama_space` VALUES ('12', '空间名称：12', 'img/real/12.jpg', 'img/cache/12.jpg', 'img/thumb/12.jpg', '2016-10-05 06:48:05.472000', '3');
-INSERT INTO `panorama_space` VALUES ('13', '空间名称：13', 'img/real/13.jpg', 'img/cache/13.jpg', 'img/thumb/13.jpg', '2016-10-05 06:48:05.472000', '3');
-INSERT INTO `panorama_space` VALUES ('14', '空间名称：14', 'img/real/14.jpg', 'img/cache/14.jpg', 'img/thumb/14.jpg', '2016-10-05 06:48:05.472000', '3');
-INSERT INTO `panorama_space` VALUES ('15', '空间1', 'img/real/new_1.jpg', 'img/cache/new_1.jpg', 'img/thumb/new_1.jpg', '2016-10-05 06:48:05.472000', '3');
-INSERT INTO `panorama_space` VALUES ('16', '空间2', 'img/real/new_2.jpg', 'img/cache/new_2.jpg', 'img/thumb/new_2.jpg', '2016-10-05 06:48:05.472000', '3');
-INSERT INTO `panorama_space` VALUES ('17', '空间3', 'img/real/new_3.jpg', 'img/cache/new_3.jpg', 'img/thumb/new_3.jpg', '2016-10-05 06:48:05.472000', '3');
-INSERT INTO `panorama_space` VALUES ('18', '空间4', 'img/real/new_4.jpg', 'img/cache/new_4.jpg', 'img/thumb/new_4.jpg', '2016-10-05 06:48:05.472000', '3');
-INSERT INTO `panorama_space` VALUES ('19', '空间5', 'img/real/new_5.jpg', 'img/cache/new_5.jpg', 'img/thumb/new_5.jpg', '2016-10-05 06:48:05.472000', '3');
-INSERT INTO `panorama_space` VALUES ('2', '空间名称：2', 'img/real/2.jpg', 'img/cache/2.jpg', 'img/thumb/2.jpg', '2016-10-05 06:48:05.472000', '3');
-INSERT INTO `panorama_space` VALUES ('20', '空间6', 'img/real/new_6.jpg', 'img/cache/new_6.jpg', 'img/thumb/new_6.jpg', '2016-10-05 06:48:05.472000', '3');
-INSERT INTO `panorama_space` VALUES ('21', '空间7', 'img/real/new_7.jpg', 'img/cache/new_7.jpg', 'img/thumb/new_7.jpg', '2016-10-05 06:48:05.472000', '3');
-INSERT INTO `panorama_space` VALUES ('22', '空间8', 'img/real/new_8.jpg', 'img/cache/new_8.jpg', 'img/thumb/new_8.jpg', '2016-10-05 06:48:05.472000', '3');
-INSERT INTO `panorama_space` VALUES ('23', '工业·灵感源地(HTC版)', 'img/real/23.jpg', 'img/cache/23.jpg', 'img/thumb/23.jpg', '2017-02-20 06:48:05.472000', '3');
-INSERT INTO `panorama_space` VALUES ('24', '一品VR全景更换材质案例', 'img/real/24.jpg', null, 'img/thumb/24.jpg', '2016-10-05 06:48:05.472000', '1');
-INSERT INTO `panorama_space` VALUES ('5', '空间名称：5', 'img/real/5.jpg', 'img/cache/5.jpg', 'img/thumb/5.jpg', '2016-10-05 06:48:05.472000', '3');
-INSERT INTO `panorama_space` VALUES ('6', '空间名称：6', 'img/real/6.jpg', 'img/cache/6.jpg', 'img/thumb/6.jpg', '2016-10-05 06:48:05.472000', '3');
-INSERT INTO `panorama_space` VALUES ('7', '空间名称：7', 'img/real/7.jpg', 'img/cache/7.jpg', 'img/thumb/7.jpg', '2016-10-05 06:48:05.472000', '3');
-INSERT INTO `panorama_space` VALUES ('8', '空间名称：8', 'img/real/8.jpg', 'img/cache/8.jpg', 'img/thumb/8.jpg', '2016-10-05 06:48:05.472000', '3');
-INSERT INTO `panorama_space` VALUES ('9', '空间名称：9', 'img/real/9.jpg', 'img/cache/9.jpg', 'img/thumb/9.jpg', '2016-10-05 06:48:05.472000', '3');
+INSERT INTO `panorama_space` VALUES ('0', '空间名称：0', 'img/real/0.jpg', 'img/thumb/0.jpg', '2016-10-05 06:48:05.472000', '3');
+INSERT INTO `panorama_space` VALUES ('1', '空间名称：1', 'img/real/1.jpg', 'img/thumb/1.jpg', '2016-10-05 06:48:05.472000', '3');
+INSERT INTO `panorama_space` VALUES ('10', '空间名称：10', 'img/real/10.jpg', 'img/thumb/10.jpg', '2016-10-05 06:48:05.472000', '3');
+INSERT INTO `panorama_space` VALUES ('11', '空间名称：11', 'img/real/11.jpg', 'img/thumb/11.jpg', '2016-10-05 06:48:05.472000', '3');
+INSERT INTO `panorama_space` VALUES ('12', '空间名称：12', 'img/real/12.jpg', 'img/thumb/12.jpg', '2016-10-05 06:48:05.472000', '3');
+INSERT INTO `panorama_space` VALUES ('13', '空间名称：13', 'img/real/13.jpg', 'img/thumb/13.jpg', '2016-10-05 06:48:05.472000', '3');
+INSERT INTO `panorama_space` VALUES ('14', '空间名称：14', 'img/real/14.jpg', 'img/thumb/14.jpg', '2016-10-05 06:48:05.472000', '3');
+INSERT INTO `panorama_space` VALUES ('15', '空间1', 'img/real/new_1.jpg', 'img/thumb/new_1.jpg', '2016-10-05 06:48:05.472000', '3');
+INSERT INTO `panorama_space` VALUES ('16', '空间2', 'img/real/new_2.jpg', 'img/thumb/new_2.jpg', '2016-10-05 06:48:05.472000', '3');
+INSERT INTO `panorama_space` VALUES ('17', '空间3', 'img/real/new_3.jpg', 'img/thumb/new_3.jpg', '2016-10-05 06:48:05.472000', '3');
+INSERT INTO `panorama_space` VALUES ('18', '空间4', 'img/real/new_4.jpg', 'img/thumb/new_4.jpg', '2016-10-05 06:48:05.472000', '3');
+INSERT INTO `panorama_space` VALUES ('19', '空间5', 'img/real/new_5.jpg', 'img/thumb/new_5.jpg', '2016-10-05 06:48:05.472000', '3');
+INSERT INTO `panorama_space` VALUES ('2', '空间名称：2', 'img/real/2.jpg', 'img/thumb/2.jpg', '2016-10-05 06:48:05.472000', '3');
+INSERT INTO `panorama_space` VALUES ('20', '空间6', 'img/real/new_6.jpg', 'img/thumb/new_6.jpg', '2016-10-05 06:48:05.472000', '3');
+INSERT INTO `panorama_space` VALUES ('21', '空间7', 'img/real/new_7.jpg', 'img/thumb/new_7.jpg', '2016-10-05 06:48:05.472000', '3');
+INSERT INTO `panorama_space` VALUES ('22', '空间8', 'img/real/new_8.jpg', 'img/thumb/new_8.jpg', '2016-10-05 06:48:05.472000', '3');
+INSERT INTO `panorama_space` VALUES ('23', '工业·灵感源地(HTC版)', 'img/real/23.jpg', 'img/thumb/23.jpg', '2017-02-20 06:48:05.472000', '3');
+INSERT INTO `panorama_space` VALUES ('24', '一品VR全景更换材质案例', 'img/real/24.jpg', 'img/thumb/24.jpg', '2016-10-05 06:48:05.472000', '1');
+INSERT INTO `panorama_space` VALUES ('25', '一品VR全景更换材质案例', 'img/real/25.jpg', 'img/thumb/25.jpg', '2016-10-05 06:48:05.472000', '1');
+INSERT INTO `panorama_space` VALUES ('5', '空间名称：5', 'img/real/5.jpg', 'img/thumb/5.jpg', '2016-10-05 06:48:05.472000', '3');
+INSERT INTO `panorama_space` VALUES ('6', '空间名称：6', 'img/real/6.jpg', 'img/thumb/6.jpg', '2016-10-05 06:48:05.472000', '3');
+INSERT INTO `panorama_space` VALUES ('7', '空间名称：7', 'img/real/7.jpg', 'img/thumb/7.jpg', '2016-10-05 06:48:05.472000', '3');
+INSERT INTO `panorama_space` VALUES ('8', '空间名称：8', 'img/real/8.jpg', 'img/thumb/8.jpg', '2016-10-05 06:48:05.472000', '3');
+INSERT INTO `panorama_space` VALUES ('9', '空间名称：9', 'img/real/9.jpg', 'img/thumb/9.jpg', '2016-10-05 06:48:05.472000', '3');
 
 -- ----------------------------
 -- Table structure for panorama_texture
 -- ----------------------------
 DROP TABLE IF EXISTS `panorama_texture`;
 CREATE TABLE `panorama_texture` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `category` smallint(6) DEFAULT NULL,
-  `url` varchar(100) NOT NULL,
-  `label` varchar(30) NOT NULL,
-  `space_id` varchar(50) NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `panorama_texture_space_id_0d75953e_fk_panorama_space_id` (`space_id`),
-  CONSTRAINT `panorama_texture_space_id_0d75953e_fk_panorama_space_id` FOREIGN KEY (`space_id`) REFERENCES `panorama_space` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8;
+  `code` int(10) unsigned NOT NULL,
+  `area` smallint(6) DEFAULT NULL,
+  `label` varchar(20) NOT NULL,
+  PRIMARY KEY (`code`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of panorama_texture
 -- ----------------------------
-INSERT INTO `panorama_texture` VALUES ('1', '1', 'img/real/23_1.jpg', '儿童系列241', '23');
-INSERT INTO `panorama_texture` VALUES ('2', '1', 'img/real/23_2.jpg', '欧式系列107', '23');
-INSERT INTO `panorama_texture` VALUES ('3', '1', 'img/real/23_3.jpg', '现代系列809', '23');
-INSERT INTO `panorama_texture` VALUES ('4', '1', 'img/real/23_4.jpg', '骑士风范5CHI', '23');
-INSERT INTO `panorama_texture` VALUES ('5', '2', 'img/real/23_5.jpg', '山核桃S-46', '23');
-INSERT INTO `panorama_texture` VALUES ('6', '2', 'img/real/23_6.jpg', '太空漫步JS8278', '23');
-INSERT INTO `panorama_texture` VALUES ('7', '2', 'img/real/23_7.jpg', '现代系列167', '23');
-INSERT INTO `panorama_texture` VALUES ('8', '3', 'img/real/23_8.jpg', '通体砖', '23');
-INSERT INTO `panorama_texture` VALUES ('9', '3', 'img/real/23_9.jpg', '釉面砖', '23');
-INSERT INTO `panorama_texture` VALUES ('10', '4', 'img/real/23_10.jpg', '木饰面', '23');
-INSERT INTO `panorama_texture` VALUES ('11', '4', 'img/real/23_11.jpg', '铝扣板', '23');
-INSERT INTO `panorama_texture` VALUES ('12', '2', 'img/real/24_1.jpg', '木地板', '24');
-INSERT INTO `panorama_texture` VALUES ('13', '3', 'img/real/24.jpg', '白地砖', '24');
-INSERT INTO `panorama_texture` VALUES ('14', '3', 'img/real/24_2.jpg', '米色地砖', '24');
-INSERT INTO `panorama_texture` VALUES ('16', '1', 'img/real/24_1.jpg', '蓝色简欧墙纸', '24');
-INSERT INTO `panorama_texture` VALUES ('17', '1', 'img/real/24.jpg', '蓝色ab墙纸', '24');
-INSERT INTO `panorama_texture` VALUES ('18', '1', 'img/real/24_2.jpg', '暖色欧式墙纸', '24');
-INSERT INTO `panorama_texture` VALUES ('19', '1', 'img/real/24_3.jpg', '条纹壁纸', '24');
+INSERT INTO `panorama_texture` VALUES ('1', '1', '蓝色暗纹壁纸');
+INSERT INTO `panorama_texture` VALUES ('2', '1', '蓝色简欧壁纸');
+INSERT INTO `panorama_texture` VALUES ('3', '1', '蓝色条纹壁纸');
+INSERT INTO `panorama_texture` VALUES ('4', '1', '暖色壁纸');
+INSERT INTO `panorama_texture` VALUES ('5', '1', '花壁纸');
+INSERT INTO `panorama_texture` VALUES ('6', '1', '素咖色壁纸');
+INSERT INTO `panorama_texture` VALUES ('7', '1', '素蓝色壁纸');
+INSERT INTO `panorama_texture` VALUES ('8', '1', '素色壁纸');
+INSERT INTO `panorama_texture` VALUES ('9', '2', '爵士白地砖');
+INSERT INTO `panorama_texture` VALUES ('10', '2', '米色地砖');
+INSERT INTO `panorama_texture` VALUES ('11', '2', '木地板');
+INSERT INTO `panorama_texture` VALUES ('12', '2', '玉石地砖');
+INSERT INTO `panorama_texture` VALUES ('13', '2', '仿古砖');
+INSERT INTO `panorama_texture` VALUES ('14', '1', '花色壁纸');
+INSERT INTO `panorama_texture` VALUES ('15', '1', '素蓝色壁纸');
+
+-- ----------------------------
+-- Table structure for panorama_texturegroup
+-- ----------------------------
+DROP TABLE IF EXISTS `panorama_texturegroup`;
+CREATE TABLE `panorama_texturegroup` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `codes` varchar(50) DEFAULT NULL,
+  `url` varchar(100) NOT NULL,
+  `entry` tinyint(1) NOT NULL,
+  `space_id` varchar(50) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `panorama_texturegroup_space_id_a6eb2dec_fk_panorama_space_id` (`space_id`),
+  CONSTRAINT `panorama_texturegroup_space_id_a6eb2dec_fk_panorama_space_id` FOREIGN KEY (`space_id`) REFERENCES `panorama_space` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Records of panorama_texturegroup
+-- ----------------------------
+INSERT INTO `panorama_texturegroup` VALUES ('1', '1,9', 'img/real/24_1.jpg', '1', '24');
+INSERT INTO `panorama_texturegroup` VALUES ('2', '2,9', 'img/real/24_2.jpg', '0', '24');
+INSERT INTO `panorama_texturegroup` VALUES ('3', '3,9', 'img/real/24_3.jpg', '0', '24');
+INSERT INTO `panorama_texturegroup` VALUES ('4', '4,9', 'img/real/24_4.jpg', '0', '24');
+INSERT INTO `panorama_texturegroup` VALUES ('5', '1,10', 'img/real/24_5.jpg', '0', '24');
+INSERT INTO `panorama_texturegroup` VALUES ('6', '2,10', 'img/real/24_6.jpg', '0', '24');
+INSERT INTO `panorama_texturegroup` VALUES ('7', '3,10', 'img/real/24_7.jpg', '0', '24');
+INSERT INTO `panorama_texturegroup` VALUES ('8', '4,10', 'img/real/24_8.jpg', '0', '24');
+INSERT INTO `panorama_texturegroup` VALUES ('9', '1,11', 'img/real/24_9.jpg', '0', '24');
+INSERT INTO `panorama_texturegroup` VALUES ('10', '2,11', 'img/real/24_10.jpg', '0', '24');
+INSERT INTO `panorama_texturegroup` VALUES ('11', '3,11', 'img/real/24_11.jpg', '0', '24');
+INSERT INTO `panorama_texturegroup` VALUES ('12', '4,11', 'img/real/24_12.jpg', '0', '24');
+INSERT INTO `panorama_texturegroup` VALUES ('13', '1,12', 'img/real/24_13.jpg', '0', '24');
+INSERT INTO `panorama_texturegroup` VALUES ('14', '2,12', 'img/real/24_14.jpg', '0', '24');
+INSERT INTO `panorama_texturegroup` VALUES ('15', '3,12', 'img/real/24_15.jpg', '0', '24');
+INSERT INTO `panorama_texturegroup` VALUES ('16', '4,12', 'img/real/24_16.jpg', '0', '24');
+INSERT INTO `panorama_texturegroup` VALUES ('17', '13,14', 'img/real/25_1.jpg', '1', '25');
+INSERT INTO `panorama_texturegroup` VALUES ('18', '13,6', 'img/real/25_2.jpg', '0', '25');
+INSERT INTO `panorama_texturegroup` VALUES ('19', '13,15', 'img/real/25_3.jpg', '0', '25');
+INSERT INTO `panorama_texturegroup` VALUES ('20', '13,8', 'img/real/25_4.jpg', '0', '25');
+INSERT INTO `panorama_texturegroup` VALUES ('21', '10,14', 'img/real/25_5.jpg', '0', '25');
+INSERT INTO `panorama_texturegroup` VALUES ('22', '10,6', 'img/real/25_6.jpg', '0', '25');
+INSERT INTO `panorama_texturegroup` VALUES ('23', '10,15', 'img/real/25_7.jpg', '0', '25');
+INSERT INTO `panorama_texturegroup` VALUES ('24', '10,8', 'img/real/25_8.jpg', '0', '25');
+INSERT INTO `panorama_texturegroup` VALUES ('25', '11,14', 'img/real/25_9.jpg', '0', '25');
+INSERT INTO `panorama_texturegroup` VALUES ('26', '11,6', 'img/real/25_10.jpg', '0', '25');
+INSERT INTO `panorama_texturegroup` VALUES ('27', '11,15', 'img/real/25_11.jpg', '0', '25');
+INSERT INTO `panorama_texturegroup` VALUES ('28', '11,8', 'img/real/25_12.jpg', '0', '25');
+INSERT INTO `panorama_texturegroup` VALUES ('29', '12,14', 'img/real/25_13.jpg', '0', '25');
+INSERT INTO `panorama_texturegroup` VALUES ('30', '12,6', 'img/real/25_14.jpg', '0', '25');
+INSERT INTO `panorama_texturegroup` VALUES ('31', '12,15', 'img/real/25_15.jpg', '0', '25');
+INSERT INTO `panorama_texturegroup` VALUES ('32', '12,8', 'img/real/25_16.jpg', '0', '25');

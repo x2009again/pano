@@ -151,17 +151,48 @@
             container.append($mask);
         }
         this.show = function (time) {
-            if (time) $mask.fadeIn();
-            else $mask.css('display', 'block');
+            if (time) $mask.fadeIn(time);
+            else $mask.show();
             return this;
         };
         this.hide = function (time) {
-            if (time) $mask.fadeOut();
-            else $mask.css('display', 'none');
+            if (time) $mask.fadeOut(time);
+            else $mask.hide();
             return this;
         };
         return this;
-    }
+    };
 
+    /**
+     * 是否包含另一数组或元素
+     * @returns {Boolean}
+     */
+    Array.prototype.contains = function (target) {
+        if (Object.prototype.toString.call(target) === '[object Array]') {
+            var notFoundCount = target.length;
+            for (var i = 0; i < target.length; i++) {
+                if (this.indexOf(target[i]) != -1) notFoundCount--;
+            }
+            return notFoundCount == 0;
+        } else {
+            return this.indexOf(target) != -1;
+        }
+    };
+
+    /**
+     * 数组去重
+     * @returns {Array}
+     */
+    Array.prototype.unique = function () {
+        var res = [];
+        var json = {};
+        for (var i = 0; i < this.length; i++) {
+            if (!json[this[i]]) {
+                res.push(this[i]);
+                json[this[i]] = 1;
+            }
+        }
+        return res;
+    };
 
 })(window, document, $);

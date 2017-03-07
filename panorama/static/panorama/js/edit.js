@@ -131,7 +131,11 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
         $('#space_id_' + spaceId).addClass('active').siblings('li').removeClass('active');
     }
 
-    function onLoadFail(data) {
+    function onLoadFail(msg) {
+        alert(msg);
+        window.clearTimeout(maskTimer);
+        maskLayer.hide();
+        progress.end();
         /*var hotId = data.hotId;
          if (confirm('目标空间不存在，删除该无效热点？')) {
          $.get('delete_hot', {
@@ -259,7 +263,7 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
             saved = false;
         };
 
-        var tempSpaceDict = {};  // TODO
+        var tempSpaceDict = {};
         var $showAddDialogBtn_click = function () {
             var listHtml = '';
             $.get('list_spaces', function (result) {

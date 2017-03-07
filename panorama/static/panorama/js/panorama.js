@@ -488,7 +488,6 @@
                     logoMesh.visible = true;
                     initHotSpots();
                     transferring = false;
-                    _lockScene = false;
                 });
             tween0.start();
             tween1.delay(500).start();
@@ -504,7 +503,6 @@
                 logoMesh.visible = true;
                 initHotSpots();
                 transferring = false;
-                _lockScene = false;
             }).start();
         }
 
@@ -769,6 +767,7 @@
      */
     var initHotSpots = function (onlyGather) {
         if (!haveHot) return false;
+        _lockScene = false;
         spaceHots = [];
         currentSpace.hotInfoDict || (currentSpace.hotInfoDict = {});
         Object.keys(currentSpace.hotInfoDict).forEach(function (k) {

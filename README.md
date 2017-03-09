@@ -6,7 +6,7 @@
  **ps:仅供学习参考，很多接口并不完善，后台也有不少bug，欢迎fork。换工作中，近期并不打算维护，抱歉23333** 
 
 # 运行
-- 安装python环境
+- 安装python2.7环境
 - 修改settings.py中的DATABASES项为mysql或sqlite3，前者需要安装并配置自己的账号密码
 - 如果使用mysql请在数据库中创建新的schema名为panorama
 - 生成migration文件：python manage.py makemigrations panorama

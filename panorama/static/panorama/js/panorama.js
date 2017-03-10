@@ -395,7 +395,8 @@
         var hotInfo = hotId && currentSpace.hotInfoDict[hotId];
         var toSpace = hotInfo && hotInfo.to ? _spacesDict[hotInfo.to] : _spacesDict[toSpaceId];
         if (!toSpace) {
-            alert('无效热点');
+            console.error('无效热点');
+            _lockScene = false;
             return false;
         }
         callbacks.onLoadStart();
@@ -426,7 +427,6 @@
             },
             function (xhr) {
                 var num = parseInt((xhr.loaded / xhr.total * 100));
-                console.log(num);
                 callbacks.onLoading(num);
             },
             function (xhr) {
@@ -527,7 +527,6 @@
             },
             function (xhr) {
                 var num = parseInt((xhr.loaded / xhr.total * 100));
-                console.log(num);
                 callbacks.onLoading(num);
             },
             function (xhr) {
@@ -570,7 +569,6 @@
             },
             function (xhr) {
                 var num = parseInt((xhr.loaded / xhr.total * 100));
-                console.log(num);
                 callbacks.onLoading(num);
             },
             function (xhr) {
@@ -712,7 +710,6 @@
             },
             function (xhr) {
                 var num = parseInt((xhr.loaded / xhr.total * 100));
-                console.log(num);
                 callbacks.onLoading(num);
             },
             function (xhr) {

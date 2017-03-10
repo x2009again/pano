@@ -767,7 +767,6 @@
      */
     var initHotSpots = function (onlyGather) {
         if (!haveHot) return false;
-        _lockScene = false;
         spaceHots = [];
         currentSpace.hotInfoDict || (currentSpace.hotInfoDict = {});
         Object.keys(currentSpace.hotInfoDict).forEach(function (k) {
@@ -803,6 +802,7 @@
                 }
             }
         });
+        _lockScene = false;
     };
 
     var mouseDown = function ($e) {

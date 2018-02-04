@@ -1,4 +1,4 @@
-（作者比较懒，该文档已长期未更新，请暂时无视接口列表及描述 23333）
+（作者比较懒，该文档已长期未更新，请暂时无视接口列表 23333）
 ------------------------------------
 # 项目描述
 全景图Demo（包添功能有：根据已有空间创建场景；增、删、改空间中的热点，修改空间底部logo，兼容移动端浏览，横屏VR模式）
@@ -11,7 +11,7 @@
 - 如果使用mysql请在数据库中创建新的schema名为panorama
 - 生成migration文件：python manage.py makemigrations panorama
 - 执行migration：python manage.py migrate
-- 初始化数据：manage.py loaddata init_panorama.json
+- 初始化数据：python manage.py loaddata init_panorama.json
 - 启动django：python manage.py runserver 0.0.0.0:8000
 - 访问主页：http://localhost:8000
 - 访问查看页面：http://localhost:8000/panorama/view?scene_id=second

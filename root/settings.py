@@ -128,6 +128,7 @@ STATICFILES_FINDERS = (
 )
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'root/static'),
+    os.path.join(BASE_DIR, 'root/media'),
 )
 # 静态文件目录
 STATIC_URL = '/static/'

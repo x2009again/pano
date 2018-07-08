@@ -4,7 +4,7 @@
         "pk": 1,
         "fields": {
             "name": "\u4fee\u4ed9\u9053\u53cb",
-            "logo": "seller-logo/pants.jpg",
+            "logo": "seller-logo/doge.jpg",
             "phone": "18888888888",
             "address": "\u9ec4\u6cb3\u8def\u5948\u4f55\u6865",
             "desc": "\u6211\u6b32\u6210\u4ed9\uff0c\u6cd5\u529b\u65e0\u8fb9",
@@ -16,7 +16,7 @@
         "pk": 2,
         "fields": {
             "name": "\u9aa8\u5934\u793e",
-            "logo": "seller-logo/finger.jpg",
+            "logo": "seller-logo/mm.jpg",
             "phone": "0751-1234567",
             "address": "\u9713\u8679",
             "desc": "\u52a8\u6f2b",

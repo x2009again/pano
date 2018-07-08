@@ -33,6 +33,7 @@
     var hotLeaved = true;
     var currentSpace = null;
 
+    var startFov = 160;
     var cameraFov = 75;
 
     var STAGE_WIDTH = window.innerWidth,
@@ -217,16 +218,18 @@
                 scene.add(hotSpot);
             }
 
-            logoMaterial = new THREE.MeshBasicMaterial({
-                map: textureLoader.load(options.logoUrl),
-                transparent: true,
-                side: THREE.FrontSide
-            });
-            logoMesh = new THREE.Mesh(new THREE.PlaneGeometry(50, 50), logoMaterial);
-            logoMesh.scale.x = -1;
-            logoMesh.position.set(0, -150, 0);
-            logoMesh.lookAt(sceneCenter);
-            sphere.add(logoMesh);
+            if (options.logoUrl) {
+                logoMaterial = new THREE.MeshBasicMaterial({
+                    map: textureLoader.load(options.logoUrl),
+                    transparent: true,
+                    side: THREE.FrontSide
+                });
+                logoMesh = new THREE.Mesh(new THREE.PlaneGeometry(50, 50), logoMaterial);
+                logoMesh.scale.x = -1;
+                logoMesh.position.set(0, -150, 0);
+                logoMesh.lookAt(sceneCenter);
+                sphere.add(logoMesh);
+            }
             renderer.clear();
             renderer.render(scene, camera);
         }
@@ -245,7 +248,7 @@
             if (options.autoRotate) sphere.rotation.y = Math.PI / 2;  // 用于向左旋转球体
             camera.position.set(0, 30, 0.001);
             camera.rotation.set(0, 0, 0);
-            camera.fov = 160;
+            camera.fov = startFov;
             camera.rotation.x = -Math.PI / 2;
             camera.updateProjectionMatrix();
         }
@@ -263,7 +266,7 @@
             if (options.smoothStart) {
 
                 // 相机沿Y轴负方向移动到0
-                new TWEEN.Tween({fov: 160, positionY: 30})
+                new TWEEN.Tween({fov: startFov, positionY: 30})
                     .to({fov: cameraFov, positionY: 0}, 3000)
                     .easing(TWEEN.Easing.Quadratic.InOut)
                     .onUpdate(function () {
@@ -1080,10 +1083,10 @@
     Object.defineProperty(Panorama.prototype, "transformation", {
         get: function () {
             return _editingHot ? {
-                    px: transformSphere.position.x.toFixed(4),
-                    py: transformSphere.position.y.toFixed(4),
-                    pz: transformSphere.position.z.toFixed(4)
-                } :
+                px: transformSphere.position.x.toFixed(4),
+                py: transformSphere.position.y.toFixed(4),
+                pz: transformSphere.position.z.toFixed(4)
+            } :
                 null;
         }
     });

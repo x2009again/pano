@@ -30,7 +30,7 @@
 |autoPlay | boolean | false | 是否自动播放 |
 |autoRotate | boolean | false | 是否自动旋转 |
 |logoUrl | string | 无 | 场景logo |
-|hotImg | string | /static/panorama/img/foot_step.png | 热点图片 |
+|hotImg | string | /pano/static/panorama/img/foot_step.png | 热点图片 |
 |debug | boolean | false | 进入编辑模式 |
 |fps | boolean | false | 显示帧速 |
 

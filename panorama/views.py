@@ -6,7 +6,7 @@ from django.views.decorators.csrf import csrf_exempt
 from panorama.models import *
 from collections import OrderedDict
 
-STATIC_PREFIX = '/static/panorama/'
+STATIC_PREFIX = '/pano/static/panorama/'
 
 
 def test(request):

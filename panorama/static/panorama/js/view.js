@@ -95,7 +95,7 @@ else {
         document.getElementById('seller-name').innerHTML = seller['name'] || '';
         document.getElementById('seller-phone').innerHTML = seller['phone'] || '';
         document.getElementById('seller-address').innerHTML = seller['address'] || '';
-        var hotImg = '/static/panorama/img/foot_step.png';
+        var hotImg = '/pano/static/panorama/img/foot_step.png';
         entryId = sceneInfo['entry'];
 
         for (i = 0; i < spaceList.length; i++) {

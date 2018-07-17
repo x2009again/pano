@@ -131,7 +131,7 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'root/media'),
 )
 # 静态文件目录
-STATIC_URL = '/static/'
+STATIC_URL = '/pano/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 # 文件上传目录

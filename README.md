@@ -12,11 +12,17 @@
 - 生成migration文件：python manage.py makemigrations panorama
 - 执行migration：python manage.py migrate
 - 初始化数据：python manage.py loaddata init_panorama.json
+- 打开本地调试：进入`root/settings.py`将`DEBUG = False`改为True
 - 启动django：python manage.py runserver 0.0.0.0:8000
 - 访问主页：http://localhost:8000
 - 访问查看页面：http://localhost:8000/panorama/view?scene_id=second
 - 访问编辑页面：http://localhost:8000/panorama/edit?scene_id=second
 - 访问单空间材质切换页面：http://localhost:8000/panorama/check?space_id=23
+
+# 视频预览
+1. [场景切换](http://kaysama.gitee.io/image-host/场景切换.mp4 "场景切换")
+2. [材质切换](http://kaysama.gitee.io/image-host/材质切换.mp4 "材质切换")
+3. [编辑热点](http://kaysama.gitee.io/image-host/编辑热点.mp4 "编辑热点")
 
 # panorama.js插件接口列表：
 
@@ -30,7 +36,7 @@
 |autoPlay | boolean | false | 是否自动播放 |
 |autoRotate | boolean | false | 是否自动旋转 |
 |logoUrl | string | 无 | 场景logo |
-|hotImg | string | /static/panorama/img/foot_step.png | 热点图片 |
+|hotImg | string | /pano/static/panorama/img/foot_step.png | 热点图片 |
 |debug | boolean | false | 进入编辑模式 |
 |fps | boolean | false | 显示帧速 |
 

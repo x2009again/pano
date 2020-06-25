@@ -20,9 +20,9 @@
 - 访问单空间材质切换页面：http://localhost:8000/panorama/check?space_id=23
 
 # 视频预览
-1. [场景切换](http://kaysama.gitee.io/image-host/场景切换.mp4 "场景切换")
-2. [材质切换](http://kaysama.gitee.io/image-host/材质切换.mp4 "材质切换")
-3. [编辑热点](http://kaysama.gitee.io/image-host/编辑热点.mp4 "编辑热点")
+1. [场景切换](http://omgfaq.com/video/场景切换.mp4 "场景切换")
+2. [材质切换](http://omgfaq.com/video/材质切换.mp4 "材质切换")
+3. [编辑热点](http://omgfaq.com/video/编辑热点.mp4 "编辑热点")
 
 # panorama.js插件接口列表：
 

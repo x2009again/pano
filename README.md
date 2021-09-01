@@ -1,12 +1,14 @@
 （作者比较懒，该文档已长期未更新，请暂时无视接口列表 23333）
 ------------------------------------
 # 项目描述
-全景图Demo（包添功能有：根据已有空间创建场景；增、删、改空间中的热点，修改空间底部logo，兼容移动端浏览，横屏VR模式）
+全景图Demo，此项目不适用于Windows系统，windows系统用户可以在子系统中运行。（包添功能有：根据已有空间创建场景；增、删、改空间中的热点，修改空间底部logo，兼容移动端浏览，横屏VR模式）
 
  **ps:仅供学习参考，很多接口并不完善，后台也有不少bug，欢迎fork。换工作中，近期并不打算维护，抱歉23333** 
 
 # 运行
+- 请不要使用windows系统，可以使用子系统
 - 安装python2.7环境
+- 安装依赖包 pip install -r requirements.txt -i https://pypi.douban.com/simple/
 - 修改settings.py中的DATABASES项为mysql或sqlite3，前者需要安装并配置自己的账号密码
 - 如果使用mysql请在数据库中创建新的schema名为panorama
 - 生成migration文件：python manage.py makemigrations panorama

@@ -392,9 +392,9 @@ CREATE TABLE `panorama_seller` (
 -- ----------------------------
 -- Records of panorama_seller
 -- ----------------------------
-INSERT INTO `panorama_seller` VALUES ('1', '修仙道友', 'seller-logo/pants.jpg', '18888888888', '黄河路奈何桥', '我欲成仙，法力无边。', '2016-10-05 06:48:05.472000');
-INSERT INTO `panorama_seller` VALUES ('2', '骨头社', 'seller-logo/finger.jpg', '0751-1234567', '霓虹', '动漫', '2016-10-05 06:48:05.474000');
-INSERT INTO `panorama_seller` VALUES ('3', '滑稽币代刷工作室', 'seller-logo/huaji.png', '2582587758', '辽宁省大连市西岗区大连造船厂', '最早研究「滑稽」的是西汉史学家司马迁，《史记》第一百二十六卷当中《滑稽列传》是专记滑稽人物的类传，颂扬当时一类滑稽人物「不流世俗，不争势利」的可贵精神，及其「谈言微中，亦可以解纷」的非凡讽谏才能。\r\n', '2016-10-05 06:48:05.472000');
+INSERT INTO `panorama_seller` VALUES ('1', '测试1', 'seller-logo/pants.jpg', '1111', '地址1', '描述1\r\n111', '2016-10-05 06:48:05.472000');
+INSERT INTO `panorama_seller` VALUES ('2', '测试2', 'seller-logo/finger.jpg', '2222', '地址2', '描述2\r\n222', '2016-10-05 06:48:05.474000');
+INSERT INTO `panorama_seller` VALUES ('3', '测试3', 'seller-logo/huaji.png', '3333', '地址3', '描述3\r\n333', '2016-10-05 06:48:05.472000');
 
 -- ----------------------------
 -- Table structure for panorama_space

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>全景漫屏</title>
@@ -9,7 +10,8 @@
             margin: 0;
         }
 
-        html, body {
+        html,
+        body {
             width: 100%;
             height: 100%;
             position: relative;
@@ -31,19 +33,49 @@
         }
     </style>
 </head>
+
 <body>
-python version: {{ python_ver }} <br/>
-django version: {{ django_ver }} <br/>
-{#<a href="/panorama/view?scene_id=first">查看场景first</a><br/>#}
-{#<a href="/panorama/edit?scene_id=first">编辑场景first</a><br/>#}
-<a href="/panorama/view?scene_id=second">查看场景second</a><br/>
-<a href="/panorama/edit?scene_id=second">编辑场景second</a><br/>
-<a href="/panorama/check?space_id=24">查看空间24</a><br/>
-<a href="/panorama/check?space_id=25">查看空间25</a><br/>
-{% comment %}
-<footer>
-    <a target="_blank" href="http://www.miitbeian.gov.cn"><img src="https://gai-sama.github.io/old2/img/index/police.png" alt="备案">浙ICP备17005822号</a>
-</footer>
-{% endcomment %}
+    <form action="{% url 'logout' %}" method="post" id="logout">
+        {% csrf_token %}
+        <input type="hidden">
+    </form>
+
+    {% if request.user.is_authenticated %}
+    <div class="login_btn fl">
+        欢迎您：<em>{{ request.user.username }}</em>
+        <span>|</span>
+        <a href="javascript:{document.getElementById('logout').submit()}">退出</a>
+    </div>
+    {% else %}
+    <div class="login_btn fl">
+        <a href="{% url 'login' %}?next=/">登录</a>
+    </div>
+    {% endif %}
+
+    {% if request.user.is_authenticated %}
+    <div class="login_btn fl">
+        <a target="_blank" href="{% url 'edit' %}">新建场景</a>
+    </div>
+    {% endif %}
+    <!-- python version: {{ python_ver }} <br />
+    django version: {{ django_ver }} <br /> -->
+    {% for scene in scene_list %} <br />
+    <a target="_blank" href="/panorama/view?scene_id={{scene.id}}">查看 {{scene.title}}</a>
+    {% endfor %}
+    <br /><br />
+
+    {#<a href="/panorama/view?scene_id=first">查看场景first</a><br />#}
+    {#<a href="/panorama/edit?scene_id=first">编辑场景first</a><br />#}
+    <!-- <a href="/panorama/view?scene_id=second">查看场景second</a><br/> -->
+    <a target="_blank" href="/panorama/edit?scene_id=second" target="_blank">编辑场景second</a><br />
+    <a target="_blank" href="/panorama/check?space_id=24">查看空间24</a><br />
+    <a target="_blank" href="/panorama/check?space_id=25">查看空间25</a><br />
+    {% comment %}
+    <footer>
+        <a target="_blank" href="http://www.miitbeian.gov.cn"><img
+                src="https://gai-sama.github.io/old2/img/index/police.png" alt="备案">浙ICP备17005822号</a>
+    </footer>
+    {% endcomment %}
 </body>
+
 </html>

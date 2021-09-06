@@ -17,4 +17,5 @@ urlpatterns = [
     url(r'^update_hot$', views.update_hot, name='update_hot'),
     url(r'^delete_hot$', views.delete_hot, name='delete_hot'),
     url(r'^update_seller$', views.update_seller, name='update_seller'),
+    url(r'^update_spaces$', views.update_spaces, name='update_spaces'),
 ]

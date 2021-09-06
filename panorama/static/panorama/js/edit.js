@@ -6,7 +6,7 @@
 var maskLayer = new MaskLayer().show();
 var progress = new Progress().start();
 var sceneId = getParam('scene_id');
-$.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, function (ret) {
+$.get('init_scene', { space_id: getParam('space_id'), scene_id: sceneId }, function (ret) {
     if (!ret.success) {
         alert(ret['err_msg']);
         return false;
@@ -29,14 +29,18 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
         $editSidebar: $('#edit-sidebar'),
         $preview: $('#preview'),
         $showAddDialogBtn: $('#show-add-dialog'),
+        $showNewDialogBtn: $('#show-new-dialog'),//新建空间按钮
         $saveAs: $('#save-as'),
         $editInfo: $('#edit-info'),
         $qrCode: $('#qr-code'),
         $addSpaceDialog: $('#add-space-dialog'),
         $addSpaceBtn: $('#add-space-btn'),
+        $newSpaceDialog: $('#new-space-dialog'),//新建空间对话框
+        $newSpaceBtn: $('#new-space-btn'),//新建空间对话框提交按钮
         $saveAsDialog: $('#save-as-dialog'),
         $editInfoDialog: $('#edit-seller-dialog'),
         $spacesContainer: $('#spaces-container'),
+        $spacesImg: $("#spaces-img"),
         $sellerLogo: $("#seller-logo"),
         $playBtn: $('#play-btn'),
         $editPanel: $('#edit-panel'),
@@ -61,6 +65,7 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
 
     var sceneInfo = ret['scene'];
     var seller = ret['seller'];
+    var space_id = null;
     var spaceList = ret['spaceList'];
     var hotImg = '/static/panorama/img/foot_step.png';
     var saved = true;
@@ -107,7 +112,9 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
         } else {
             ui.$playBtn.fadeIn(1000);
         }
-        sceneContainer = panorama.stage;
+        if (panorama && panorama.stage) {
+            sceneContainer = panorama.stage;
+        }
         bindUIListener();
         animate();
     }
@@ -217,11 +224,12 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
             optionsHtml += '<option value="' + space.id + '">' + space.name + '</option>'
         }
         ui.$addHotDialog.find('select').html(optionsHtml);
-        ui.$addHotDialog.css({left: pos.x, top: pos.y}).show();
+        ui.$addHotDialog.css({ left: pos.x, top: pos.y }).show();
     };
 
     function animate() {
-        panorama.update();  // 更新场景数据
+        if (panorama)
+            panorama.update();  // 更新场景数据
         requestAnimationFrame(animate);
     }
 
@@ -248,15 +256,15 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
                 if (panorama.addingHot) {  // 结束选择热点
                     panorama.addingHot = false;
                 } else if (ui.$hotTitle.is(':hidden')) {  // 若热点标题未显示状态（即鼠标不在热点上），则显示右键菜单
-                    rClickedPos = {x: e.pageX, y: e.pageY};
-                    ui.$contextMenu.css({left: e.pageX, top: e.pageY}).show();
+                    rClickedPos = { x: e.pageX, y: e.pageY };
+                    ui.$contextMenu.css({ left: e.pageX, top: e.pageY }).show();
                     rightClickFlag = 1;  // 标记需要弹出菜单
                 }
             }
         };
 
         var $showAddHotDialogBtn_mousedown = function () {
-            showAddingHotDialog({x: ui.$showAddHotDialogBtn.offset().left, y: ui.$showAddHotDialogBtn.offset().top});
+            showAddingHotDialog({ x: ui.$showAddHotDialogBtn.offset().left, y: ui.$showAddHotDialogBtn.offset().top });
         };
 
         var $spaceBar_sortchange = function () {
@@ -287,6 +295,10 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
                 ui.$addSpaceDialog.show();
             });
         };
+
+        var $showNewDialogBtn_click = function () {
+            ui.$newSpaceDialog.show();
+        }
 
         var operate = {};
         var spaceImg_click = function () {
@@ -349,6 +361,13 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
                 }
             });
         };
+
+        //提交事件
+        var $newSpaceBtn_click = function () {
+            // document.getElementById('space_id').value = space_id;
+            ui.$newSpaceDialog.find('form').submit();
+            // ui.$newSpaceDialog.hide();
+        }
 
         // 关闭对话框
         $('.dialog-close, .dialog-cancel').click(function () {
@@ -415,7 +434,7 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
         // 点击页面保存修改
         ui.$body.click(function () {
             if (ui.$qrCode.is(':visible'))
-                ui.$qrCode.animate({'opacity': 0, 'margin-top': '-40px'}, function () {
+                ui.$qrCode.animate({ 'opacity': 0, 'margin-top': '-40px' }, function () {
                     $(this).hide();
                 });
             ui.$spaceBar.find('input:visible').blur();
@@ -453,6 +472,26 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
                 alert("请选择图片格式！");
             }
         });
+
+        //上传空间图片
+        $('#spaces-input').change(function () {
+            var files = this.files;
+            if (!files || !files.length > 0 || !window.FileReader) {
+                document.getElementById('dialog-img-ele').style.display = 'none';
+                return false;
+            }
+            if (/^image.*/.test(files[0].type)) {
+                var reader = new FileReader();
+                reader.readAsDataURL(files[0]);
+                reader.onloadend = function () {
+                    ui.$spacesImg.attr("src", this.result);
+                    document.getElementById('dialog-img-ele').style.display = 'block';
+                }
+            } else {
+                alert("请选择图片格式！");
+            }
+        });
+
         // 编辑商家信息操作
         ui.$editInfoDialog.find('.dialog-confirm').click(function () {
             document.getElementById('seller_id').value = seller.id;
@@ -495,7 +534,7 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
         });
         ui.$preview.click(function (e) {
             if (sceneInfo && sceneInfo.title) {
-                if (ui.$qrCode.is(':hidden')) ui.$qrCode.show().animate({'opacity': 1, 'margin-top': '-20px'});
+                if (ui.$qrCode.is(':hidden')) ui.$qrCode.show().animate({ 'opacity': 1, 'margin-top': '-20px' });
                 e.stopPropagation();
             } else {
                 alert('请先保存场景！');
@@ -672,9 +711,13 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
 
         ui.$showAddDialogBtn.click($showAddDialogBtn_click);  // 弹出添加空间对话框按钮
 
+        ui.$showNewDialogBtn.click($showNewDialogBtn_click);//弹出新建空间对话框按钮
+
         ui.$spacesContainer.on('click', '.space-img', spaceImg_click);  // 选择/取消选择空间
 
         ui.$addSpaceBtn.click($addSpaceBtn_click);  // 添加空间按钮
+
+        ui.$newSpaceBtn.click($newSpaceBtn_click);//新建空间提交按钮
 
         ui.$showAddHotDialogBtn.mousedown($showAddHotDialogBtn_mousedown);  // 显示添加热点对话框
 
@@ -697,6 +740,33 @@ $.get('init_scene', {space_id: getParam('space_id'), scene_id: sceneId}, functio
             alert('操作修改！');
         }
     };
+
+    window.callbackNewSpace = function (result) {
+        if (result.success) {
+            var space = result['seller'];
+            panorama.addSpace(space);
+            saved = false;
+            // 左侧列表增加
+            ui.$spaceBar.append('<li class="space-ele" id="space_id_' + space.id + '" data-index="' + space.id + '">' +
+                '<div class="ele-pic"><img src="' + space['thumb_url'] + '"/></div>' +
+                '<div class="ele-name"><input type="text" value=""/><span>' + space.name + '</span></div>' +
+                '<div class="ele-ope"><div class="ele-ope-edit"></div><div class="ele-ope-del"></div></div>' +
+                '</li>');
+            if (ui.$spaceBar.find('li').length > 1) {
+                ui.$spaceBar.removeClass('no-del');
+            }
+            maskLayer.hide();
+            ui.$newSpaceDialog.hide();
+            alert('操作成功！');
+        } else {
+            if (result.err_msg) {
+                alert(result.err_msg);
+            }
+            else {
+                alert('操作修改！');
+            }
+        }
+    }
 
     // 监听窗口大小改变事件
     window.addEventListener('resize', function () {

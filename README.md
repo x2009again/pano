@@ -3,8 +3,6 @@
 # 项目描述
 全景图Demo，此项目不适用于Windows系统，windows系统用户可以在子系统中运行。（包添功能有：根据已有空间创建场景；增、删、改空间中的热点，修改空间底部logo，兼容移动端浏览，横屏VR模式）
 
-***发现这个项目只是个粗版，缺少空间管理，在场景管理时只能选择固定的2个空间，所以这个项目只做演示参考使用***
-
  **ps:仅供学习参考，很多接口并不完善，后台也有不少bug，欢迎fork。换工作中，近期并不打算维护，抱歉23333** 
 
 # 运行
@@ -16,6 +14,7 @@
 - 生成migration文件：python manage.py makemigrations panorama
 - 执行migration：python manage.py migrate
 - 初始化数据：python manage.py loaddata init_panorama.json
+- 初始化管理员账号：python manage.py createsuperuser
 - 打开本地调试：进入`root/settings.py`将`DEBUG = False`改为True
 - 启动django：python manage.py runserver 0.0.0.0:8000
 - 访问主页：http://localhost:8000

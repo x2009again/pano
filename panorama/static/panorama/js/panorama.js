@@ -23,7 +23,7 @@
     var hotSpotMat;  // 热点材质
     var hotPos = null;  // 热点方向矢量
 
-    var startPoint1 = {x: 0, y: 0}, startPoint2 = {x: 0, y: 0};
+    var startPoint1 = { x: 0, y: 0 }, startPoint2 = { x: 0, y: 0 };
 
     var intersects = [];  // 鼠标与热点的交点
     var selectedHot = null;  // 鼠标按下的热点
@@ -130,7 +130,7 @@
         var entryId = opt.entryId;
 
         // 渲染器
-        renderer = new THREE.WebGLRenderer({antialias: true});
+        renderer = new THREE.WebGLRenderer({ antialias: true });
         renderer.setSize(STAGE_WIDTH, STAGE_HEIGHT);
         renderer.sortObjects = false;
         renderer.setClearColor(0x000000);
@@ -159,7 +159,7 @@
         // 拉取静态资源
         currentSpace = _spacesDict[entryId];
         // 初始化热点信息
-        var hotInfoDict = currentSpace.hotInfoDict;
+        var hotInfoDict = currentSpace ? currentSpace.hotInfoDict : null;
         !hotInfoDict && (hotInfoDict = {});
         Object.keys(hotInfoDict).forEach(function (h_key) {
             var hotInfo = hotInfoDict[h_key];
@@ -176,7 +176,7 @@
         }
 
         var _this = this;
-        var tempMat = new THREE.MeshBasicMaterial({color: 0x000000, side: THREE.DoubleSide});
+        var tempMat = new THREE.MeshBasicMaterial({ color: 0x000000, side: THREE.DoubleSide });
         // 载入空间
 
         // 首先加载入口空间
@@ -263,8 +263,8 @@
             if (options.smoothStart) {
 
                 // 相机沿Y轴负方向移动到0
-                new TWEEN.Tween({fov: 160, positionY: 30})
-                    .to({fov: cameraFov, positionY: 0}, 3000)
+                new TWEEN.Tween({ fov: 160, positionY: 30 })
+                    .to({ fov: cameraFov, positionY: 0 }, 3000)
                     .easing(TWEEN.Easing.Quadratic.InOut)
                     .onUpdate(function () {
                         camera.position.y = this.positionY;
@@ -272,20 +272,20 @@
                         camera.updateProjectionMatrix();
                     }).start();
                 // 相机镜头从下到朝Z轴负方向
-                new TWEEN.Tween({rotateX: -Math.PI / 2})
-                    .to({rotateX: 0}, 3000)
+                new TWEEN.Tween({ rotateX: -Math.PI / 2 })
+                    .to({ rotateX: 0 }, 3000)
                     .easing(TWEEN.Easing.Quadratic.InOut)
                     .onUpdate(function () {
                         camera.rotation.x = this.rotateX;
                     }).onComplete(function () {
-                    camera.position.set(0, 0, 0.1);
-                    _lockScene = false;
-                    initControls();
-                }).delay(500).start();
+                        camera.position.set(0, 0, 0.1);
+                        _lockScene = false;
+                        initControls();
+                    }).delay(500).start();
 
                 if (options.autoRotate) {  // 如果需要在平滑进入时自动旋转
-                    new TWEEN.Tween({rotateY: Math.PI / 2})
-                        .to({rotateY: 0}, 3000)
+                    new TWEEN.Tween({ rotateY: Math.PI / 2 })
+                        .to({ rotateY: 0 }, 3000)
                         .easing(TWEEN.Easing.Quadratic.InOut)
                         .onUpdate(function () {
                             sphere.rotation.y = this.rotateY;
@@ -397,6 +397,7 @@
         if (!toSpace) {
             console.error('无效热点');
             _lockScene = false;
+            callbacks.onInit();
             return false;
         }
         callbacks.onLoadStart();
@@ -479,8 +480,8 @@
                     transformSphere.position.set(this.px, this.py, this.pz);
                 });
             // 转场球opacity减小
-            var tween1 = new TWEEN.Tween({opacity: 1})
-                .to({opacity: 0}, animateTime)
+            var tween1 = new TWEEN.Tween({ opacity: 1 })
+                .to({ opacity: 0 }, animateTime)
                 .easing(TWEEN.Easing.Quadratic.InOut)
                 .onUpdate(function () {
                     transformSphere.material.opacity = this.opacity;
@@ -494,16 +495,16 @@
         } else {
             // 直接切换
             transformSphere.position.set(0, 0, 0);
-            new TWEEN.Tween({opacity: 1})
-                .to({opacity: 0}, 1000)
+            new TWEEN.Tween({ opacity: 1 })
+                .to({ opacity: 0 }, 1000)
                 .easing(TWEEN.Easing.Quadratic.InOut)
                 .onUpdate(function () {
                     transformSphere.material.opacity = this.opacity;
                 }).onComplete(function () {
-                logoMesh.visible = true;
-                initHotSpots();
-                transferring = false;
-            }).start();
+                    logoMesh.visible = true;
+                    initHotSpots();
+                    transferring = false;
+                }).start();
         }
 
     };
@@ -765,47 +766,51 @@
     var initHotSpots = function (onlyGather) {
         if (!haveHot) return false;
         spaceHots = [];
-        currentSpace.hotInfoDict || (currentSpace.hotInfoDict = {});
-        Object.keys(currentSpace.hotInfoDict).forEach(function (k) {
-            var hotInfo = currentSpace.hotInfoDict[k];
-            if (onlyGather) {  // 仅收集当前空间中的热点用于拾取
-                spaceHots.push(hotInfo.mesh);
-            } else {  // 初始化当前空间的热点
-                var hotRay = hotInfo.ray;
-                if (!hotRay) {
-                    hotRay = new THREE.Raycaster();
-                    hotRay.set(sceneCenter, new THREE.Vector3(hotInfo.vx, hotInfo.vy, hotInfo.vz));
-                    hotInfo.ray = hotRay;
-                }
-                var tempIntersects = hotRay.intersectObjects([sphere]);
-                if (tempIntersects.length > 0) {
-                    var tempHotSpot = hotSpot.clone();
-                    tempHotSpot.visible = true;
-                    tempHotSpot.material = hotSpot.material.clone();
-                    hotPos = tempIntersects[0].point.clone();
-                    hotPos.setLength(radius - 10);
-                    tempHotSpot.position.set(
-                        -hotPos.x,
-                        hotPos.y,
-                        hotPos.z
-                    );
-                    tempHotSpot.hotId = k;
-                    tempHotSpot.title = hotInfo.title;
-                    tempHotSpot.lookAt(camera.position);
-                    sphere.add(tempHotSpot);
-                    // 用于拾取热点
-                    hotInfo.mesh = tempHotSpot;
+        currentSpace && (currentSpace.hotInfoDict || (currentSpace.hotInfoDict = {}));
+        if(currentSpace)
+        {
+            Object.keys(currentSpace.hotInfoDict).forEach(function (k) {
+                var hotInfo = currentSpace.hotInfoDict[k];
+                if (onlyGather) {  // 仅收集当前空间中的热点用于拾取
                     spaceHots.push(hotInfo.mesh);
+                } else {  // 初始化当前空间的热点
+                    var hotRay = hotInfo.ray;
+                    if (!hotRay) {
+                        hotRay = new THREE.Raycaster();
+                        hotRay.set(sceneCenter, new THREE.Vector3(hotInfo.vx, hotInfo.vy, hotInfo.vz));
+                        hotInfo.ray = hotRay;
+                    }
+                    var tempIntersects = hotRay.intersectObjects([sphere]);
+                    if (tempIntersects.length > 0) {
+                        var tempHotSpot = hotSpot.clone();
+                        tempHotSpot.visible = true;
+                        tempHotSpot.material = hotSpot.material.clone();
+                        hotPos = tempIntersects[0].point.clone();
+                        hotPos.setLength(radius - 10);
+                        tempHotSpot.position.set(
+                            -hotPos.x,
+                            hotPos.y,
+                            hotPos.z
+                        );
+                        tempHotSpot.hotId = k;
+                        tempHotSpot.title = hotInfo.title;
+                        tempHotSpot.lookAt(camera.position);
+                        sphere.add(tempHotSpot);
+                        // 用于拾取热点
+                        hotInfo.mesh = tempHotSpot;
+                        spaceHots.push(hotInfo.mesh);
+                    }
                 }
-            }
-        });
+            });
+        }
+
         _lockScene = false;
     };
 
     var mouseDown = function ($e) {
         if (!_lockScene) {
             clickOrTap = true;
-            startPoint1 = {x: $e.pageX, y: $e.pageY};
+            startPoint1 = { x: $e.pageX, y: $e.pageY };
         }
     };
 
@@ -864,7 +869,7 @@
     var mouseUp = function ($e) {
         if (!_lockScene && clickOrTap) {
             if (_addingHot) {  // 添加脚印
-                callbacks.onAddingHot({x: $e.pageX, y: $e.pageY});
+                callbacks.onAddingHot({ x: $e.pageX, y: $e.pageY });
             } else {
                 if (intersects.length > 0) {  // 单击热点
                     targetHotId = selectedHot.hotId;
@@ -936,7 +941,7 @@
             if (e.touches.length > 1) {  // 如果是双指操作
                 var lastDistance = Math.sqrt(Math.pow(startPoint2.x - startPoint1.x, 2) + Math.pow(startPoint2.y - startPoint1.y, 2));
                 var currentDistance = Math.sqrt(Math.pow(e.touches[1].clientX - touch0X, 2) + Math.pow(e.touches[1].clientY - touch0Y, 2));
-                camera.fov = cameraFov + (lastDistance - currentDistance ) / 5;
+                camera.fov = cameraFov + (lastDistance - currentDistance) / 5;
                 camera.fov = camera.fov > 110 ? 110 : camera.fov < 40 ? 40 : camera.fov;
                 orbitControls.rotateSpeed = camera.fov > 75 ? 0.04 : camera.fov / 75 * 0.04;
                 camera.updateProjectionMatrix();
@@ -996,7 +1001,7 @@
     // 定义spaceId属性（只读）
     Object.defineProperty(Panorama.prototype, "spaceId", {
         get: function () {
-            return currentSpace.id;
+            return currentSpace && currentSpace.id;
         }
     });
 
@@ -1080,10 +1085,10 @@
     Object.defineProperty(Panorama.prototype, "transformation", {
         get: function () {
             return _editingHot ? {
-                    px: transformSphere.position.x.toFixed(4),
-                    py: transformSphere.position.y.toFixed(4),
-                    pz: transformSphere.position.z.toFixed(4)
-                } :
+                px: transformSphere.position.x.toFixed(4),
+                py: transformSphere.position.y.toFixed(4),
+                pz: transformSphere.position.z.toFixed(4)
+            } :
                 null;
         }
     });

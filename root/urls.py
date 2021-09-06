@@ -22,8 +22,10 @@ from django.views.generic import RedirectView
 from . import views
 
 urlpatterns = [
-                  url(r'^favicon\.ico$', RedirectView.as_view(url='/static/favicon.ico')),
-                  url(r'^$', views.index, name='index'),
-                  url(r'^panorama/', include('panorama.urls')),
-                  url(r'^admin/', admin.site.urls),
-              ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)  # 使MEDIA_ROOT目录可以访问
+    url(r'^favicon\.ico$', RedirectView.as_view(url='/static/favicon.ico')),
+    url(r'^$', views.index, name='index'),
+    url(r'^panorama/', include('panorama.urls')),
+    url(r'^admin/', admin.site.urls),
+    url(r'^login/', views.login,name="login"),
+    url(r'^logout/', views.logout,name="logout")
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)  # 使MEDIA_ROOT目录可以访问

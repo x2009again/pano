@@ -2,7 +2,20 @@
 import uuid
 from django.db import models
 from django.utils import timezone
+from PIL import Image
+import os
+from root.settings import MEDIA_ROOT
+from django.db.models.fields.files import ImageFieldFile
 
+def make_thumb(path, size = 180):
+    pixbuf = Image.open(path)
+    width, height = pixbuf.size
+
+    if width > size:
+        delta = width / size
+        height = int(height / delta)
+        pixbuf.thumbnail((size, height), Image.ANTIALIAS)
+        return pixbuf
 
 class Seller(models.Model):
     """
@@ -23,10 +36,21 @@ class Space(models.Model):
 
     id = models.CharField(max_length=50, primary_key=True)
     name = models.CharField(max_length=20, null=False)
-    url = models.CharField(verbose_name='默认材质地址', max_length=100, null=False)
-    thumb_url = models.CharField(max_length=100, null=True)
+    url = models.ImageField(upload_to='spaces/real/', verbose_name='默认材质地址', max_length=100, null=False)
+    thumb_url = models.ImageField(upload_to='spaces/thumb/',max_length=100, null=True)
     creator = models.ForeignKey(Seller, verbose_name='创建者', related_name='+', null=False)
     create_time = models.DateTimeField(verbose_name='创建时间', default=timezone.now)
+
+    # 保存上传图片的缩略图
+    def save(self):
+        super(Space, self).save()  # 将上传的图片先保存一下，否则报错
+        base, ext = os.path.splitext(os.path.basename(self.url.path))
+        thumb_pixbuf = make_thumb(os.path.join(MEDIA_ROOT, self.url.name))
+        relate_thumb_path = os.path.join('spaces/thumb', base + ext)
+        thumb_path = os.path.join(MEDIA_ROOT, relate_thumb_path)
+        thumb_pixbuf.save(thumb_path)
+        self.thumb_url = ImageFieldFile(self, self.thumb_url, relate_thumb_path)
+        super(Space, self).save() # 再保存一下，包括缩略图等
 
 
 class Scene(models.Model):
@@ -34,7 +58,7 @@ class Scene(models.Model):
     场景
     """
     id = models.CharField(max_length=50, primary_key=True, default=uuid.uuid1)
-    title = models.CharField(max_length=20, null=False)
+    title = models.CharField(verbose_name='标题', max_length=20, null=False)
     seller = models.ForeignKey(Seller, verbose_name='商户', related_name='+', null=False)
     entry = models.ForeignKey(Space, verbose_name='入口空间', related_name='+', null=False)
 

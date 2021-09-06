@@ -79,9 +79,9 @@ ul, li {
 #show-add-dialog {
     line-height: 32px;
     border-top: 1px solid #ccc;
-    background: #fff url(../img/icon/add.png) no-repeat 12px center;
-    padding: 0 10px 0 30px;
-    margin-left: 14px;
+    /* background: #fff url(../img/icon/add.png) no-repeat 12px center; */
+    background-color: #fff;
+    padding: 0 10px 0 5px;
     display: inline-block;
     vertical-align: middle;
     -moz-border-radius: 4px;
@@ -93,6 +93,26 @@ ul, li {
 #show-add-dialog:hover {
     background-color: #e6e6e6;
 }
+
+#show-new-dialog {
+    line-height: 32px;
+    border-top: 1px solid #ccc;
+    background: rgb(34, 185, 225) url(../img/icon/add.png) no-repeat 12px center;
+    padding: 0 10px 0 30px;
+    margin-left: 10px;
+    display: inline-block;
+    vertical-align: middle;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+#show-new-dialog:hover {
+    color: #fff;
+    background-color: #384ad7;
+    border-color: #2e40d4;
+}
+
 
 #option-bar > div {
     float: right;
@@ -333,6 +353,17 @@ ul, li {
     border-radius: 2px;
 }
 
+#space-name {
+    height: 100%;
+    width: 100%;
+    padding: 0 10px;
+    border: 1px solid #ccc;
+    -moz-border-radius: 2px;
+    -webkit-border-radius: 2px;
+    border-radius: 2px;
+    font-size: 14px;
+}
+
 .dialog .dialog-title {
     position: relative;
     width: 100%;
@@ -401,6 +432,40 @@ ul, li {
 }
 
 #edit-seller-dialog .dialog-ele .dialog-ele-content {
+    width: 410px;
+    height: 32px;
+    float: left;
+}
+
+#new-space-dialog {
+    width: 720px;
+    height: 450px;
+    display: none;
+}
+
+#new-space-dialog input, textarea {
+    outline: none;
+    border: 0;
+    -webkit-appearance: none;
+}
+
+#new-space-dialog .dialog-ele {
+    width: 500px;
+    height: 32px;
+    margin-left: 80px;
+    line-height: 40px;
+    margin-top: 15px;
+}
+
+#new-space-dialog .dialog-ele .dialog-ele-title {
+    width: 90px;
+    height: 32px;
+    float: left;
+    color: #444444;
+    font-size: 16px;
+}
+
+#new-space-dialog .dialog-ele .dialog-ele-content {
     width: 410px;
     height: 32px;
     float: left;

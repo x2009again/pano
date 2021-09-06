@@ -137,3 +137,6 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 # 文件上传目录
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'root/media')
+
+# 登录地址
+LOGIN_URL = '/login/'

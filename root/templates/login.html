@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+
+<html lang="en-us">
+
+<head>
+    <title>登录</title>
+    <link rel="stylesheet" type="text/css" href="/static/admin/css/base.css" />
+    <link rel="stylesheet" type="text/css" href="/static/admin/css/login.css" />
+    <meta name="robots" content="NONE,NOARCHIVE" />
+</head>
+
+<body class=" login" data-admin-utc-offset="28800">
+    <!-- Container -->
+    <div id="container">
+        <!-- Header -->
+        <div id="header">
+            <div id="branding">
+                <h1 id="site-name"><a href="/login/">登录系统</a></h1>
+            </div>
+        </div>
+        <!-- END Header -->
+        {% if messages %}
+        <ul class="messagelist">
+            {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
+                {% endfor %}
+        </ul>
+        {% endif %}
+        <!-- Content -->
+        <div id="content" class="colM">
+            {% if data %}
+            <p class="errornote">
+                {{ data }}
+            </p>
+            {% endif %}
+            <div id="content-main">
+                <form action="/login/" method="post" id="login-form">
+                    {% csrf_token %}
+                    {% if next %}
+                    <input type="hidden" name="next" value="{{ next }}" />
+                    {% endif %}
+                    <div class="form-row">
+
+                        <label class="required" for="id_username">Username:</label> <input type="text" name="username"
+                            autofocus required id="id_username" maxlength="254" />
+                    </div>
+                    <div class="form-row">
+
+                        <label class="required" for="id_password">Password:</label> <input type="password"
+                            name="password" required id="id_password" />
+                    </div>
+
+                    <div class="submit-row">
+                        <label>&nbsp;</label><input type="submit" value="登录" />
+                    </div>
+                </form>
+            </div>
+            <br class="clear" />
+        </div>
+        <!-- END Content -->
+        <div id="footer"></div>
+    </div>
+    <!-- END Container -->
+</body>
+
+</html>
